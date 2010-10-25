@@ -1,7 +1,7 @@
 Gem::Specification.new do |gem|
   gem.rubygems_version = "1.3.7"
   gem.name = "mailcatcher"
-  gem.version = "0.1.0"
+  gem.version = "0.1.1"
   gem.date = "2010-10-25"
   gem.summary = "Runs an SMTP server, catches and displays email in a web interface."
   gem.description = <<-EOD
