@@ -4,6 +4,24 @@ $: << File.expand_path(File.join(File.dirname(__FILE__), '../lib'))
 
 require 'mail_catcher'
 
+require 'optparse'
+
+options = {}
+
+OptionParser.new do |opts|
+  opts.banner = 'Usage: mailcatcher [options]'
+  
+  options[:verbose] = false
+  opts.on('-v', '--verbose', 'Be more verbose') do
+    options[:verbose] = true
+  end
+  
+  opts.on('-h', '--help', 'Display this help information') do
+    puts opts
+    exit
+  end
+end.parse!
+
 puts 'Starting mail catcher'
 puts '==> smtp://0.0.0.0:1025'
 puts '==> http://0.0.0.0:1080'
