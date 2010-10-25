@@ -18,6 +18,7 @@ Gem::Specification.new do |gem|
   
   gem.add_dependency 'bundler'
   gem.add_dependency 'eventmachine'
+  gem.add_dependency 'haml'
   gem.add_dependency 'json'
   gem.add_dependency 'mail'
   gem.add_dependency 'thin'

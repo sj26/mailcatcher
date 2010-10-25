@@ -6,6 +6,7 @@ gem 'mail'
 gem 'thin'
 gem 'sqlite3-ruby', :require => 'sqlite3'
 gem 'sinatra'
+gem 'haml'
 gem 'sunshowers'
 
 # Required by activesupport, required by mail, but not listed.
