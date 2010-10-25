@@ -16,6 +16,7 @@ Gem::Specification.new do |gem|
   gem.authors = ["Samuel Cochran"]
   gem.email = "sj26@sj26.com"
   
+  gem.add_dependency 'bundler'
   gem.add_dependency 'eventmachine'
   gem.add_dependency 'json'
   gem.add_dependency 'mail'

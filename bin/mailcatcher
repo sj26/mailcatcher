@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+require 'bundler'
+Bundler.setup
+
 $: << File.expand_path(File.join(File.dirname(__FILE__), '../lib'))
 
 require 'mail_catcher'
