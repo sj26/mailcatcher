@@ -204,6 +204,9 @@ module MailCatcher
     options[:http_ip] ||= '127.0.0.1'
     options[:http_port] ||= 1080
     
+    puts "==> smtp://#{options[:smtp_ip]}:#{options[:smtp_port]}"
+    puts "==> http://#{options[:http_ip]}:#{options[:http_port]}"
+
     Thin::Logging.silent = true
     EM::run do
       EM::start_server options[:smtp_ip], options[:smtp_port], SmtpServer
