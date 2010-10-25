@@ -199,11 +199,16 @@ module MailCatcher
     end
   end
 
-  def self.run
+  def self.run(options = {})
+    options[:smtp_ip] ||= '127.0.0.1'
+    options[:smtp_port] ||= 1025
+    options[:http_ip] ||= '127.0.0.1'
+    options[:http_port] ||= 1080
+    
     Thin::Logging.silent = true
     EM::run do
-      EM::start_server '127.0.0.1', 1025, SmtpServer
-      Thin::Server.start WebApp, '127.0.0.1', 1080
+      EM::start_server options[:smtp_ip], options[:smtp_port], SmtpServer
+      Thin::Server.start WebApp, options[:http_ip], options[:http_port]
     end
   end
 end
