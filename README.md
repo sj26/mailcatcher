@@ -11,6 +11,7 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 * Rewrites HTML enabling display of embedded, inline images/etc. (currently very basic)
 * Lists attachments and allows separate downloading of parts.
 * Written super-simply in EventMachine, easy to dig in and change.
+* Command line options to override the default SMTP/HTTP IP and port settings.
 
 ## Caveats
 
@@ -21,7 +22,6 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 
 ## TODO
 
-* Command line options.
 * Websockets for immediate mail viewing.
 * Download link to view original message in mail client.
 * Growl support.
