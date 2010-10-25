@@ -10,6 +10,7 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 * Shows HTML, Plain Text and Source version of messages, as applicable.
 * Rewrites HTML enabling display of embedded, inline images/etc. (currently very basic)
 * Lists attachments and allows separate downloading of parts.
+* Written super-simply in EventMachine, easy to dig in and change.
 
 ## Caveats
 
@@ -19,13 +20,16 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 
 ## TODO
 
-* Websockets.
+* Command line options.
+* Websockets for immediate mail viewing.
 * Download link to view original message in mail client.
+* Growl support.
 * Test suite.
 * Better organisation.
 * Better interface. SproutCore?
 * Add mail delivery on request, optionally multiple times.
 * Forward mail to rendering service, maybe CampaignMonitor?
+* Package as an app? Native interfaces?
 
 ## License
 
