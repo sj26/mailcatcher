@@ -24,6 +24,9 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'sqlite3-ruby'
   gem.add_dependency 'sinatra'
   gem.add_dependency 'sunshowers'
+
+  # Required by activesupport, required by mail, but not listed.
+  gem.add_dependency 'i18n'
   
   gem.files = %w[
     bin/mailcatcher
