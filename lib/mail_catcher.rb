@@ -87,21 +87,32 @@ module MailCatcher
     end
 
     def receive_message
-      mail = Mail.new(current_message.source)
-      result = insert_message.execute(current_message.sender, current_message.recipients.inspect, mail.subject, current_message.source, current_message.source.length)
-      mail_id = MailCatcher.db.last_insert_row_id
-      if mail.multipart?
-        mail.all_parts.each do |part|
-          body = part.body.to_s
-          insert_part.execute(mail_id, part.cid, part.mime_type, part.attachment? ? 1 : 0, part.filename, body, body.length)
+      MailCatcher.db.transaction do
+        mail = Mail.new(current_message.source)
+        result = insert_message.execute(current_message.sender, current_message.recipients.inspect, mail.subject, current_message.source, current_message.source.length)
+        mail_id = MailCatcher.db.last_insert_row_id
+        if mail.multipart?
+          mail.all_parts.each do |part|
+            body = part.body.to_s
+            insert_part.execute(mail_id, part.cid, part.mime_type, part.attachment? ? 1 : 0, part.filename, body, body.length)
+          end
+        else
+          body = mail.body.to_s
+          insert_part.execute(mail_id, nil, mail.mime_type, 0, mail.filename, body, body.length)
         end
-      else
-        body = mail.body.to_s
-        insert_part.execute(mail_id, nil, mail.mime_type, 0, mail.filename, body, body.length)
+        puts "==> SMTP: Received message '#{mail.subject}' from '#{current_message.sender}'"
+        true
       end
-      puts "==> SMTP: Received message '#{mail.subject}' from '#{current_message.sender}'"
+    rescue
+      puts "*** Error receiving message: #{current_message.inspect}"
+      puts "    Exception: #{$!}"
+      puts "    Backtrace:"
+      $!.backtrace.each do |line|
+        puts "       #{line}"
+      end
+      puts "    Please submit this as an issue at http://github.com/sj26/mailcatcher/issues"
+    ensure
       @current_message = nil
-      true
     end
   end
   
@@ -209,8 +220,8 @@ module MailCatcher
     puts "==> http://#{options[:http_ip]}:#{options[:http_port]}"
 
     Thin::Logging.silent = true
-    EM::run do
-      EM::start_server options[:smtp_ip], options[:smtp_port], SmtpServer
+    EM.run do
+      EM.start_server options[:smtp_ip], options[:smtp_port], SmtpServer
       Thin::Server.start WebApp, options[:http_ip], options[:http_port]
     end
   end
