@@ -1,8 +1,8 @@
 Gem::Specification.new do |gem|
   gem.rubygems_version = "1.3.7"
   gem.name = "mailcatcher"
-  gem.version = "0.1.3"
-  gem.date = "2010-10-25"
+  gem.version = "0.1.5"
+  gem.date = "2010-10-26"
   gem.summary = "Runs an SMTP server, catches and displays email in a web interface."
   gem.description = <<-EOD
     MailCatcher runs a super simple SMTP server which catches any
@@ -35,6 +35,7 @@ Gem::Specification.new do |gem|
     views/index.haml
     README.md
     LICENSE
+    Gemfile
   ];
   gem.executables = ["mailcatcher"]
 end
