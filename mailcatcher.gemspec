@@ -16,7 +16,6 @@ Gem::Specification.new do |gem|
   gem.authors = ["Samuel Cochran"]
   gem.email = "sj26@sj26.com"
   
-  gem.add_dependency 'bundler'
   gem.add_dependency 'eventmachine'
   gem.add_dependency 'haml'
   gem.add_dependency 'json'
@@ -35,7 +34,6 @@ Gem::Specification.new do |gem|
     views/index.haml
     README.md
     LICENSE
-    Gemfile
   ];
   gem.executables = ["mailcatcher"]
 end

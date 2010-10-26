@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'eventmachine'
 require 'json'
 require 'ostruct'
