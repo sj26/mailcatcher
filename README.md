@@ -32,9 +32,13 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 * Forward mail to rendering service, maybe CampaignMonitor?
 * Package as an app? Native interfaces?
 
-## License
+## Thanks
 
-MailCatcher is released under the MIT License. See LICENSE.
+MailCatcher is just a mishmash of other people's hard work. Thank you so much to the people who have built the wonderful guts on which this project relies.
+
+## Copyright
+
+Copyright (c) 2010 Samuel Cochran. See LICENSE for details.
 
 ## Dreams
 

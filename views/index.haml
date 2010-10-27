@@ -2,109 +2,11 @@
 %html
   %head
     %title MailCatcher
-    %script{:src => "http://code.jquery.com/jquery-1.4.3.min.js"}
+    %link{:rel => "stylesheet", :href => "/stylesheets/application.css"}
+    %script{:src => "/javascripts/jquery.js"}
+    %script{:src => "/javascripts/application.js"}
     :javascript
-      var MailCatcher = {
-        refresh: function() {
-          console.log('Refreshing mail');
-          $.getJSON('/mail', function(mail) {
-            $.each(mail, function(i, message) {
-              var row = $('<tr />').attr('data-message-id', message.id.toString());
-              $.each(['sender', 'recipients', 'subject', 'created_at'], function (i, property) {
-                row.append($('<td />').text(message[property]));
-              });
-              $('#mail tbody').append(row);
-            });
-          });
-        },
-        load: function(id) {
-          var id = id || $('#mail tr.selected').attr('data-message-id');
-          
-          if (id !== null) {
-            console.log('Loading message', id);
-          
-            $('#mail tbody tr:not([data-message-id="'+id+'"])').removeClass('selected');
-            $('#mail tbody tr[data-message-id="'+id+'"]').addClass('selected');
-            $.getJSON('/mail/' + id + '.json', function(message) {
-              $('#message .received span').text(message.created_at);
-              $('#message .from span').text(message.sender);
-              $('#message .to span').text(message.recipients);
-              $('#message .subject span').text(message.subject);
-              $('#message .formats ul li').each(function(i, el) {
-                var $el = $(el),
-                  format = $el.attr('data-message-format');
-                if ($.inArray(format, message.formats) >= 0) {
-                  $el.show();
-                } else {
-                  $el.hide();
-                }
-              })
-              if ($("#message .formats ul li.selected:not(:visible)")) {
-                $("#message .formats ul li.selected").removeClass("selected");
-                $("#message .formats ul li:visible:first").addClass("selected");
-              }
-              if (message.attachments.length > 0) {
-                console.log(message.attachments);
-                $('#message .attachments ul').empty();
-                $.each(message.attachments, function (i, attachment) {
-                  $('#message .attachments ul').append($('<li>').append($('<a>').attr('href', attachment['href']).addClass(attachment['type'].split('/', 1)[0]).addClass(attachment['type'].replace('/', '-')).text(attachment['filename'])));
-                });
-                $('#message .attachments').show();
-              } else {
-                $('#message .attachments').hide();
-              }
-              MailCatcher.loadBody();
-            });
-          }
-        },
-        loadBody: function(id, format) {
-          var id = id || $('#mail tr.selected').attr('data-message-id');
-          var format = format || $('#message .formats ul li.selected').first().attr('data-message-format') || 'html';
-          
-          $('#message .formats ul li[data-message-format="'+format+'"]').addClass('selected');
-          $('#message .formats ul li:not([data-message-format="'+format+'"])').removeClass('selected');
-          
-          if (id != undefined && id !== null) {
-            console.log('Loading message', id, 'in format', format);
-          
-            $('#message iframe').attr('src', '/mail/' + id + '.' + format);
-          }
-        }
-      };
-      
-      $('#mail tr').live('click', function() {
-        MailCatcher.load($(this).attr('data-message-id'));
-      });
-      
-      $('#message .formats ul li').live('click', function() {
-        MailCatcher.loadBody($('#mail tr.selected').attr('data-message-id'), $(this).attr('data-message-format'));
-      });
-      
-      $(MailCatcher.refresh);
-    :css
-      html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td { margin:0px; padding:0px; border:0px; outline:0px; font-weight:inherit; font-style:inherit; font-size:100%; font-family:inherit; vertical-align:baseline; }
-      body { line-height:1; color:black; background:white; font-size:12px; font-family:Helvetica, Arial, sans-serif; }
-      ol, ul { list-style:none; }
-      table { border-collapse:separate; border-spacing:0px; }
-      caption, th, td { text-align:left; font-weight:normal; }
-      
-      #mail { height: 10em; overflow: scroll; }
-      #mail table { width: 100%; }
-      #mail table thead tr { background: #ccc; }
-      #mail table thead tr th { padding: .25em; font-weight: bold; }
-      #mail table tbody tr:nth-child(even) { background: #eee; }
-      #mail table tbody tr.selected { background: Highlight; color: HighlightText; }
-      #mail table tbody tr td { padding: .25em; }
-      #message .metadata { padding: 1em; background: #ccc; }
-      #message .metadata div { padding: .25em;; }
-      #message .metadata div label { display: inline-block; width: 8em; text-align: right; font-weight: bold; }
-      #message .metadata .attachments { display: none; }
-      #message .metadata .attachments ul { display: inline; }
-      #message .metadata .attachments ul li { display: inline-block; }
-      #message .formats ul { background: #ccc; border-bottom: 1px solid #666; padding: 0 .5em; }
-      #message .formats ul li { display: inline-block; padding: .5em; border: solid #666; border-width: 1px 1px 0 1px; }
-      #message .formats ul li.selected { background: white; height: 13px; margin-bottom: -1px; }
-      #message iframe { width: 100%; height: 42em; }
+      $(MailCatcher.init);
   %body
     #mail
       %table
@@ -134,6 +36,6 @@
       .formats
         %ul
           %li.selected{'data-message-format' => 'html'} HTML
-          %li{'data-message-format' => 'txt'} Plain Text
-          %li{'data-message-format' => 'eml'} Source
+          %li{'data-message-format' => 'plain'} Plain Text
+          %li{'data-message-format' => 'source'} Source
       %iframe

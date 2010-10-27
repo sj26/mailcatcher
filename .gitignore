@@ -1,4 +1,2 @@
-.bundle
-Gemfile.lock
-.rvmrc
-mailcatcher-0.1.0.gem mailcatcher-0.1.1.gem mailcatcher-0.1.2.gem mailcatcher-0.1.3.gem
+*.gemspec
+pkg
