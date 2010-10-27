@@ -19,7 +19,7 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 * Lists attachments and allows separate downloading of parts.
 * Written super-simply in EventMachine, easy to dig in and change.
 * Command line options to override the default SMTP/HTTP IP and port settings.
-* Mail appears instantly if your browser supports (WebSockets)[websockets].
+* Mail appears instantly if your browser supports [WebSockets][websockets].
 
 ## Caveats
 
