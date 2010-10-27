@@ -12,25 +12,22 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 * Lists attachments and allows separate downloading of parts.
 * Written super-simply in EventMachine, easy to dig in and change.
 * Command line options to override the default SMTP/HTTP IP and port settings.
+* Mail appears instantly if your browser supports (WebSockets)[websockets].
 
 ## Caveats
 
 * Mail requires activesupport which requires i18n, but it doesn't list it as a dependency. For now I've added i18n as a requirement for MailCatcher.
-* For now you need to refresh the page to see new mail. Websockets support is coming soon to show new mail immediately.
 * Mail proccessing is fairly basic but easily modified. If something doesn't work for you, fork and fix it or file an issue and let me know. Include the whole message you're having problems with.
 * The interface is very basic and has not been tested on many browsers yet.
 
 ## TODO
 
-* Websockets for immediate mail viewing.
 * Download link to view original message in mail client.
 * Growl support.
 * Test suite.
-* Better organisation.
-* Better interface. SproutCore?
 * Add mail delivery on request, optionally multiple times.
 * Forward mail to rendering service, maybe CampaignMonitor?
-* Package as an app? Native interfaces?
+* Package as an app? Native interfaces? HotCocoa?
 
 ## Thanks
 
@@ -43,3 +40,5 @@ Copyright (c) 2010 Samuel Cochran. See LICENSE for details.
 ## Dreams
 
 For dream catching, try [this](http://goo.gl/kgbh).
+
+  [websockets]: http://www.whatwg.org/specs/web-socket-protocol/
