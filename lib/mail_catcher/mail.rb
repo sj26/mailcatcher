@@ -42,9 +42,11 @@ module MailCatcher::Mail
       mail = Mail.new(message[:source])
       result = @@add_message_query.execute(message[:sender], message[:recipients].inspect, mail.subject, message[:source], message[:source].length)
       message_id = db.last_insert_row_id
-      (mail.all_parts || [mail]).each do |part|
+      (mail.all_parts.presence || [mail]).each do |part|
         body = part.body.to_s
-        add_message_part(message_id, part.cid, part.mime_type || 'text/plain', part.attachment? ? 1 : 0, part.filename, part.charset, body, body.length)
+        # Only parts have CIDs, not mail
+        cid = part.cid if part.respond_to? :cid
+        add_message_part(message_id, cid, part.mime_type || 'text/plain', part.attachment? ? 1 : 0, part.filename, part.charset, body, body.length)
       end
       
       EventMachine.next_tick do
