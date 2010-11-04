@@ -22,7 +22,7 @@ begin
     gem.add_dependency 'i18n'
     gem.add_dependency 'sqlite3-ruby'
     gem.add_dependency 'thin'
-    gem.add_dependency 'skinny'
+    gem.add_dependency 'skinny', '>=0.1.2'
     gem.add_dependency 'sinatra'
     gem.add_dependency 'haml'
     gem.add_dependency 'json'

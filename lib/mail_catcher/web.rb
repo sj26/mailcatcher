@@ -5,7 +5,7 @@ require 'pathname'
 require 'skinny'
 
 class Sinatra::Request
-  include Skinny::RequestHelpers
+  include Skinny::Helpers
 end
 
 module MailCatcher
