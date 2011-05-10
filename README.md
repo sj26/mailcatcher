@@ -23,7 +23,6 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 
 ## Caveats
 
-* Mail requires activesupport which requires i18n, but it doesn't list it as a dependency. For now I've added i18n as a requirement for MailCatcher.
 * Mail proccessing is fairly basic but easily modified. If something doesn't work for you, fork and fix it or file an issue and let me know. Include the whole message you're having problems with.
 * The interface is very basic and has not been tested on many browsers yet.
 
