@@ -42,7 +42,9 @@ module MailCatcher::Mail
       mail = Mail.new(message[:source])
       result = @@add_message_query.execute(message[:sender], message[:recipients].inspect, mail.subject, message[:source], message[:source].length)
       message_id = db.last_insert_row_id
-      (mail.all_parts.presence || [mail]).each do |part|
+      parts = mail.all_parts
+      parts = [mail] if parts.empty?
+      parts.each do |part|
         body = part.body.to_s
         # Only parts have CIDs, not mail
         cid = part.cid if part.respond_to? :cid
