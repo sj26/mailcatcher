@@ -4,6 +4,7 @@
     %title MailCatcher
     %link{:rel => "stylesheet", :href => "/stylesheets/application.css"}
     %script{:src => "/javascripts/jquery.js"}
+    %script{:src => "/javascripts/date.js"}
     %script{:src => "/javascripts/application.js"}
     :javascript
       $(MailCatcher.init);
@@ -33,9 +34,12 @@
         .attachments
           %label Attachments
           %ul
-      .formats
+      .actions
         %ul
-          %li.selected{'data-message-format' => 'html'} HTML
-          %li{'data-message-format' => 'plain'} Plain Text
-          %li{'data-message-format' => 'source'} Source
-      %iframe
+          %li.format.tab.html.selected{'data-message-format' => 'html'} HTML
+          %li.format.tab.plain{'data-message-format' => 'plain'} Plain Text
+          %li.format.tab.source{'data-message-format' => 'source'} Source
+          %li.button.download
+            %a{:href => '#'}
+              %span Download
+      %iframe.body
