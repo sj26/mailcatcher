@@ -29,6 +29,10 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 * Mail proccessing is fairly basic but easily modified. If something doesn't work for you, fork and fix it or file an issue and let me know. Include the whole message you're having problems with.
 * The interface is very basic and has not been tested on many browsers yet.
 
+## API
+
+A fairly RESTful URL schema means you can download a list of messages in JSON from `/messages`, each message's metadata with `/messages/:id.json`, and then the pertinent parts with `/messages/:id.html` and `/messages/:id.plain` for the default HTML and plain text version, `/messages/:id/:cid` for individual attachments by CID, or the whole message with `/messages/:id.source`.
+
 ## TODO
 
 * Download link to view original message in mail client.
