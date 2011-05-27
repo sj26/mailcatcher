@@ -1,4 +1,5 @@
 require 'active_support/all'
+require 'daemons'
 require 'eventmachine'
 require 'thin'
 
@@ -16,13 +17,14 @@ module MailCatcher
     :http_ip => '127.0.0.1',
     :http_port => '1080',
     :verbose => false,
+    :daemon => false,
   }
   
   def self.parse! arguments=ARGV, defaults=@@defaults
     @@defaults.dup.tap do |options|
       OptionParser.new do |parser|
         parser.banner = 'Usage: mailcatcher [options]'
-        
+
         parser.on('--ip IP', 'Set the ip address of both servers') do |ip|
           options[:smtp_ip] = options[:http_ip] = ip
         end
@@ -41,6 +43,10 @@ module MailCatcher
 
         parser.on('--http-port PORT', Integer, 'Set the port address of the http server') do |port|
           options[:http_port] = port
+        end
+
+        parser.on('-d', '--daemon', 'Run as a daemon') do
+          options[:daemon] = true
         end
 
         parser.on('-v', '--verbose', 'Be more verbose') do
@@ -66,9 +72,18 @@ module MailCatcher
     puts "==> http://#{options[:http_ip]}:#{options[:http_port]}"
 
     Thin::Logging.silent = true
+    
     EventMachine.run do
       EventMachine.start_server options[:smtp_ip], options[:smtp_port], Smtp
+      
       Thin::Server.start options[:http_ip], options[:http_port], Web
+      
+      if options[:daemon]
+        # Make sure the servers start before daemonizing.
+        EventMachine.next_tick do
+          Daemons.daemonize :app_name => "mailcatcher"
+        end
+      end
     end
   end
 end
