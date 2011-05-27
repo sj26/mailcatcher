@@ -22,6 +22,10 @@ module MailCatcher
     @@defaults.dup.tap do |options|
       OptionParser.new do |parser|
         parser.banner = 'Usage: mailcatcher [options]'
+        
+        parser.on('--ip IP', 'Set the ip address of both servers') do |ip|
+          options[:smtp_ip] = options[:http_ip] = ip
+        end
 
         parser.on('--smtp-ip IP', 'Set the ip address of the smtp server') do |ip|
           options[:smtp_ip] = ip
