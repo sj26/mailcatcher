@@ -40,7 +40,7 @@ module MailCatcher::Mail
       @@add_message_query ||= db.prepare("INSERT INTO message (sender, recipients, subject, source, size, created_at) VALUES (?, ?, ?, ?, ?, datetime('now'))")
       
       mail = Mail.new(message[:source])
-      result = @@add_message_query.execute(message[:sender], message[:recipients].inspect, mail.subject, message[:source], message[:source].length)
+      result = @@add_message_query.execute(message[:sender], message[:recipients].to_json, mail.subject, message[:source], message[:source].length)
       message_id = db.last_insert_row_id
       parts = mail.all_parts
       parts = [mail] if parts.empty?
@@ -69,12 +69,18 @@ module MailCatcher::Mail
     
     def messages
       @@messages_query ||= db.prepare "SELECT id, sender, recipients, subject, size, created_at FROM message ORDER BY created_at DESC"
-      @@messages_query.execute.to_a
+      @@messages_query.execute.to_a.tap do |messages|
+        messages.each do |message|
+          message["recipients"] &&= ActiveSupport::JSON.decode message["recipients"]
+        end
+      end
     end
     
     def message(id)
       @@message_query ||= db.prepare "SELECT * FROM message WHERE id = ? LIMIT 1"
-      @@message_query.execute(id).next
+      @@message_query.execute(id).next.to_hash.tap do |message|
+        message["recipients"] &&= ActiveSupport::JSON.decode message["recipients"]
+      end
     end
     
     def message_has_html?(id)

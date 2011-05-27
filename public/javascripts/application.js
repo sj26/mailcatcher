@@ -17,7 +17,7 @@ var MailCatcher = {
     $('#mail tbody').append(
       $('<tr />').attr('data-message-id', message.id.toString())
         .append($('<td/>').text(message.sender))
-        .append($('<td/>').text(message.recipients))
+        .append($('<td/>').text((message.recipients || []).join(', ')))
         .append($('<td/>').text(message.subject))
         .append($('<td/>').text((new Date(message.created_at)).toString("dddd, d MMM yyyy h:mm:ss tt")))
     );
@@ -54,7 +54,7 @@ var MailCatcher = {
       $.getJSON('/messages/' + id + '.json', function(message) {  
         $('#message .received span').text((new Date(message.created_at)).toString("dddd, d MMM yyyy h:mm:ss tt"));
         $('#message .from span').text(message.sender);
-        $('#message .to span').text(message.recipients);
+        $('#message .to span').text((message.recipients || []).join(', '));
         $('#message .subject span').text(message.subject);
         $('#message .actions ul li.format').each(function(i, el) {
           var $el = $(el),
