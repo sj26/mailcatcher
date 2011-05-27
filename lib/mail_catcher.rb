@@ -1,11 +1,14 @@
+require 'active_support/all'
 require 'eventmachine'
 require 'thin'
 
 module MailCatcher
-  autoload :Events, 'mail_catcher/events'
-  autoload :Mail, 'mail_catcher/mail'
-  autoload :Smtp, 'mail_catcher/smtp'
-  autoload :Web, 'mail_catcher/web'
+  extend ActiveSupport::Autoload
+  
+  autoload :Events
+  autoload :Mail
+  autoload :Smtp
+  autoload :Web
   
   @@defaults = {
     :smtp_ip => '127.0.0.1',
