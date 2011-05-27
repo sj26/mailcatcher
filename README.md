@@ -4,7 +4,7 @@ Catches mail and serves it through a dream.
 
 MailCatcher runs a super simple SMTP server which catches any message sent to it to display in a web interface. Run mailcatcher, set your favourite app to deliver to smtp://127.0.0.1:1025 instead of your default SMTP server, then check out http://127.0.0.1:1080 to see the mail that's arrived so far.
 
-![MailCatcher screenshot](http://puu.sh/25jm)
+![MailCatcher screenshot](http://puu.sh/2fZR)
 
 ## How
 
@@ -17,6 +17,7 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 
 * Catches all mail and stores it for display.
 * Shows HTML, Plain Text and Source version of messages, as applicable.
+* Download original email to view in your native mail client(s).
 * Rewrites HTML enabling display of embedded, inline images/etc and open links in a new window. (currently very basic)
 * Lists attachments and allows separate downloading of parts.
 * Written super-simply in EventMachine, easy to dig in and change.
@@ -35,7 +36,6 @@ A fairly RESTful URL schema means you can download a list of messages in JSON fr
 
 ## TODO
 
-* Download link to view original message in mail client.
 * Growl support.
 * Test suite.
 * Add mail delivery on request, optionally multiple times.
