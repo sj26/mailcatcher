@@ -7,11 +7,52 @@ module MailCatcher
   autoload :Smtp, 'mail_catcher/smtp'
   autoload :Web, 'mail_catcher/web'
   
-  def self.run(options = {})
-    options[:smtp_ip] ||= '127.0.0.1'
-    options[:smtp_port] ||= 1025
-    options[:http_ip] ||= '127.0.0.1'
-    options[:http_port] ||= 1080
+  @@defaults = {
+    :smtp_ip => '127.0.0.1',
+    :smtp_port => '1025',
+    :http_ip => '127.0.0.1',
+    :http_port => '1080',
+    :verbose => false,
+  }
+  
+  def self.parse! arguments=ARGV, defaults=@@defaults
+    @@defaults.dup.tap do |options|
+      OptionParser.new do |parser|
+        parser.banner = 'Usage: mailcatcher [options]'
+
+        parser.on('--smtp-ip IP', 'Set the ip address of the smtp server') do |ip|
+          options[:smtp_ip] = ip
+        end
+
+        parser.on('--smtp-port PORT', Integer, 'Set the port of the smtp server') do |port|
+          options[:smtp_port] = port
+        end
+
+        parser.on('--http-ip IP', 'Set the ip address of the http server') do |ip|
+          options[:http_ip] = ip
+        end
+
+        parser.on('--http-port PORT', Integer, 'Set the port address of the http server') do |port|
+          options[:http_port] = port
+        end
+
+        parser.on('-v', '--verbose', 'Be more verbose') do
+          options[:verbose] = true
+        end
+
+        parser.on('-h', '--help', 'Display this help information') do
+          puts parser
+          exit!
+        end
+      end.parse!
+    end
+  end
+  
+  def self.run! options=nil
+    # If we are passed options, fill in the blanks
+    options &&= @@defaults.merge options
+    # Otherwise, parse them from ARGV
+    options ||= parse!
     
     puts "Starting MailCatcher"
     puts "==> smtp://#{options[:smtp_ip]}:#{options[:smtp_port]}"

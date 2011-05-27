@@ -1,44 +1,4 @@
 #!/usr/bin/env ruby
 
-$: << File.expand_path(File.join(File.dirname(__FILE__), '../lib'))
-
 require 'mail_catcher'
-require 'optparse'
-
-options = {}
-
-OptionParser.new do |opts|
-  opts.banner = 'Usage: mailcatcher [options]'
-  
-  options[:smtp_ip] = '127.0.0.1'
-  opts.on('--smtp-ip IP', 'Set the ip address of the smtp server') do |ip|
-    options[:smtp_ip] = ip
-  end
-
-  options[:smtp_port] = 1025
-  opts.on('--smtp-port PORT', Integer, 'Set the port of the smtp server') do |port|
-    options[:smtp_port] = port
-  end
-
-  options[:http_ip] = '127.0.0.1'
-  opts.on('--http-ip IP', 'Set the ip address of the http server') do |ip|
-    options[:http_ip] = ip
-  end
-  
-  options[:http_port] = 1080
-  opts.on('--http-port PORT', Integer, 'Set the port address of the http server') do |port|
-    options[:http_port] = port
-  end
-
-  options[:verbose] = false
-  opts.on('-v', '--verbose', 'Be more verbose') do
-    options[:verbose] = true
-  end
-  
-  opts.on('-h', '--help', 'Display this help information') do
-    puts opts
-    exit!
-  end
-end.parse!
-
-MailCatcher.run(options)
+MailCatcher.run!
