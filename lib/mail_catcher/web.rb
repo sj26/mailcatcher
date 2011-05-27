@@ -54,7 +54,12 @@ module MailCatcher
       id = params[:id].to_i
       if part = MailCatcher::Mail.message_part_html(id)
         content_type part["type"], :charset => (part["charset"] || "utf8")
+        
+        # Rewrite body to link to embedded attachments served by cid
         part["body"].gsub(/cid:([^'"> ]+)/, "#{id}/\\1")
+        
+        # Rewrite body to open links in a new window
+        part["body"].gsub(/(<a\s+)/, '<a target="_blank" ')
       else
         not_found
       end
