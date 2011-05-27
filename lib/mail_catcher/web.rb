@@ -89,6 +89,16 @@ module MailCatcher
       end
     end
   
+    get "/messages/:id.eml" do
+      id = params[:id].to_i
+      if message = MailCatcher::Mail.message(id)
+        content_type "message/rfc822"
+        message["source"]
+      else
+        not_found
+      end
+    end
+  
     get "/messages/:id/:cid" do
       id = params[:id].to_i
       if part = MailCatcher::Mail.message_part_cid(id, params[:cid])
