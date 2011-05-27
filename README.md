@@ -15,15 +15,16 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 
 * Catches all mail and stores it for display.
 * Shows HTML, Plain Text and Source version of messages, as applicable.
-* Rewrites HTML enabling display of embedded, inline images/etc. (currently very basic)
+* Rewrites HTML enabling display of embedded, inline images/etc and open links in a new window. (currently very basic)
 * Lists attachments and allows separate downloading of parts.
 * Written super-simply in EventMachine, easy to dig in and change.
 * Command line options to override the default SMTP/HTTP IP and port settings.
 * Mail appears instantly if your browser supports [WebSockets][websockets].
+* Daemonizable to run in the background.
 
 ## Caveats
 
-* Mail proccessing is fairly basic but easily modified. If something doesn't work for you, fork and fix it or file an issue and let me know. Include the whole message you're having problems with.
+* Mail processing is fairly basic but easily modified. If something doesn't work for you, fork and fix it or file an issue and let me know. Include the whole message you're having problems with.
 * The interface is very basic and has not been tested on many browsers yet.
 
 ## TODO
