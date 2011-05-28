@@ -14,7 +14,14 @@ Gem::Specification.new do |s|
   s.email = "sj26@sj26.com"
   s.homepage = "http://github.com/sj26/mailcatcher"
 
-  s.files = Dir["README.md", "LICENSE", "bin/*", "lib/**/*.rb", "public/**/*", "views/**/*"]
+  s.files = Dir[
+    "README.md", "LICENSE",
+    "bin/*",
+    "lib/**/*.rb",
+    "public/javascripts/**/*.js",
+    "public/stylesheets/**/*.css",
+    "views/**/*"
+  ]
   s.require_paths = ["lib"]
   s.executables = ["mailcatcher"]
   s.extra_rdoc_files = ["README.md", "LICENSE"]
@@ -30,4 +37,6 @@ Gem::Specification.new do |s|
   s.add_dependency "sinatra",       "~> 1.2"
   s.add_dependency "haml",          "~> 3.1"
   s.add_dependency "json",          "~> 1.0"
+
+  s.add_development_dependency "sass", "~> 3.1"
 end
