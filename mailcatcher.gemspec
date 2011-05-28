@@ -19,6 +19,8 @@ Gem::Specification.new do |s|
   s.executables = ["mailcatcher"]
   s.extra_rdoc_files = ["README.md", "LICENSE"]
   
+  s.required_ruby_version = '>= 1.8.7'
+  
   s.add_dependency "activesupport", "~> 3.0"
   s.add_dependency "eventmachine",  "~> 0.12"
   s.add_dependency "mail",          "~> 2.3"
