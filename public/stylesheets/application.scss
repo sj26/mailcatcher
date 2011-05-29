@@ -24,7 +24,7 @@ body {
 #mail table { width: 100%; }
 #mail table thead tr { background: #eee; color: #333; }
 #mail table thead tr th { padding: .25em; font-weight: bold; color: #666; text-shadow: 0 1px 0 #fff; }
-#mail table tbody tr:nth-child(even) { background: #ddd; color: #333; }
+#mail table tbody tr:nth-child(even) { background: #f0f0f0; color: #333; }
 #mail table tbody tr.selected { background: Highlight; color: HighlightText; }
 #mail table tbody tr td { padding: .25em; }
 
