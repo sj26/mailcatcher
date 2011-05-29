@@ -20,7 +20,6 @@
       }
     };
     MailCatcher.prototype.formatDate = function(date) {
-      console.log(typeof date);
       if (typeof date === "string") {
         date && (date = this.parseDate(date));
       }

@@ -17,7 +17,6 @@ class MailCatcher
       new Date match[1], match[2], match[3], match[4], match[5], match[6], 0
   
   formatDate: (date) ->
-    console.log typeof(date)
     date &&= @parseDate(date) if typeof(date) == "string"
     date &&= date.toString("dddd, d MMM yyyy h:mm:ss tt")
 
