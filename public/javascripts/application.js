@@ -57,7 +57,7 @@
               return $el.hide();
             }
           });
-          if ($("#message .actions ul li.tab.selected:not(:visible)").count) {
+          if ($("#message .actions ul li.tab.selected:not(:visible)").length) {
             $("#message .actions ul li.tab.selected").removeClass("selected");
             $("#message .actions ul li.tab:visible:first").addClass("selected");
           }
@@ -77,10 +77,10 @@
     };
     MailCatcher.prototype.loadMessageBody = function(id, format) {
       id || (id = $('#mail tr.selected').attr('data-message-id'));
-      format || (format = $('#message .actions ul li.selected').first().attr('data-message-format'));
+      format || (format = $('#message .actions ul li.format.selected').attr('data-message-format'));
       format || (format = 'html');
-      $("#message .actions ul li.tab[data-message-format=\"" + format + "\"]").addClass('selected');
-      $("#message .actions ul li.tab:not([data-message-format=\"" + format + "\"])").removeClass('selected');
+      $("#message .actions ul li.tab[data-message-format=\"" + format + "\"]:not(.selected)").addClass('selected');
+      $("#message .actions ul li.tab:not([data-message-format=\"" + format + "\"]).selected").removeClass('selected');
       if (id != null) {
         return $('#message iframe').attr("src", "/messages/" + id + "." + format);
       }
