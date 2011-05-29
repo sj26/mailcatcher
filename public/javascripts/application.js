@@ -12,6 +12,20 @@
       this.refresh();
       this.subscribe();
     }
+    MailCatcher.prototype.parseDateRegexp = /^(\d{4})[-\/\\](\d{2})[-\/\\](\d{2})(?:\s+|T)(\d{2})[:-](\d{2})[:-](\d{2})(?:([ +-]\d{2}:\d{2}|\s*\S+|Z?))?$/;
+    MailCatcher.prototype.parseDate = function(date) {
+      var match;
+      if (match = this.parseDateRegexp.exec(date)) {
+        return new Date(match[1], match[2], match[3], match[4], match[5], match[6], 0);
+      }
+    };
+    MailCatcher.prototype.formatDate = function(date) {
+      console.log(typeof date);
+      if (typeof date === "string") {
+        date && (date = this.parseDate(date));
+      }
+      return date && (date = date.toString("dddd, d MMM yyyy h:mm:ss tt"));
+    };
     MailCatcher.prototype.haveMessage = function(message) {
       if (message.id != null) {
         message = message.id;
@@ -19,7 +33,7 @@
       return $("#mail tbody tr[data-message-id=\"" + message + "\"]").length > 0;
     };
     MailCatcher.prototype.addMessage = function(message) {
-      return $('#mail tbody').append($('<tr />').attr('data-message-id', message.id.toString()).append($('<td/>').text(message.sender)).append($('<td/>').text((message.recipients || []).join(', '))).append($('<td/>').text(message.subject)).append($('<td/>').text((new Date(message.created_at)).toString("dddd, d MMM yyyy h:mm:ss tt"))));
+      return $('#mail tbody').append($('<tr />').attr('data-message-id', message.id.toString()).append($('<td/>').text(message.sender)).append($('<td/>').text((message.recipients || []).join(', '))).append($('<td/>').text(message.subject)).append($('<td/>').text(this.formatDate(message.created_at))));
     };
     MailCatcher.prototype.loadMessage = function(id) {
       if ((id != null ? id.id : void 0) != null) {
@@ -30,7 +44,7 @@
         $('#mail tbody tr:not([data-message-id="' + id + '"])').removeClass('selected');
         $('#mail tbody tr[data-message-id="' + id + '"]').addClass('selected');
         return $.getJSON('/messages/' + id + '.json', __bind(function(message) {
-          $('#message .received span').text((new Date(message.created_at)).toString("dddd, d MMM yyyy h:mm:ss tt"));
+          $('#message .received span').text(this.formatDate(message.created_at));
           $('#message .from span').text(message.sender);
           $('#message .to span').text((message.recipients || []).join(', '));
           $('#message .subject span').text(message.subject);

@@ -8,6 +8,18 @@ class MailCatcher
 
     @refresh()
     @subscribe()
+  
+  # Only here because Safari's Date parsing *sucks*
+  # We throw away the timezone, but you could use it for something...
+  parseDateRegexp: /^(\d{4})[-\/\\](\d{2})[-\/\\](\d{2})(?:\s+|T)(\d{2})[:-](\d{2})[:-](\d{2})(?:([ +-]\d{2}:\d{2}|\s*\S+|Z?))?$/
+  parseDate: (date) ->
+    if match = @parseDateRegexp.exec(date)
+      new Date match[1], match[2], match[3], match[4], match[5], match[6], 0
+  
+  formatDate: (date) ->
+    console.log typeof(date)
+    date &&= @parseDate(date) if typeof(date) == "string"
+    date &&= date.toString("dddd, d MMM yyyy h:mm:ss tt")
 
   haveMessage: (message) ->
     message = message.id if message.id?
@@ -19,7 +31,7 @@ class MailCatcher
         .append($('<td/>').text(message.sender))
         .append($('<td/>').text((message.recipients || []).join(', ')))
         .append($('<td/>').text(message.subject))
-        .append($('<td/>').text((new Date(message.created_at)).toString("dddd, d MMM yyyy h:mm:ss tt")))
+        .append($('<td/>').text @formatDate message.created_at)
   
   loadMessage: (id) ->
     id = id.id if id?.id?
@@ -30,7 +42,7 @@ class MailCatcher
       $('#mail tbody tr[data-message-id="'+id+'"]').addClass 'selected'
     
       $.getJSON '/messages/' + id + '.json', (message) =>
-        $('#message .received span').text (new Date(message.created_at)).toString("dddd, d MMM yyyy h:mm:ss tt")
+        $('#message .received span').text @formatDate message.created_at
         $('#message .from span').text message.sender
         $('#message .to span').text (message.recipients || []).join(', ')
         $('#message .subject span').text message.subject
