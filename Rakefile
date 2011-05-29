@@ -20,7 +20,8 @@ desc "Compile SASS/SCSS files into SCSS"
 task "build:sass" do
   require 'sass'
   Dir["public/stylesheets/**/*.scss"].each do |file|
-    Sass.compile_file file, file.sub(/\.scss$/, ".css"), :cache => false
+    css_file = file.sub /\.scss$/, ".css"
+    Sass.compile_file file, css_file, :cache => false
   end
 end
 
