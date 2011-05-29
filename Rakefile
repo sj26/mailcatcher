@@ -25,9 +25,18 @@ task "build:sass" do
   end
 end
 
+desc "Compile CoffeeScript files into JavaScript"
+task "build:coffee" do
+  require 'coffee-script'
+  Dir["public/javascripts/**/*.coffee"].each do |file|
+    js_file = file.sub /\.coffee$/, ".js"
+    File.new(js_file, "w").write CoffeeScript.compile File.read file
+  end
+end
+
 task "build:rdoc" => "rdoc"
 
-multitask "build" => ["build:sass", "build:rdoc"]
+multitask "build" => ["build:sass", "build:coffee", "build:rdoc"]
 
 desc "Package as Gem"
 task "package:gem" do
