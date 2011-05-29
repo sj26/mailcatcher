@@ -75,6 +75,8 @@ body {
   padding: .25em;
   font-weight: bold;
   color: #666;
+  -moz-text-shadow: 0 1px 0 #fff;
+  -webkit-text-shadow: 0 1px 0 #fff;
   text-shadow: 0 1px 0 #fff; }
 
 #mail table tbody tr:nth-child(even) {
@@ -101,6 +103,8 @@ body {
   text-align: right;
   font-weight: bold;
   color: #666;
+  -moz-text-shadow: 0 1px 0 #fff;
+  -webkit-text-shadow: 0 1px 0 #fff;
   text-shadow: 0 1px 0 #fff; }
 
 #message .metadata .subject span {
@@ -128,6 +132,8 @@ body {
   color: #333;
   border-width: 1px 1px 0 1px;
   cursor: pointer;
+  -moz-text-shadow: 0 1px 0 #eee;
+  -webkit-text-shadow: 0 1px 0 #eee;
   text-shadow: 0 1px 0 #eee; }
 
 #message .actions ul li.tab:not(.selected):hover {
@@ -137,7 +143,10 @@ body {
   background: #fff;
   color: #000;
   height: 13px;
-  margin-bottom: -1px; }
+  -moz-box-shadow: 1px 1px 0 #ccc;
+  -webkit-box-shadow: 1px 1px 0 #ccc;
+  box-shadow: 1px 1px 0 #ccc;
+  margin-bottom: -2px; }
 
 #message .actions ul li.button {
   display: inline-block;
@@ -148,19 +157,26 @@ body {
   display: inline-block;
   padding: .25em .5em;
   border: 1px solid #999;
-  border-radius: .35em;
   background: #ddd;
   color: #333;
   text-decoration: none;
+  -moz-text-shadow: 1px 1px 0 #eee;
+  -webkit-text-shadow: 1px 1px 0 #eee;
   text-shadow: 1px 1px 0 #eee;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
   box-shadow: 1px 1px 0 #ccc; }
 
 #message .actions ul li.button a:hover {
   background: #fff;
-  text-shadow: none; }
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none; }
 
 #message .actions ul li.button a:active {
   margin: 1px -1px -1px 1px;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
   box-shadow: none; }
 
 #message .body {
