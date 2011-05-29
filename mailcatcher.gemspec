@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
     "views/**/*"
   ]
   s.require_paths = ["lib"]
-  s.executables = ["mailcatcher"]
+  s.executables = ["mailcatcher", "catchmail"]
   s.extra_rdoc_files = ["README.md", "LICENSE"]
   
   s.required_ruby_version = '>= 1.8.7'
