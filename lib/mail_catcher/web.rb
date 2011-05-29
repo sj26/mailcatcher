@@ -40,7 +40,7 @@ module MailCatcher
             "source",
             ("html" if MailCatcher::Mail.message_has_html? id),
             ("plain" if MailCatcher::Mail.message_has_plain? id),
-          ].flatten,
+          ].compact,
           "attachments" => MailCatcher::Mail.message_attachments(id).map do |attachment|
             attachment.merge({"href" => "/messages/#{escape(id)}/#{escape(attachment['cid'])}"})
           end,
