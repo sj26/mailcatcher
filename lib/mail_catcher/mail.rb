@@ -15,6 +15,7 @@ module MailCatcher::Mail
               subject TEXT,
               source BLOB,
               size TEXT,
+              type TEXT,
               created_at DATETIME DEFAULT CURRENT_DATETIME
             )
           SQL
@@ -37,10 +38,10 @@ module MailCatcher::Mail
     end
     
     def add_message(message)
-      @@add_message_query ||= db.prepare("INSERT INTO message (sender, recipients, subject, source, size, created_at) VALUES (?, ?, ?, ?, ?, datetime('now'))")
+      @@add_message_query ||= db.prepare("INSERT INTO message (sender, recipients, subject, source, type, size, created_at) VALUES (?, ?, ?, ?, ?, ?, datetime('now'))")
       
       mail = Mail.new(message[:source])
-      result = @@add_message_query.execute(message[:sender], message[:recipients].to_json, mail.subject, message[:source], message[:source].length)
+      result = @@add_message_query.execute(message[:sender], message[:recipients].to_json, mail.subject, message[:source], mail.mime_type || 'text/plain', message[:source].length)
       message_id = db.last_insert_row_id
       parts = mail.all_parts
       parts = [mail] if parts.empty?
@@ -85,13 +86,13 @@ module MailCatcher::Mail
     end
     
     def message_has_html?(id)
-      @@message_has_html_query ||= db.prepare "SELECT 1 FROM message_part WHERE message_id = ? AND is_attachment = 0 AND type = 'text/html' LIMIT 1"
-      !!@@message_has_html_query.execute(id).next
+      @@message_has_html_query ||= db.prepare "SELECT 1 FROM message_part WHERE message_id = ? AND is_attachment = 0 AND type IN ('application/xhtml+xml', 'text/html') LIMIT 1"
+      (!!@@message_has_html_query.execute(id).next) || ['text/html', 'application/xhtml+xml'].include?(message(id)["type"])
     end
     
     def message_has_plain?(id)
-      @@message_has_html_query ||= db.prepare "SELECT 1 FROM message_part WHERE message_id = ? AND is_attachment = 0 AND type = 'text/plain' LIMIT 1"
-      !!@@message_has_html_query.execute(id).next
+      @@message_has_plain_query ||= db.prepare "SELECT 1 FROM message_part WHERE message_id = ? AND is_attachment = 0 AND type = 'text/plain' LIMIT 1"
+      (!!@@message_has_plain_query.execute(id).next) || message(id)["type"] == "text/plain"
     end
     
     def message_parts(id)
@@ -121,7 +122,12 @@ module MailCatcher::Mail
     end
     
     def message_part_html(message_id)
-      message_part_type message_id, "text/html"
+      part = message_part_type(message_id, "text/html")
+      part ||= message_part_type(message_id, "application/xhtml+xml")
+      part ||= begin
+        message = message(message_id)
+        message if ['text/html', 'application/xhtml+xml'].include? message["type"]
+      end
     end
     
     def message_part_plain(message_id)
