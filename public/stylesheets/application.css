@@ -78,7 +78,7 @@ body {
   text-shadow: 0 1px 0 #fff; }
 
 #mail table tbody tr:nth-child(even) {
-  background: #ddd;
+  background: #f0f0f0;
   color: #333; }
 
 #mail table tbody tr.selected {
