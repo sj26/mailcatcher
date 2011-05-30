@@ -73,17 +73,17 @@ module MailCatcher
 
     Thin::Logging.silent = true
     
+    # One EventMachine loop...
     EventMachine.run do
+      # Set up an SMTP server to run within EventMachine
       EventMachine.start_server options[:smtp_ip], options[:smtp_port], Smtp
       
+      # Let Thin set itself up inside our EventMachine loop
+      # (Skinny/WebSockets just works on the inside)
       Thin::Server.start options[:http_ip], options[:http_port], Web
       
-      if options[:daemon]
-        # Make sure the servers start before daemonizing.
-        EventMachine.next_tick do
-          Daemons.daemonize :app_name => "mailcatcher"
-        end
-      end
+      # Daemonize, if we should, but only after the servers have started.
+      EventMachine.next_tick { Process.daemon } if options[:daemon]
     end
   end
 end
