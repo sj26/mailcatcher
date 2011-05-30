@@ -30,6 +30,13 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 * Mail processing is fairly basic but easily modified. If something doesn't work for you, fork and fix it or file an issue and let me know. Include the whole message you're having problems with.
 * The interface is very basic and has not been tested on many browsers yet.
 
+## RVM
+
+Under RVM your mailcatcher command may only available under the ruby you install mailcatcher into. To prevent this, and to prevent gem conflicts, install mailcatcher into a dedicated gemset and create wrapper scripts:
+
+    rvm default@mailcatcher --create gem install mailcatcher
+    rvm wrapper default@mailcatcher --no-prefix mailcatcher catchmail
+
 ## API
 
 A fairly RESTful URL schema means you can download a list of messages in JSON from `/messages`, each message's metadata with `/messages/:id.json`, and then the pertinent parts with `/messages/:id.html` and `/messages/:id.plain` for the default HTML and plain text version, `/messages/:id/:cid` for individual attachments by CID, or the whole message with `/messages/:id.source`.
