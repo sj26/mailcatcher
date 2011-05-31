@@ -17,7 +17,7 @@ module MailCatcher
     :http_ip => '127.0.0.1',
     :http_port => '1080',
     :verbose => false,
-    :daemon => false,
+    :daemon => true,
   }
   
   def self.parse! arguments=ARGV, defaults=@@defaults
@@ -45,8 +45,8 @@ module MailCatcher
           options[:http_port] = port
         end
 
-        parser.on('-d', '--daemon', 'Run as a daemon') do
-          options[:daemon] = true
+        parser.on('-f', '--foreground', 'Run in the foreground') do
+          options[:daemon] = false
         end
 
         parser.on('-v', '--verbose', 'Be more verbose') do
@@ -91,6 +91,7 @@ module MailCatcher
       # Daemonize, if we should, but only after the servers have started.
       if options[:daemon]
         EventMachine.next_tick do
+          puts "*** MailCatcher now runs as a daemon by default. Go to the web interface to quit."
           Process.daemon
         end
       end
