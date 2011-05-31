@@ -41,13 +41,38 @@ body > header {
   }
 
   nav {
-    padding: 0 5px;
     &.project { float: left; }
     &.app { float: right; }
+    
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #fff;
 
     li {
-      padding: 10px 5px;
-      @include inline-block;
+      display: inline;
+      // @include inline-block;
+      a {
+        display: inline-block;
+        
+        float: left;
+        padding: 9px;
+
+        border-left: 1px solid #fff;
+        border-right: 1px solid #ccc;
+
+        background: #eee;
+        color: #666;
+        font-weight: bold;
+        text-decoration: none;
+        @include text-shadow(0 1px 0 #fff);
+        
+        &:hover {
+          background: #fff;
+        }
+        &:active {
+          margin: 1px -1px -1px 1px;
+          @include box-shadow(none);
+        }
+      }
     }
   }
 }

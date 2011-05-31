@@ -91,20 +91,33 @@ body > header {
       body > header h1 a:hover {
         color: #4183C4; }
   body > header nav {
-    padding: 0 5px; }
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #fff; }
     body > header nav.project {
       float: left; }
     body > header nav.app {
       float: right; }
     body > header nav li {
-      padding: 10px 5px;
-      display: -moz-inline-box;
-      -moz-box-orient: vertical;
-      display: inline-block;
-      vertical-align: middle;
-      *vertical-align: auto; }
-      body > header nav li {
-        *display: inline; }
+      display: inline; }
+      body > header nav li a {
+        display: inline-block;
+        float: left;
+        padding: 9px;
+        border-left: 1px solid #fff;
+        border-right: 1px solid #ccc;
+        background: #eee;
+        color: #666;
+        font-weight: bold;
+        text-decoration: none;
+        text-shadow: 0 1px 0 white; }
+        body > header nav li a:hover {
+          background: #fff; }
+        body > header nav li a:active {
+          margin: 1px -1px -1px 1px;
+          -moz-box-shadow: none;
+          -webkit-box-shadow: none;
+          -o-box-shadow: none;
+          box-shadow: none; }
 
 #messages {
   width: 100%;
