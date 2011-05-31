@@ -1,10 +1,10 @@
 class MailCatcher
   constructor: ->
-    $('#mail tr').live 'click', (e) =>
+    $('#messages tr').live 'click', (e) =>
       @loadMessage $(e.currentTarget).attr 'data-message-id'
 
-    $('#message .actions ul li.tab').live 'click', (e) =>
-      @loadMessageBody $('#mail tr.selected').attr('data-message-id'), $(e.currentTarget).attr 'data-message-format'
+    $('#message .views .tab').live 'click', (e) =>
+      @loadMessageBody $('#messages tr.selected').attr('data-message-id'), $(e.currentTarget).attr 'data-message-format'
 
     @refresh()
     @subscribe()
@@ -22,10 +22,10 @@ class MailCatcher
 
   haveMessage: (message) ->
     message = message.id if message.id?
-    $("#mail tbody tr[data-message-id=\"#{message}\"]").length > 0
+    $("#messages tbody tr[data-message-id=\"#{message}\"]").length > 0
     
   addMessage: (message) ->
-    $('#mail tbody').append \
+    $('#messages tbody').append \
       $('<tr />').attr('data-message-id', message.id.toString())
         .append($('<td/>').text(message.sender))
         .append($('<td/>').text((message.recipients || []).join(', ')))
@@ -34,18 +34,18 @@ class MailCatcher
   
   loadMessage: (id) ->
     id = id.id if id?.id?
-    id ||= $('#mail tr.selected').attr 'data-message-id'
+    id ||= $('#messages tr.selected').attr 'data-message-id'
   
     if id?
-      $('#mail tbody tr:not([data-message-id="'+id+'"])').removeClass 'selected'
-      $('#mail tbody tr[data-message-id="'+id+'"]').addClass 'selected'
+      $('#messages tbody tr:not([data-message-id="'+id+'"])').removeClass 'selected'
+      $('#messages tbody tr[data-message-id="'+id+'"]').addClass 'selected'
     
       $.getJSON '/messages/' + id + '.json', (message) =>
-        $('#message .received span').text @formatDate message.created_at
-        $('#message .from span').text message.sender
-        $('#message .to span').text (message.recipients || []).join(', ')
-        $('#message .subject span').text message.subject
-        $('#message .actions ul li.format').each (i, el) ->
+        $('#message .metadata dd.created_at').text @formatDate message.created_at
+        $('#message .metadata dd.from').text message.sender
+        $('#message .metadata dd.to').text (message.recipients || []).join(', ')
+        $('#message .metadata dd.subject').text message.subject
+        $('#message .views .tab.format').each (i, el) ->
           $el = $(el)
           format = $el.attr 'data-message-format'
           if $.inArray(format, message.formats) >= 0
@@ -53,29 +53,29 @@ class MailCatcher
           else
             $el.hide()
       
-        if $("#message .actions ul li.tab.selected:not(:visible)").length
-          $("#message .actions ul li.tab.selected").removeClass "selected"
-          $("#message .actions ul li.tab:visible:first").addClass "selected"
+        if $("#message .views .tab.selected:not(:visible)").length
+          $("#message .views .tab.selected").removeClass "selected"
+          $("#message .views .tab:visible:first").addClass "selected"
         
         if message.attachments.length
-          $('#message .metadata .attachments ul').empty()
+          $('#message .metadata dd.attachments ul').empty()
           $.each message.attachments, (i, attachment) ->
-            $('#message .metadata .attachments ul').append($('<li>').append($('<a>').attr('href', attachment['href']).addClass(attachment['type'].split('/', 1)[0]).addClass(attachment['type'].replace('/', '-')).text(attachment['filename'])));
+            $('#message .metadata dd.attachments ul').append($('<li>').append($('<a>').attr('href', attachment['href']).addClass(attachment['type'].split('/', 1)[0]).addClass(attachment['type'].replace('/', '-')).text(attachment['filename'])));
           $('#message .metadata .attachments').show()
         else
           $('#message .metadata .attachments').hide()
         
-        $('#message .actions ul li.download a').attr 'href', "/messages/#{id}.eml"
+        $('#message .actions .download a').attr 'href', "/messages/#{id}.eml"
       
         @loadMessageBody()
 
   loadMessageBody: (id, format) ->
-    id ||= $('#mail tr.selected').attr 'data-message-id'
-    format ||= $('#message .actions ul li.format.selected').attr 'data-message-format'
+    id ||= $('#messages tr.selected').attr 'data-message-id'
+    format ||= $('#message .views .tab.format.selected').attr 'data-message-format'
     format ||= 'html'
   
-    $("#message .actions ul li.tab[data-message-format=\"#{format}\"]:not(.selected)").addClass 'selected'
-    $("#message .actions ul li.tab:not([data-message-format=\"#{format}\"]).selected").removeClass 'selected'
+    $("#message .views .tab[data-message-format=\"#{format}\"]:not(.selected)").addClass 'selected'
+    $("#message .views .tab:not([data-message-format=\"#{format}\"]).selected").removeClass 'selected'
   
     if id?
       $('#message iframe').attr "src", "/messages/#{id}.#{format}"

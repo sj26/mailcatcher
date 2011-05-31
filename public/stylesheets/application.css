@@ -1,186 +1,234 @@
-html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
-  margin: 0px;
-  padding: 0px;
-  border: 0px;
-  outline: 0px;
-  font-weight: inherit;
-  font-style: inherit;
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
   font-size: 100%;
-  font-family: inherit;
+  font: inherit;
   vertical-align: baseline; }
 
 body {
-  line-height: 1;
-  background: #eee;
-  color: #000;
-  font-size: 12px;
-  font-family: Helvetica, Arial, sans-serif; }
+  line-height: 1; }
 
 ol, ul {
   list-style: none; }
 
 table {
-  border-collapse: separate;
-  border-spacing: 0px; }
+  border-collapse: collapse;
+  border-spacing: 0; }
 
 caption, th, td {
   text-align: left;
-  font-weight: normal; }
+  font-weight: normal;
+  vertical-align: middle; }
+
+q, blockquote {
+  quotes: none; }
+  q:before, q:after, blockquote:before, blockquote:after {
+    content: "";
+    content: none; }
+
+a img {
+  border: none; }
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block; }
 
 html, body {
   width: 100%;
   height: 100%; }
 
 body {
-  display: -webkit-box;
   display: -moz-box;
-  display: box;
-  -webkit-box-orient: vertical;
-  -moz-box-orient: vertical;
-  box-orient: vertical; }
-
-#message {
   display: -webkit-box;
-  display: -moz-box;
   display: box;
-  -webkit-box-orient: vertical;
   -moz-box-orient: vertical;
+  -webkit-box-orient: vertical;
   box-orient: vertical;
-  -webkit-box-flex: 1;
-  -moz-box-flex: 1;
-  box-flex: 1; }
+  background: #eee;
+  color: #000;
+  font-size: 12px;
+  font-family: Helvetica, sans-serif; }
+  body body {
+    font-size: 75%;
+    line-height: 2em; }
+  body html > body {
+    font-size: 12px; }
 
-#message iframe {
-  display: -webkit-box;
-  display: -moz-box;
-  display: box;
-  -webkit-box-flex: 1;
-  -moz-box-flex: 1;
-  box-flex: 1; }
+body > header {
+  overflow: hidden;
+  *zoom: 1;
+  border-bottom: 1px solid #ccc; }
+  body > header h1 {
+    float: left;
+    padding: 6px;
+    font-size: 18px;
+    font-weight: bold; }
+    body > header h1 a {
+      color: black;
+      text-decoration: none;
+      text-shadow: 0 1px 0 white;
+      -moz-transition-property: 0.1s ease;
+      -webkit-transition-property: 0.1s ease;
+      -o-transition-property: 0.1s ease;
+      transition-property: 0.1s ease;
+      -moz-transition-duration: 1s;
+      -webkit-transition-duration: 1s;
+      -o-transition-duration: 1s;
+      transition-duration: 1s; }
+      body > header h1 a:hover {
+        color: #4183C4; }
+  body > header nav {
+    padding: 0 5px; }
+    body > header nav.project {
+      float: left; }
+    body > header nav.app {
+      float: right; }
+    body > header nav li {
+      padding: 10px 5px;
+      display: -moz-inline-box;
+      -moz-box-orient: vertical;
+      display: inline-block;
+      vertical-align: middle;
+      *vertical-align: auto; }
+      body > header nav li {
+        *display: inline; }
 
-#mail {
+#messages {
+  width: 100%;
   height: 10em;
   overflow: auto;
   background: #fff;
+  border-top: 1px solid #fff;
   border-bottom: 1px solid #ccc; }
+  #messages table {
+    width: 100%; }
+    #messages table thead tr {
+      background: #eee;
+      color: #333; }
+      #messages table thead tr th {
+        padding: .25em;
+        font-weight: bold;
+        color: #666;
+        text-shadow: 0 1px 0 white; }
+    #messages table tbody tr:nth-child(even) {
+      background: #f0f0f0; }
+    #messages table tbody tr.selected {
+      background: Highlight;
+      color: HighlightText; }
+    #messages table tbody tr td {
+      padding: .25em; }
 
-#mail table {
-  width: 100%; }
-
-#mail table thead tr {
-  background: #eee;
-  color: #333; }
-
-#mail table thead tr th {
-  padding: .25em;
-  font-weight: bold;
-  color: #666;
-  -moz-text-shadow: 0 1px 0 #fff;
-  -webkit-text-shadow: 0 1px 0 #fff;
-  text-shadow: 0 1px 0 #fff; }
-
-#mail table tbody tr:nth-child(even) {
-  background: #f0f0f0;
-  color: #333; }
-
-#mail table tbody tr.selected {
-  background: Highlight;
-  color: HighlightText; }
-
-#mail table tbody tr td {
-  padding: .25em; }
-
-#message .metadata {
-  padding: 1em; }
-
-#message .metadata div {
-  padding: .25em; }
-
-#message .metadata div label {
-  display: inline-block;
-  width: 8em;
-  margin-right: .5em;
-  text-align: right;
-  font-weight: bold;
-  color: #666;
-  -moz-text-shadow: 0 1px 0 #fff;
-  -webkit-text-shadow: 0 1px 0 #fff;
-  text-shadow: 0 1px 0 #fff; }
-
-#message .metadata .subject span {
-  font-weight: bold; }
-
-#message .metadata .attachments {
-  display: none; }
-
-#message .metadata .attachments ul {
-  display: inline; }
-
-#message .metadata .attachments ul li {
-  display: inline-block;
-  margin-right: .5em; }
-
-#message .actions ul {
-  border-bottom: 1px solid #999;
-  padding: 0 .5em; }
-
-#message .actions ul li.tab {
-  display: inline-block;
-  padding: .5em;
-  border: 1px solid #999;
-  background: #ddd;
-  color: #333;
-  border-width: 1px 1px 0 1px;
-  cursor: pointer;
-  -moz-text-shadow: 0 1px 0 #eee;
-  -webkit-text-shadow: 0 1px 0 #eee;
-  text-shadow: 0 1px 0 #eee; }
-
-#message .actions ul li.tab:not(.selected):hover {
-  background-color: #ddd; }
-
-#message .actions ul li.tab.selected {
-  background: #fff;
-  color: #000;
-  height: 13px;
-  -moz-box-shadow: 1px 1px 0 #ccc;
-  -webkit-box-shadow: 1px 1px 0 #ccc;
-  box-shadow: 1px 1px 0 #ccc;
-  margin-bottom: -2px; }
-
-#message .actions ul li.button {
-  display: inline-block;
-  float: right;
-  margin: 0 .25em; }
-
-#message .actions ul li.button a {
-  display: inline-block;
-  padding: .25em .5em;
-  border: 1px solid #999;
-  background: #ddd;
-  color: #333;
-  text-decoration: none;
-  -moz-text-shadow: 1px 1px 0 #eee;
-  -webkit-text-shadow: 1px 1px 0 #eee;
-  text-shadow: 1px 1px 0 #eee;
-  -moz-box-shadow: none;
-  -webkit-box-shadow: none;
-  box-shadow: 1px 1px 0 #ccc; }
-
-#message .actions ul li.button a:hover {
-  background: #fff;
-  -moz-box-shadow: none;
-  -webkit-box-shadow: none;
-  box-shadow: none; }
-
-#message .actions ul li.button a:active {
-  margin: 1px -1px -1px 1px;
-  -moz-box-shadow: none;
-  -webkit-box-shadow: none;
-  box-shadow: none; }
-
-#message .body {
-  width: 100%;
-  min-height: 20em;
-  height: 100%;
-  background: #fff; }
+#message {
+  display: -moz-box;
+  display: -webkit-box;
+  display: box;
+  -moz-box-orient: vertical;
+  -webkit-box-orient: vertical;
+  box-orient: vertical;
+  -moz-box-flex: 1;
+  -webkit-box-flex: 1;
+  box-flex: 1;
+  border-top: 1px solid #fff; }
+  #message > header {
+    overflow: hidden;
+    *zoom: 1; }
+    #message > header .metadata {
+      overflow: hidden;
+      *zoom: 1;
+      padding: .5em; }
+      #message > header .metadata dt, #message > header .metadata dd {
+        padding: .25em; }
+      #message > header .metadata dt {
+        float: left;
+        clear: left;
+        width: 8em;
+        margin-right: .5em;
+        text-align: right;
+        font-weight: bold;
+        color: #666;
+        text-shadow: 0 1px 0 white; }
+      #message > header .metadata dd.subject {
+        font-weight: bold; }
+      #message > header .metadata .attachments {
+        display: none; }
+        #message > header .metadata .attachments ul {
+          display: inline; }
+          #message > header .metadata .attachments ul li {
+            display: -moz-inline-box;
+            -moz-box-orient: vertical;
+            display: inline-block;
+            vertical-align: middle;
+            *vertical-align: auto;
+            margin-right: .5em; }
+            #message > header .metadata .attachments ul li {
+              *display: inline; }
+    #message > header .views ul {
+      padding: 0 .5em;
+      border-bottom: 1px solid #999; }
+    #message > header .views .tab {
+      display: inline-block;
+      padding: .5em;
+      border: 1px solid #999;
+      background: #ddd;
+      color: #333;
+      border-width: 1px 1px 0 1px;
+      cursor: pointer;
+      text-shadow: 0 1px 0 #eeeeee; }
+    #message > header .views .tab:not(.selected):hover {
+      background-color: #ddd; }
+    #message > header .views .tab.selected {
+      background: #fff;
+      color: #000;
+      height: 13px;
+      -moz-box-shadow: 1px 1px 0 #cccccc;
+      -webkit-box-shadow: 1px 1px 0 #cccccc;
+      -o-box-shadow: 1px 1px 0 #cccccc;
+      box-shadow: 1px 1px 0 #cccccc;
+      margin-bottom: -2px; }
+    #message > header .views .button {
+      display: inline-block;
+      float: right;
+      margin: 0 .25em; }
+      #message > header .views .button a {
+        display: inline-block;
+        padding: .25em .5em;
+        border: 1px solid #999;
+        background: #ddd;
+        color: #333;
+        text-decoration: none;
+        text-shadow: 1px 1px 0 #eeeeee;
+        -moz-box-shadow: 1px 1px 0 #cccccc;
+        -webkit-box-shadow: 1px 1px 0 #cccccc;
+        -o-box-shadow: 1px 1px 0 #cccccc;
+        box-shadow: 1px 1px 0 #cccccc; }
+        #message > header .views .button a:hover {
+          background: #fff;
+          text-shadow: none; }
+        #message > header .views .button a:active {
+          margin: 1px -1px -1px 1px;
+          -moz-box-shadow: none;
+          -webkit-box-shadow: none;
+          -o-box-shadow: none;
+          box-shadow: none; }
+  #message .body {
+    display: -moz-box;
+    display: -webkit-box;
+    display: box;
+    -moz-box-flex: 1;
+    -webkit-box-flex: 1;
+    box-flex: 1;
+    width: 100%;
+    background: #fff; }

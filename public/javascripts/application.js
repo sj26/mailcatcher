@@ -3,11 +3,11 @@
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   MailCatcher = (function() {
     function MailCatcher() {
-      $('#mail tr').live('click', __bind(function(e) {
+      $('#messages tr').live('click', __bind(function(e) {
         return this.loadMessage($(e.currentTarget).attr('data-message-id'));
       }, this));
-      $('#message .actions ul li.tab').live('click', __bind(function(e) {
-        return this.loadMessageBody($('#mail tr.selected').attr('data-message-id'), $(e.currentTarget).attr('data-message-format'));
+      $('#message .views .tab').live('click', __bind(function(e) {
+        return this.loadMessageBody($('#messages tr.selected').attr('data-message-id'), $(e.currentTarget).attr('data-message-format'));
       }, this));
       this.refresh();
       this.subscribe();
@@ -29,25 +29,25 @@
       if (message.id != null) {
         message = message.id;
       }
-      return $("#mail tbody tr[data-message-id=\"" + message + "\"]").length > 0;
+      return $("#messages tbody tr[data-message-id=\"" + message + "\"]").length > 0;
     };
     MailCatcher.prototype.addMessage = function(message) {
-      return $('#mail tbody').append($('<tr />').attr('data-message-id', message.id.toString()).append($('<td/>').text(message.sender)).append($('<td/>').text((message.recipients || []).join(', '))).append($('<td/>').text(message.subject)).append($('<td/>').text(this.formatDate(message.created_at))));
+      return $('#messages tbody').append($('<tr />').attr('data-message-id', message.id.toString()).append($('<td/>').text(message.sender)).append($('<td/>').text((message.recipients || []).join(', '))).append($('<td/>').text(message.subject)).append($('<td/>').text(this.formatDate(message.created_at))));
     };
     MailCatcher.prototype.loadMessage = function(id) {
       if ((id != null ? id.id : void 0) != null) {
         id = id.id;
       }
-      id || (id = $('#mail tr.selected').attr('data-message-id'));
+      id || (id = $('#messages tr.selected').attr('data-message-id'));
       if (id != null) {
-        $('#mail tbody tr:not([data-message-id="' + id + '"])').removeClass('selected');
-        $('#mail tbody tr[data-message-id="' + id + '"]').addClass('selected');
+        $('#messages tbody tr:not([data-message-id="' + id + '"])').removeClass('selected');
+        $('#messages tbody tr[data-message-id="' + id + '"]').addClass('selected');
         return $.getJSON('/messages/' + id + '.json', __bind(function(message) {
-          $('#message .received span').text(this.formatDate(message.created_at));
-          $('#message .from span').text(message.sender);
-          $('#message .to span').text((message.recipients || []).join(', '));
-          $('#message .subject span').text(message.subject);
-          $('#message .actions ul li.format').each(function(i, el) {
+          $('#message .metadata dd.created_at').text(this.formatDate(message.created_at));
+          $('#message .metadata dd.from').text(message.sender);
+          $('#message .metadata dd.to').text((message.recipients || []).join(', '));
+          $('#message .metadata dd.subject').text(message.subject);
+          $('#message .views .tab.format').each(function(i, el) {
             var $el, format;
             $el = $(el);
             format = $el.attr('data-message-format');
@@ -57,30 +57,30 @@
               return $el.hide();
             }
           });
-          if ($("#message .actions ul li.tab.selected:not(:visible)").length) {
-            $("#message .actions ul li.tab.selected").removeClass("selected");
-            $("#message .actions ul li.tab:visible:first").addClass("selected");
+          if ($("#message .views .tab.selected:not(:visible)").length) {
+            $("#message .views .tab.selected").removeClass("selected");
+            $("#message .views .tab:visible:first").addClass("selected");
           }
           if (message.attachments.length) {
-            $('#message .metadata .attachments ul').empty();
+            $('#message .metadata dd.attachments ul').empty();
             $.each(message.attachments, function(i, attachment) {
-              return $('#message .metadata .attachments ul').append($('<li>').append($('<a>').attr('href', attachment['href']).addClass(attachment['type'].split('/', 1)[0]).addClass(attachment['type'].replace('/', '-')).text(attachment['filename'])));
+              return $('#message .metadata dd.attachments ul').append($('<li>').append($('<a>').attr('href', attachment['href']).addClass(attachment['type'].split('/', 1)[0]).addClass(attachment['type'].replace('/', '-')).text(attachment['filename'])));
             });
             $('#message .metadata .attachments').show();
           } else {
             $('#message .metadata .attachments').hide();
           }
-          $('#message .actions ul li.download a').attr('href', "/messages/" + id + ".eml");
+          $('#message .actions .download a').attr('href', "/messages/" + id + ".eml");
           return this.loadMessageBody();
         }, this));
       }
     };
     MailCatcher.prototype.loadMessageBody = function(id, format) {
-      id || (id = $('#mail tr.selected').attr('data-message-id'));
-      format || (format = $('#message .actions ul li.format.selected').attr('data-message-format'));
+      id || (id = $('#messages tr.selected').attr('data-message-id'));
+      format || (format = $('#message .views .tab.format.selected').attr('data-message-format'));
       format || (format = 'html');
-      $("#message .actions ul li.tab[data-message-format=\"" + format + "\"]:not(.selected)").addClass('selected');
-      $("#message .actions ul li.tab:not([data-message-format=\"" + format + "\"]).selected").removeClass('selected');
+      $("#message .views .tab[data-message-format=\"" + format + "\"]:not(.selected)").addClass('selected');
+      $("#message .views .tab:not([data-message-format=\"" + format + "\"]).selected").removeClass('selected');
       if (id != null) {
         return $('#message iframe').attr("src", "/messages/" + id + "." + format);
       }
