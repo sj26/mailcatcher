@@ -142,5 +142,13 @@ module MailCatcher::Mail
         part["cid"] == cid
       end
     end
+    
+    def delete!
+      @@delete_messages_query ||= db.prepare 'DELETE FROM message'
+      @@delete_message_parts_query ||= db.prepare 'DELETE FROM message_part'
+      
+      @@delete_messages_query.execute and
+      @@delete_message_parts_query.execute
+    end
   end
 end

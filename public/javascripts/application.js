@@ -9,6 +9,22 @@
       $('#message .views .tab').live('click', __bind(function(e) {
         return this.loadMessageBody($('#messages tr.selected').attr('data-message-id'), $(e.currentTarget).attr('data-message-format'));
       }, this));
+      $('nav.app .clear a').live('click', __bind(function(e) {
+        if (confirm("You will lose all your received messages.\n\nAre you sure you want to clear all messages?")) {
+          return $.ajax({
+            url: '/messages',
+            type: 'DELETE',
+            success: function() {
+              $('#messages tbody, #message .metadata dd').empty();
+              $('#message .metadata .attachments').hide();
+              return $('#message iframe').attr('src', 'about:blank');
+            },
+            error: function() {
+              return alert('Error while quitting.');
+            }
+          });
+        }
+      }, this));
       $('nav.app .quit a').live('click', __bind(function(e) {
         if (confirm("You will lose all your received messages.\n\nAre you sure you want to quit?")) {
           return $.ajax({

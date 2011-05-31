@@ -5,6 +5,18 @@ class MailCatcher
 
     $('#message .views .tab').live 'click', (e) =>
       @loadMessageBody $('#messages tr.selected').attr('data-message-id'), $(e.currentTarget).attr 'data-message-format'
+  
+    $('nav.app .clear a').live 'click', (e) =>
+      if confirm "You will lose all your received messages.\n\nAre you sure you want to clear all messages?"
+        $.ajax 
+          url: '/messages'
+          type: 'DELETE'
+          success: ->
+            $('#messages tbody, #message .metadata dd').empty()
+            $('#message .metadata .attachments').hide()
+            $('#message iframe').attr 'src', 'about:blank'
+          error: ->
+            alert 'Error while quitting.'
 
     $('nav.app .quit a').live 'click', (e) =>
       if confirm "You will lose all your received messages.\n\nAre you sure you want to quit?"

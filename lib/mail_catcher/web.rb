@@ -37,6 +37,11 @@ module MailCatcher
       end
     end
   
+    delete '/messages' do
+      MailCatcher::Mail.delete!
+      status 204
+    end
+    
     get '/messages/:id.json' do
       id = params[:id].to_i
       if message = MailCatcher::Mail.message(id)
