@@ -10,9 +10,16 @@
         return this.loadMessageBody($('#messages tr.selected').attr('data-message-id'), $(e.currentTarget).attr('data-message-format'));
       }, this));
       $('nav.app .quit a').live('click', __bind(function(e) {
-        if (confirm("You will lose all your received messages.\n\nAre you sure you want to click?")) {
-          $.get('/quit');
-          return location.replace($('body > header h1 a').attr('href'));
+        if (confirm("You will lose all your received messages.\n\nAre you sure you want to quit?")) {
+          return $.ajax({
+            type: 'DELETE',
+            success: function() {
+              return location.replace($('body > header h1 a').attr('href'));
+            },
+            error: function() {
+              return alert('Error while quitting.');
+            }
+          });
         }
       }, this));
       this.refresh();

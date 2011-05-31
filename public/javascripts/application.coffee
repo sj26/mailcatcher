@@ -5,12 +5,16 @@ class MailCatcher
 
     $('#message .views .tab').live 'click', (e) =>
       @loadMessageBody $('#messages tr.selected').attr('data-message-id'), $(e.currentTarget).attr 'data-message-format'
-    
-    $('nav.app .quit a').live 'click', (e) =>
-      if confirm "You will lose all your received messages.\n\nAre you sure you want to click?"
-        $.get '/quit'
-        location.replace $('body > header h1 a').attr('href')
 
+    $('nav.app .quit a').live 'click', (e) =>
+      if confirm "You will lose all your received messages.\n\nAre you sure you want to quit?"
+        $.ajax
+          type: 'DELETE'
+          success: ->
+            location.replace $('body > header h1 a').attr('href')
+          error: ->
+            alert 'Error while quitting.'
+    
     @refresh()
     @subscribe()
   
