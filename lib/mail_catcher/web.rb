@@ -109,6 +109,11 @@ module MailCatcher
         not_found
       end
     end
+    
+    get '/quit' do
+      MailCatcher.quit!
+      status 204
+    end
   
     not_found do
       "<html><body><h1>No Dice</h1><p>The message you were looking for does not exist, or doesn't have content of this type.</p></body></html>"

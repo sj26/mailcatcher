@@ -86,4 +86,8 @@ module MailCatcher
       EventMachine.next_tick { Process.daemon } if options[:daemon]
     end
   end
+  
+  def self.quit!
+    EventMachine.next_tick { EventMachine.stop_event_loop }
+  end
 end
