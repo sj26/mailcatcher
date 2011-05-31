@@ -68,26 +68,53 @@ module MailCatcher
     options ||= parse!
     
     puts "Starting MailCatcher"
-    puts "==> smtp://#{options[:smtp_ip]}:#{options[:smtp_port]}"
-    puts "==> http://#{options[:http_ip]}:#{options[:http_port]}"
 
     Thin::Logging.silent = true
     
     # One EventMachine loop...
     EventMachine.run do
+      # TODO: DRY this up
+      
       # Set up an SMTP server to run within EventMachine
-      EventMachine.start_server options[:smtp_ip], options[:smtp_port], Smtp
+      rescue_port options[:smtp_port] do
+        EventMachine.start_server options[:smtp_ip], options[:smtp_port], Smtp
+        puts "==> smtp://#{options[:smtp_ip]}:#{options[:smtp_port]}"
+      end
       
       # Let Thin set itself up inside our EventMachine loop
       # (Skinny/WebSockets just works on the inside)
-      Thin::Server.start options[:http_ip], options[:http_port], Web
+      rescue_port options[:http_port] do
+        Thin::Server.start options[:http_ip], options[:http_port], Web
+        puts "==> http://#{options[:http_ip]}:#{options[:http_port]}"
+      end
       
       # Daemonize, if we should, but only after the servers have started.
-      EventMachine.next_tick { Process.daemon } if options[:daemon]
+      if options[:daemon]
+        EventMachine.next_tick do
+          Process.daemon
+        end
+      end
     end
   end
   
   def self.quit!
     EventMachine.next_tick { EventMachine.stop_event_loop }
+  end
+
+protected 
+
+  def self.rescue_port port
+    begin
+      yield
+      
+    # XXX: EventMachine only spits out RuntimeError with a string description
+    rescue RuntimeError
+      if $!.to_s =~ /\bno acceptor\b/
+        puts "~~> ERROR: Something's using port #{port}. Are you already running MailCatcher?"
+        exit -1
+      else
+        raise
+      end
+    end
   end
 end
