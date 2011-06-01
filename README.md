@@ -58,14 +58,19 @@ MailCatcher is just a mishmash of other people's hard work. Thank you so much to
 
 Thanks also to [The Frontier Group][tfg] for giving me the idea, being great guinea pigs and letting me steal pieces of time to keep the project alive.
 
-## Copyright
+## Donations
 
-Copyright © 2010-2011 Samuel Cochran. See [LICENSE][license] for details.
+I work on MailCatcher mostly in my own spare time. If you've found Mailcatcher useful and would like to help feed me and fund continued development and new features, please [donate via PayPal](donate). If you'd like a specific feature added to MailCatcher and are willing to pay for it, please [email me](mailto:sj26@sj26.com).
+
+## License
+
+Copyright © 2010-2011 Samuel Cochran (sj26@sj26.com). Released under the MIT License, see [LICENSE][license] for details.
 
 ## Dreams
 
 For dream catching, try [this](http://goo.gl/kgbh). OR [THIS](http://www.nyanicorn.com), OMG.
 
+  [donate]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=522WUPLRWUSKE
   [license]: https://github.com/sj26/mailcatcher/blob/master/LICENSE
   [mailcatcher-github]: https://github.com/sj26/mailcatcher
   [tfg]: http://www.thefrontiergroup.com.au
