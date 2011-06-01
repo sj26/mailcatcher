@@ -1,25 +1,29 @@
 require 'active_support/all'
-require 'daemons'
 require 'eventmachine'
+require ‘rbconfig’
 require 'thin'
+
+def windows?
+  Config::CONFIG[‘host_os’] =~ /mswin|mingw/
+end
 
 module MailCatcher
   extend ActiveSupport::Autoload
-  
+
   autoload :Events
   autoload :Mail
   autoload :Smtp
   autoload :Web
-  
+
   @@defaults = {
     :smtp_ip => '127.0.0.1',
     :smtp_port => '1025',
     :http_ip => '127.0.0.1',
     :http_port => '1080',
     :verbose => false,
-    :daemon => true,
+    :daemon => true unless windows?,
   }
-  
+
   def self.parse! arguments=ARGV, defaults=@@defaults
     @@defaults.dup.tap do |options|
       OptionParser.new do |parser|
@@ -45,8 +49,10 @@ module MailCatcher
           options[:http_port] = port
         end
 
-        parser.on('-f', '--foreground', 'Run in the foreground') do
-          options[:daemon] = false
+        unless windows?
+          parser.on('-f', '--foreground', 'Run in the foreground') do
+            options[:daemon] = false
+          end
         end
 
         parser.on('-v', '--verbose', 'Be more verbose') do
@@ -60,34 +66,34 @@ module MailCatcher
       end.parse!
     end
   end
-  
+
   def self.run! options=nil
     # If we are passed options, fill in the blanks
     options &&= @@defaults.merge options
     # Otherwise, parse them from ARGV
     options ||= parse!
-    
+
     puts "Starting MailCatcher"
 
     Thin::Logging.silent = true
-    
+
     # One EventMachine loop...
     EventMachine.run do
       # TODO: DRY this up
-      
+
       # Set up an SMTP server to run within EventMachine
       rescue_port options[:smtp_port] do
         EventMachine.start_server options[:smtp_ip], options[:smtp_port], Smtp
         puts "==> smtp://#{options[:smtp_ip]}:#{options[:smtp_port]}"
       end
-      
+
       # Let Thin set itself up inside our EventMachine loop
       # (Skinny/WebSockets just works on the inside)
       rescue_port options[:http_port] do
         Thin::Server.start options[:http_ip], options[:http_port], Web
         puts "==> http://#{options[:http_ip]}:#{options[:http_port]}"
       end
-      
+
       # Daemonize, if we should, but only after the servers have started.
       if options[:daemon]
         EventMachine.next_tick do
@@ -97,17 +103,17 @@ module MailCatcher
       end
     end
   end
-  
+
   def self.quit!
     EventMachine.next_tick { EventMachine.stop_event_loop }
   end
 
-protected 
+protected
 
   def self.rescue_port port
     begin
       yield
-      
+
     # XXX: EventMachine only spits out RuntimeError with a string description
     rescue RuntimeError
       if $!.to_s =~ /\bno acceptor\b/
