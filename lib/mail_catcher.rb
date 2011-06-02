@@ -1,5 +1,6 @@
 require 'active_support/all'
 require 'eventmachine'
+require 'optparse'
 require 'rbconfig'
 require 'thin'
 
