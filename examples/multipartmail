@@ -1,0 +1,19 @@
+To: Blah <blah@blah.com>
+From: Me <me@sj26.com>
+Subject: Test Multipart Mail
+Mime-Version: 1.0
+Content-Type: multipart/alternative; boundary=BOUNDARY--198849662
+
+Header
+
+--BOUNDARY--198849662
+Content-Type: text/plain
+
+Plain text mail
+
+--BOUNDARY--198849662
+Content-Type: text/html
+
+<html><body><em>HTML</em> mail</body></html>
+
+--BOUNDARY--198849662--

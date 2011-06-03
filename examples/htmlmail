@@ -1,0 +1,10 @@
+To: Blah <blah@blah.com>
+From: Me <me@sj26.com>
+Subject: Test HTML Mail
+Content-Type: text/html
+
+<html>
+<body>
+Yo, you <em>slimey scoundrel</em>.
+</body>
+</html>
