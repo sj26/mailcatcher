@@ -21,7 +21,7 @@ module MailCatcher
     :http_ip => '127.0.0.1',
     :http_port => '1080',
     :verbose => false,
-    :daemon => true unless windows?,
+    :daemon => (true unless windows?)
   }
 
   def self.parse! arguments=ARGV, defaults=@@defaults
