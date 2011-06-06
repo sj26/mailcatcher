@@ -1,10 +1,10 @@
 require 'active_support/all'
 require 'eventmachine'
-require ‘rbconfig’
+require 'rbconfig'
 require 'thin'
 
 def windows?
-  Config::CONFIG[‘host_os’] =~ /mswin|mingw/
+  Config::CONFIG['host_os'] =~ /mswin|mingw/
 end
 
 module MailCatcher
