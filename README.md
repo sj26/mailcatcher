@@ -28,14 +28,33 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 
 The brave can get the source from [the GitHub repository][mailcatcher-github].
 
-## RVM
+### RVM
 
 Under RVM your mailcatcher command may only available under the ruby you install mailcatcher into. To prevent this, and to prevent gem conflicts, install mailcatcher into a dedicated gemset and create wrapper scripts:
 
     rvm default@mailcatcher --create gem install mailcatcher
     rvm wrapper default@mailcatcher --no-prefix mailcatcher catchmail
 
-## API
+### Rails
+
+To set up your rails app, I recommend adding this to your `environment/development.rb`:
+
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = { :host => "localhost", :port => 1025 }
+
+### PHP
+
+For projects using PHP, or PHP frameworks and application platforms like Drupal, you can set [PHP's mail configuration](http://www.php.net/manual/en/mail.configuration.php) in your [php.ini](http://www.php.net/manual/en/configuration.file.php) to send via MailCatcher with:
+
+    sendmail_path = /usr/bin/env catchmail
+
+You can do this in an [Apache htaccess file](http://php.net/manual/en/configuration.changes.php) or general configuration like so:
+
+    php_value sendmail_path "/usr/bin/env catchmail"
+
+If you've installed via RVM this probably won't work unless you've manually added your RVM bin paths to your system environment's PATH. In that case, run `which catchmail` and put that path into the `sendmail_path` directive above instead of `/usr/bin/env catchmail`.
+
+### API
 
 A fairly RESTful URL schema means you can download a list of messages in JSON from `/messages`, each message's metadata with `/messages/:id.json`, and then the pertinent parts with `/messages/:id.html` and `/messages/:id.plain` for the default HTML and plain text version, `/messages/:id/:cid` for individual attachments by CID, or the whole message with `/messages/:id.source`.
 
