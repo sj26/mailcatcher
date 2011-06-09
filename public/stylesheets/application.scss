@@ -102,6 +102,8 @@ body > header {
     }
     
     tbody tr {
+      cursor: pointer;
+      
       &:nth-child(even) {
         background: #f0f0f0;
       }
