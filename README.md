@@ -68,7 +68,9 @@ A fairly RESTful URL schema means you can download a list of messages in JSON fr
 
 * Add mail delivery on request, optionally multiple times.
 * Better Growl support in MacRuby and RubyCocoa with click notifications which takes you to the received message.
+* An API-compatible nodejs version, for fun and profit (and non-ruby npm users).
 * Test suite.
+* Compatibility testing against CampaignMonitor's [design guidelines](http://www.campaignmonitor.com/design-guidelines/) and [CSS support matrix](http://www.campaignmonitor.com/design-guidelines/).
 * Forward mail to rendering service, maybe CampaignMonitor?
 * Package as an app? Native interfaces? HotCocoa?
 
