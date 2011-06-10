@@ -75,6 +75,10 @@ body > header
         +text-shadow(0 1px 0 white)
     tbody tr
       cursor: pointer
+      +transition(0.1s ease)
+      color: #333
+      &:hover
+        color: #000
       &:nth-child(even)
         background: #f0f0f0
       &.selected
