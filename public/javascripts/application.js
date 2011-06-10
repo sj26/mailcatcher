@@ -99,7 +99,7 @@
           } else {
             $('#message .metadata .attachments').hide();
           }
-          $('#message .actions .download a').attr('href', "/messages/" + id + ".eml");
+          $('#message .views .download a').attr('href', "/messages/" + id + ".eml");
           return this.loadMessageBody();
         }, this));
       }
