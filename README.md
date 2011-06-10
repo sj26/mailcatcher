@@ -14,7 +14,8 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 * Lists attachments and allows separate downloading of parts.
 * Download original email to view in your native mail client(s).
 * Command line options to override the default SMTP/HTTP IP and port settings.
-* Mail appears instantly if your browser supports [WebSockets][websockets].
+* Mail appears instantly if your browser supports [WebSockets][websockets], otherwise updates every thirty seconds.
+* Growl notifications when you receive a new message.
 * Runs as a daemon run in the background.
 * Sendmail-analogue command, `catchmail`, makes [using mailcatcher from PHP][withphp] a lot easier.
 * Written super-simply in EventMachine, easy to dig in and change.
@@ -65,9 +66,11 @@ A fairly RESTful URL schema means you can download a list of messages in JSON fr
 
 ## TODO
 
-* Growl support.
-* Test suite.
 * Add mail delivery on request, optionally multiple times.
+* Better Growl support in MacRuby and RubyCocoa with click notifications which takes you to the received message.
+* An API-compatible nodejs version, for fun and profit (and non-ruby npm users).
+* Test suite.
+* Compatibility testing against CampaignMonitor's [design guidelines](http://www.campaignmonitor.com/design-guidelines/) and [CSS support matrix](http://www.campaignmonitor.com/design-guidelines/).
 * Forward mail to rendering service, maybe CampaignMonitor?
 * Package as an app? Native interfaces? HotCocoa?
 
@@ -79,7 +82,7 @@ Thanks also to [The Frontier Group][tfg] for giving me the idea, being great gui
 
 ## Donations
 
-I work on MailCatcher mostly in my own spare time. If you've found Mailcatcher useful and would like to help feed me and fund continued development and new features, please [donate via PayPal](donate). If you'd like a specific feature added to MailCatcher and are willing to pay for it, please [email me](mailto:sj26@sj26.com).
+I work on MailCatcher mostly in my own spare time. If you've found Mailcatcher useful and would like to help feed me and fund continued development and new features, please [donate via PayPal][donate]. If you'd like a specific feature added to MailCatcher and are willing to pay for it, please [email me](mailto:sj26@sj26.com).
 
 ## License
 

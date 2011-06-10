@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
     smtp://127.0.0.1:1025 instead of your default SMTP server,
     then check out http://127.0.0.1:1080 to see the mail.
   END
-  
+
   s.author = "Samuel Cochran"
   s.email = "sj26@sj26.com"
   s.homepage = "http://github.com/sj26/mailcatcher"
@@ -25,9 +25,9 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.executables = ["mailcatcher", "catchmail"]
   s.extra_rdoc_files = ["README.md", "LICENSE"]
-  
+
   s.required_ruby_version = '>= 1.8.7'
-  
+
   s.add_dependency "activesupport", "~> 3.0"
   s.add_dependency "eventmachine",  "~> 0.12"
   s.add_dependency "mail",          "~> 2.3"
@@ -36,7 +36,6 @@ Gem::Specification.new do |s|
   s.add_dependency "skinny",        "~> 0.1"
   s.add_dependency "sinatra",       "~> 1.2"
   s.add_dependency "haml",          "~> 3.1"
-  s.add_dependency "json",          "~> 1.0"
 
   s.add_development_dependency "sass", "~> 3.1"
   s.add_development_dependency "compass", "~> 0.11.1"

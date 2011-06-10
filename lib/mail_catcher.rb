@@ -4,17 +4,42 @@ require 'optparse'
 require 'rbconfig'
 require 'thin'
 
-def windows?
-  Config::CONFIG['host_os'] =~ /mswin|mingw/
-end
-
 module MailCatcher
   extend ActiveSupport::Autoload
 
   autoload :Events
+  autoload :Growl
   autoload :Mail
   autoload :Smtp
   autoload :Web
+
+module_function
+
+  def mac?
+    Config::CONFIG['host_os'] =~ /darwin/
+  end
+
+  def windows?
+    Config::CONFIG['host_os'] =~ /mswin|mingw/
+  end
+
+  def macruby?
+    mac? and const_defined? :MACRUBY_VERSION
+  end
+
+  def growlnotify?
+    system "which", "-s", "growlnotify"
+  end
+
+  def growlframework?
+    macruby? and
+    # TODO: Look for growl framework accessible
+    false
+  end
+
+  def growl?
+    growlnotify? or growlframework?
+  end
 
   @@defaults = {
     :smtp_ip => '127.0.0.1',
@@ -22,32 +47,46 @@ module MailCatcher
     :http_ip => '127.0.0.1',
     :http_port => '1080',
     :verbose => false,
-    :daemon => (true unless windows?),
+    :daemon => !windows?,
+    :growl => growlnotify?,
   }
 
-  def self.parse! arguments=ARGV, defaults=@@defaults
+  def parse! arguments=ARGV, defaults=@@defaults
     @@defaults.dup.tap do |options|
       OptionParser.new do |parser|
-        parser.banner = 'Usage: mailcatcher [options]'
+        parser.banner = "Usage: mailcatcher [options]"
 
-        parser.on('--ip IP', 'Set the ip address of both servers') do |ip|
+        parser.on("--ip IP", "Set the ip address of both servers") do |ip|
           options[:smtp_ip] = options[:http_ip] = ip
         end
 
-        parser.on('--smtp-ip IP', 'Set the ip address of the smtp server') do |ip|
+        parser.on("--smtp-ip IP", "Set the ip address of the smtp server") do |ip|
           options[:smtp_ip] = ip
         end
 
-        parser.on('--smtp-port PORT', Integer, 'Set the port of the smtp server') do |port|
+        parser.on("--smtp-port PORT", Integer, "Set the port of the smtp server") do |port|
           options[:smtp_port] = port
         end
 
-        parser.on('--http-ip IP', 'Set the ip address of the http server') do |ip|
+        parser.on("--http-ip IP", "Set the ip address of the http server") do |ip|
           options[:http_ip] = ip
         end
 
-        parser.on('--http-port PORT', Integer, 'Set the port address of the http server') do |port|
+        parser.on("--http-port PORT", Integer, "Set the port address of the http server") do |port|
           options[:http_port] = port
+        end
+
+        if mac?
+          parser.on("--[no-]growl", "Growl to the local machine when a message arrives") do |growl|
+            if growl and not growlnotify?
+              puts "You'll need to install growlnotify from the Growl installer."
+              puts
+              puts "See: http://growl.info/extras.php#growlnotify"
+              exit!
+            end
+
+            options[:growl] = growl
+          end
         end
 
         unless windows?
@@ -68,7 +107,7 @@ module MailCatcher
     end
   end
 
-  def self.run! options=nil
+  def run! options=nil
     # If we are passed options, fill in the blanks
     options &&= @@defaults.merge options
     # Otherwise, parse them from ARGV
@@ -80,6 +119,9 @@ module MailCatcher
 
     # One EventMachine loop...
     EventMachine.run do
+      # Get our lion on if asked
+      MailCatcher::Growl.start if options[:growl]
+
       # TODO: DRY this up
 
       # Set up an SMTP server to run within EventMachine
@@ -105,13 +147,14 @@ module MailCatcher
     end
   end
 
-  def self.quit!
+  def quit!
     EventMachine.next_tick { EventMachine.stop_event_loop }
   end
 
 protected
+module_function
 
-  def self.rescue_port port
+  def rescue_port port
     begin
       yield
 

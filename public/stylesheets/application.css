@@ -57,8 +57,8 @@ body {
   -moz-box-orient: vertical;
   -webkit-box-orient: vertical;
   box-orient: vertical;
-  background: #eee;
-  color: #000;
+  background: #eeeeee;
+  color: black;
   font-size: 12px;
   font-family: Helvetica, sans-serif; }
   body body {
@@ -70,7 +70,7 @@ body {
 body > header {
   overflow: hidden;
   *zoom: 1;
-  border-bottom: 1px solid #ccc; }
+  border-bottom: 1px solid #cccccc; }
   body > header h1 {
     float: left;
     padding: 6px;
@@ -89,10 +89,10 @@ body > header {
       -o-transition-duration: 1s;
       transition-duration: 1s; }
       body > header h1 a:hover {
-        color: #4183C4; }
+        color: #4183c4; }
   body > header nav {
-    border-left: 1px solid #ccc;
-    border-right: 1px solid #fff; }
+    border-left: 1px solid #cccccc;
+    border-right: 1px solid white; }
     body > header nav.project {
       float: left; }
     body > header nav.app {
@@ -103,15 +103,15 @@ body > header {
         display: inline-block;
         float: left;
         padding: 9px;
-        border-left: 1px solid #fff;
-        border-right: 1px solid #ccc;
-        background: #eee;
-        color: #666;
+        border-left: 1px solid white;
+        border-right: 1px solid #cccccc;
+        background: #eeeeee;
+        color: #666666;
         font-weight: bold;
         text-decoration: none;
         text-shadow: 0 1px 0 white; }
         body > header nav li a:hover {
-          background: #fff; }
+          background: white; }
         body > header nav li a:active {
           margin: 1px -1px -1px 1px;
           -moz-box-shadow: none;
@@ -123,18 +123,18 @@ body > header {
   width: 100%;
   height: 10em;
   overflow: auto;
-  background: #fff;
-  border-top: 1px solid #fff;
-  border-bottom: 1px solid #ccc; }
+  background: white;
+  border-top: 1px solid white;
+  border-bottom: 1px solid #cccccc; }
   #messages table {
     width: 100%; }
     #messages table thead tr {
-      background: #eee;
-      color: #333; }
+      background: #eeeeee;
+      color: #333333; }
       #messages table thead tr th {
-        padding: .25em;
+        padding: 0.25em;
         font-weight: bold;
-        color: #666;
+        color: #666666;
         text-shadow: 0 1px 0 white; }
     #messages table tbody tr:nth-child(even) {
       background: #f0f0f0; }
@@ -142,7 +142,7 @@ body > header {
       background: Highlight;
       color: HighlightText; }
     #messages table tbody tr td {
-      padding: .25em; }
+      padding: 0.25em; }
 
 #message {
   display: -moz-box;
@@ -154,24 +154,24 @@ body > header {
   -moz-box-flex: 1;
   -webkit-box-flex: 1;
   box-flex: 1;
-  border-top: 1px solid #fff; }
+  border-top: 1px solid white; }
   #message > header {
     overflow: hidden;
     *zoom: 1; }
     #message > header .metadata {
       overflow: hidden;
       *zoom: 1;
-      padding: .5em; }
+      padding: 0.5em; }
       #message > header .metadata dt, #message > header .metadata dd {
-        padding: .25em; }
+        padding: 0.25em; }
       #message > header .metadata dt {
         float: left;
         clear: left;
         width: 8em;
-        margin-right: .5em;
+        margin-right: 0.5em;
         text-align: right;
         font-weight: bold;
-        color: #666;
+        color: #666666;
         text-shadow: 0 1px 0 white; }
       #message > header .metadata dd.subject {
         font-weight: bold; }
@@ -185,26 +185,26 @@ body > header {
             display: inline-block;
             vertical-align: middle;
             *vertical-align: auto;
-            margin-right: .5em; }
+            margin-right: 0.5em; }
             #message > header .metadata .attachments ul li {
               *display: inline; }
     #message > header .views ul {
-      padding: 0 .5em;
-      border-bottom: 1px solid #999; }
+      padding: 0 0.5em;
+      border-bottom: 1px solid #999999; }
     #message > header .views .tab {
       display: inline-block;
-      padding: .5em;
-      border: 1px solid #999;
-      background: #ddd;
-      color: #333;
+      padding: 0.5em;
+      border: 1px solid #999999;
+      background: #dddddd;
+      color: #333333;
       border-width: 1px 1px 0 1px;
       cursor: pointer;
       text-shadow: 0 1px 0 #eeeeee; }
     #message > header .views .tab:not(.selected):hover {
-      background-color: #ddd; }
+      background-color: #dddddd; }
     #message > header .views .tab.selected {
-      background: #fff;
-      color: #000;
+      background: white;
+      color: black;
       height: 13px;
       -moz-box-shadow: 1px 1px 0 #cccccc;
       -webkit-box-shadow: 1px 1px 0 #cccccc;
@@ -214,13 +214,13 @@ body > header {
     #message > header .views .button {
       display: inline-block;
       float: right;
-      margin: 0 .25em; }
+      margin: 0 0.25em; }
       #message > header .views .button a {
         display: inline-block;
-        padding: .25em .5em;
-        border: 1px solid #999;
-        background: #ddd;
-        color: #333;
+        padding: 0.25em 0.5em;
+        border: 1px solid #999999;
+        background: #dddddd;
+        color: #333333;
         text-decoration: none;
         text-shadow: 1px 1px 0 #eeeeee;
         -moz-box-shadow: 1px 1px 0 #cccccc;
@@ -228,7 +228,7 @@ body > header {
         -o-box-shadow: 1px 1px 0 #cccccc;
         box-shadow: 1px 1px 0 #cccccc; }
         #message > header .views .button a:hover {
-          background: #fff;
+          background: white;
           text-shadow: none; }
         #message > header .views .button a:active {
           margin: 1px -1px -1px 1px;
@@ -244,4 +244,4 @@ body > header {
     -webkit-box-flex: 1;
     box-flex: 1;
     width: 100%;
-    background: #fff; }
+    background: white; }

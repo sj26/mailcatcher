@@ -1,5 +1,4 @@
 require 'sinatra'
-require 'json'
 require 'pathname'
 
 require 'skinny'
@@ -12,16 +11,16 @@ module MailCatcher
   class Web < Sinatra::Base
     set :root, Pathname.new(__FILE__).dirname.parent.parent
     set :haml, :format => :html5
-    
+
     get '/' do
       haml :index
     end
-  
+
     delete '/' do
       MailCatcher.quit!
       status 204
     end
-  
+
     get '/messages' do
       if request.websocket?
         request.websocket!(
@@ -36,12 +35,12 @@ module MailCatcher
         MailCatcher::Mail.messages.to_json
       end
     end
-  
+
     delete '/messages' do
       MailCatcher::Mail.delete!
       status 204
     end
-    
+
     get '/messages/:id.json' do
       id = params[:id].to_i
       if message = MailCatcher::Mail.message(id)
@@ -59,26 +58,26 @@ module MailCatcher
         not_found
       end
     end
-  
+
     get '/messages/:id.html' do
       id = params[:id].to_i
       if part = MailCatcher::Mail.message_part_html(id)
         content_type part["type"], :charset => (part["charset"] || "utf8")
-        
+
         body = part["body"]
-        
+
         # Rewrite body to link to embedded attachments served by cid
         body.gsub! /cid:([^'"> ]+)/, "#{id}/\\1"
-        
+
         # Rewrite body to open links in a new window
         body.gsub! /<a\s+/, '<a target="_blank" '
-        
+
         body
       else
         not_found
       end
     end
-  
+
     get "/messages/:id.plain" do
       id = params[:id].to_i
       if part = MailCatcher::Mail.message_part_plain(id)
@@ -88,7 +87,7 @@ module MailCatcher
         not_found
       end
     end
-  
+
     get "/messages/:id.source" do
       id = params[:id].to_i
       if message = MailCatcher::Mail.message(id)
@@ -98,7 +97,7 @@ module MailCatcher
         not_found
       end
     end
-  
+
     get "/messages/:id.eml" do
       id = params[:id].to_i
       if message = MailCatcher::Mail.message(id)
@@ -108,7 +107,7 @@ module MailCatcher
         not_found
       end
     end
-  
+
     get "/messages/:id/:cid" do
       id = params[:id].to_i
       if part = MailCatcher::Mail.message_part_cid(id, params[:cid])
@@ -119,7 +118,7 @@ module MailCatcher
         not_found
       end
     end
-    
+
     not_found do
       "<html><body><h1>No Dice</h1><p>The message you were looking for does not exist, or doesn't have content of this type.</p></body></html>"
     end
