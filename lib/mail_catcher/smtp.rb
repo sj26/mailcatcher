@@ -5,23 +5,23 @@ module MailCatcher
     def current_message
       @current_message ||= {}
     end
-  
+
     def receive_reset
       @current_message = nil
       true
     end
-  
+
     def receive_sender(sender)
       current_message[:sender] = sender
       true
     end
-  
+
     def receive_recipient(recipient)
       current_message[:recipients] ||= []
       current_message[:recipients] << recipient
       true
     end
-  
+
     def receive_data_chunk(lines)
       current_message[:source] ||= ""
       current_message[:source] += lines.join("\n")

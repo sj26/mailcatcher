@@ -15,6 +15,7 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 * Download original email to view in your native mail client(s).
 * Command line options to override the default SMTP/HTTP IP and port settings.
 * Mail appears instantly if your browser supports [WebSockets][websockets], otherwise updates every thirty seconds.
+* Growl notifications when you receive a new message.
 * Runs as a daemon run in the background.
 * Sendmail-analogue command, `catchmail`, makes [using mailcatcher from PHP][withphp] a lot easier.
 * Written super-simply in EventMachine, easy to dig in and change.
