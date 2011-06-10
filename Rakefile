@@ -18,10 +18,9 @@ end
 
 desc "Compile SASS/SCSS files into SCSS"
 task "build:sass" do
-  require 'sass'
-  Dir["public/stylesheets/**/*.scss"].each do |file|
-    css_file = file.sub /\.scss$/, ".css"
-    Sass.compile_file file, css_file, :cache => false
+  Dir["public/stylesheets/**/*.sass"].each do |file|
+    css_file = file.sub /\.sass$/, ".css"
+    system "sass", "--no-cache", "--compass", file, css_file
   end
 end
 
