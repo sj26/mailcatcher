@@ -136,13 +136,26 @@ body > header {
         font-weight: bold;
         color: #666666;
         text-shadow: 0 1px 0 white; }
-    #messages table tbody tr:nth-child(even) {
-      background: #f0f0f0; }
-    #messages table tbody tr.selected {
-      background: Highlight;
-      color: HighlightText; }
-    #messages table tbody tr td {
-      padding: 0.25em; }
+    #messages table tbody tr {
+      cursor: pointer;
+      -moz-transition-property: 0.1s ease;
+      -webkit-transition-property: 0.1s ease;
+      -o-transition-property: 0.1s ease;
+      transition-property: 0.1s ease;
+      -moz-transition-duration: 1s;
+      -webkit-transition-duration: 1s;
+      -o-transition-duration: 1s;
+      transition-duration: 1s;
+      color: #333333; }
+      #messages table tbody tr:hover {
+        color: black; }
+      #messages table tbody tr:nth-child(even) {
+        background: #f0f0f0; }
+      #messages table tbody tr.selected {
+        background: Highlight;
+        color: HighlightText; }
+      #messages table tbody tr td {
+        padding: 0.25em; }
 
 #message {
   display: -moz-box;
