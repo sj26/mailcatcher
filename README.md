@@ -66,9 +66,9 @@ A fairly RESTful URL schema means you can download a list of messages in JSON fr
 
 ## TODO
 
-* Growl support.
-* Test suite.
 * Add mail delivery on request, optionally multiple times.
+* Better Growl support in MacRuby and RubyCocoa with click notifications which takes you to the received message.
+* Test suite.
 * Forward mail to rendering service, maybe CampaignMonitor?
 * Package as an app? Native interfaces? HotCocoa?
 
