@@ -67,6 +67,45 @@ body {
   body html > body {
     font-size: 12px; }
 
+.button {
+  padding: 0.5em 1em;
+  border: 1px solid #cccccc;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -o-border-radius: 2px;
+  -ms-border-radius: 2px;
+  -khtml-border-radius: 2px;
+  border-radius: 2px;
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f4f4f4), color-stop(100%, #ececec)), #ececec;
+  background: -webkit-linear-gradient(#f4f4f4, #ececec), #ececec;
+  background: -moz-linear-gradient(#f4f4f4, #ececec), #ececec;
+  background: -o-linear-gradient(#f4f4f4, #ececec), #ececec;
+  background: linear-gradient(#f4f4f4, #ececec), #ececec;
+  color: #666666;
+  text-shadow: 1px 1px 0 white;
+  text-decoration: none; }
+  .button:hover, .button:focus {
+    border-color: #999999;
+    border-bottom-color: #666666;
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #eeeeee), color-stop(100%, #dddddd)), #dddddd;
+    background: -webkit-linear-gradient(#eeeeee, #dddddd), #dddddd;
+    background: -moz-linear-gradient(#eeeeee, #dddddd), #dddddd;
+    background: -o-linear-gradient(#eeeeee, #dddddd), #dddddd;
+    background: linear-gradient(#eeeeee, #dddddd), #dddddd;
+    color: #333333;
+    text-decoration: none; }
+  .button:active, .button.active {
+    border-color: #666666;
+    border-bottom-color: #999999;
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #dddddd), color-stop(100%, #eeeeee)), #eeeeee;
+    background: -webkit-linear-gradient(#dddddd, #eeeeee), #eeeeee;
+    background: -moz-linear-gradient(#dddddd, #eeeeee), #eeeeee;
+    background: -o-linear-gradient(#dddddd, #eeeeee), #eeeeee;
+    background: linear-gradient(#dddddd, #eeeeee), #eeeeee;
+    color: #333333;
+    text-decoration: none;
+    text-shadow: -1px -1px 0 #eeeeee; }
+
 body > header {
   overflow: hidden;
   *zoom: 1;
@@ -91,8 +130,7 @@ body > header {
       body > header h1 a:hover {
         color: #4183c4; }
   body > header nav {
-    border-left: 1px solid #cccccc;
-    border-right: 1px solid white; }
+    border-left: 1px solid #cccccc; }
     body > header nav.project {
       float: left; }
     body > header nav.app {
@@ -100,24 +138,44 @@ body > header {
     body > header nav li {
       display: inline; }
       body > header nav li a {
+        display: -moz-inline-box;
+        -moz-box-orient: vertical;
         display: inline-block;
+        vertical-align: middle;
+        *vertical-align: auto;
         float: left;
         padding: 9px;
         border-left: 1px solid white;
         border-right: 1px solid #cccccc;
-        background: #eeeeee;
-        color: #666666;
-        font-weight: bold;
         text-decoration: none;
-        text-shadow: 0 1px 0 white; }
-        body > header nav li a:hover {
-          background: white; }
-        body > header nav li a:active {
-          margin: 1px -1px -1px 1px;
-          -moz-box-shadow: none;
-          -webkit-box-shadow: none;
-          -o-box-shadow: none;
-          box-shadow: none; }
+        text-shadow: 0 1px 0 white;
+        background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f4f4f4), color-stop(100%, #ececec)), #ececec;
+        background: -webkit-linear-gradient(#f4f4f4, #ececec), #ececec;
+        background: -moz-linear-gradient(#f4f4f4, #ececec), #ececec;
+        background: -o-linear-gradient(#f4f4f4, #ececec), #ececec;
+        background: linear-gradient(#f4f4f4, #ececec), #ececec;
+        color: #666666;
+        text-shadow: 1px 1px 0 white;
+        text-decoration: none; }
+        body > header nav li a {
+          *display: inline; }
+        body > header nav li a:hover, body > header nav li a:focus {
+          background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #eeeeee), color-stop(100%, #dddddd)), #dddddd;
+          background: -webkit-linear-gradient(#eeeeee, #dddddd), #dddddd;
+          background: -moz-linear-gradient(#eeeeee, #dddddd), #dddddd;
+          background: -o-linear-gradient(#eeeeee, #dddddd), #dddddd;
+          background: linear-gradient(#eeeeee, #dddddd), #dddddd;
+          color: #333333;
+          text-decoration: none; }
+        body > header nav li a:active, body > header nav li a.active {
+          background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #dddddd), color-stop(100%, #eeeeee)), #eeeeee;
+          background: -webkit-linear-gradient(#dddddd, #eeeeee), #eeeeee;
+          background: -moz-linear-gradient(#dddddd, #eeeeee), #eeeeee;
+          background: -o-linear-gradient(#dddddd, #eeeeee), #eeeeee;
+          background: linear-gradient(#dddddd, #eeeeee), #eeeeee;
+          color: #333333;
+          text-decoration: none;
+          text-shadow: -1px -1px 0 #eeeeee; }
 
 #messages {
   width: 100%;
@@ -203,18 +261,24 @@ body > header {
               *display: inline; }
     #message > header .views ul {
       padding: 0 0.5em;
-      border-bottom: 1px solid #999999; }
+      border-bottom: 1px solid #cccccc; }
     #message > header .views .tab {
+      display: -moz-inline-box;
+      -moz-box-orient: vertical;
       display: inline-block;
+      vertical-align: middle;
+      *vertical-align: auto;
       padding: 0.5em;
-      border: 1px solid #999999;
+      border: 1px solid #cccccc;
       background: #dddddd;
       color: #333333;
       border-width: 1px 1px 0 1px;
       cursor: pointer;
       text-shadow: 0 1px 0 #eeeeee; }
+      #message > header .views .tab {
+        *display: inline; }
     #message > header .views .tab:not(.selected):hover {
-      background-color: #dddddd; }
+      background-color: #eeeeee; }
     #message > header .views .tab.selected {
       background: white;
       color: black;
@@ -223,32 +287,18 @@ body > header {
       -webkit-box-shadow: 1px 1px 0 #cccccc;
       -o-box-shadow: 1px 1px 0 #cccccc;
       box-shadow: 1px 1px 0 #cccccc;
-      margin-bottom: -2px; }
-    #message > header .views .button {
+      margin-bottom: -2px;
+      cursor: default; }
+    #message > header .views .action {
+      display: -moz-inline-box;
+      -moz-box-orient: vertical;
       display: inline-block;
+      vertical-align: middle;
+      *vertical-align: auto;
       float: right;
       margin: 0 0.25em; }
-      #message > header .views .button a {
-        display: inline-block;
-        padding: 0.25em 0.5em;
-        border: 1px solid #999999;
-        background: #dddddd;
-        color: #333333;
-        text-decoration: none;
-        text-shadow: 1px 1px 0 #eeeeee;
-        -moz-box-shadow: 1px 1px 0 #cccccc;
-        -webkit-box-shadow: 1px 1px 0 #cccccc;
-        -o-box-shadow: 1px 1px 0 #cccccc;
-        box-shadow: 1px 1px 0 #cccccc; }
-        #message > header .views .button a:hover {
-          background: white;
-          text-shadow: none; }
-        #message > header .views .button a:active {
-          margin: 1px -1px -1px 1px;
-          -moz-box-shadow: none;
-          -webkit-box-shadow: none;
-          -o-box-shadow: none;
-          box-shadow: none; }
+      #message > header .views .action {
+        *display: inline; }
   #message .body {
     display: -moz-box;
     display: -webkit-box;

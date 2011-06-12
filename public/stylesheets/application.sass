@@ -14,6 +14,28 @@ body
   font-size: 12px
   font-family: Helvetica, sans-serif
 
+.button
+  padding: .5em 1em
+  border: 1px solid #ccc
+  +border-radius(2px)
+  +background(linear-gradient(color-stops(#f4f4f4, #ececec)), #ececec)
+  color: #666
+  +text-shadow(1px 1px 0 #fff)
+  text-decoration: none
+  &:hover, &:focus
+    border-color: #999
+    border-bottom-color: #666
+    +background(linear-gradient(color-stops(#eee, #ddd)), #ddd)
+    color: #333
+    text-decoration: none
+  &:active, &.active
+    border-color: #666
+    border-bottom-color: #999
+    +background(linear-gradient(color-stops(#ddd, #eee)), #eee)
+    color: #333
+    text-decoration: none
+    +text-shadow(-1px -1px 0 #eee)
+
 body > header
   +clearfix
   border-bottom: 1px solid #ccc
@@ -35,26 +57,29 @@ body > header
     &.app
       float: right
     border-left: 1px solid #ccc
-    border-right: 1px solid #fff
     li
       display: inline
-      // @include inline-block;
       a
-        display: inline-block
+        +inline-block
         float: left
         padding: 9px
         border-left: 1px solid #fff
         border-right: 1px solid #ccc
-        background: #eee
-        color: #666
-        font-weight: bold
         text-decoration: none
         +text-shadow(0 1px 0 white)
-        &:hover
-          background: #fff
-        &:active
-          margin: 1px -1px -1px 1px
-          +box-shadow(none)
+        +background(linear-gradient(color-stops(#f4f4f4, #ececec)), #ececec)
+        color: #666
+        +text-shadow(1px 1px 0 #fff)
+        text-decoration: none
+        &:hover, &:focus
+          +background(linear-gradient(color-stops(#eee, #ddd)), #ddd)
+          color: #333
+          text-decoration: none
+        &:active, &.active
+          +background(linear-gradient(color-stops(#ddd, #eee)), #eee)
+          color: #333
+          text-decoration: none
+          +text-shadow(-1px -1px 0 #eee)
 
 #messages
   width: 100%
@@ -120,43 +145,29 @@ body > header
     .views
       ul
         padding: 0 .5em
-        border-bottom: 1px solid #999
+        border-bottom: 1px solid #ccc
       .tab
-        display: inline-block
+        +inline-block
         padding: .5em
-        border: 1px solid #999
+        border: 1px solid #ccc
         background: #ddd
         color: #333
         border-width: 1px 1px 0 1px
         cursor: pointer
         +text-shadow(0 1px 0 #eeeeee)
       .tab:not(.selected):hover
-        background-color: #ddd
+        background-color: #eee
       .tab.selected
         background: #fff
         color: #000
         height: 13px
-        +box-shadow(1px 1px 0 #cccccc)
+        +box-shadow(1px 1px 0 #ccc)
         margin-bottom: -2px
-      .button
-        display: inline-block
+        cursor: default
+      .action
+        +inline-block
         float: right
         margin: 0 .25em
-        a
-          display: inline-block
-          padding: .25em .5em
-          border: 1px solid #999
-          background: #ddd
-          color: #333
-          text-decoration: none
-          +text-shadow(1px 1px 0 #eeeeee)
-          +box-shadow(1px 1px 0 #cccccc)
-          &:hover
-            background: #fff
-            +text-shadow(none)
-          &:active
-            margin: 1px -1px -1px 1px
-            +box-shadow(none)
   .body
     +display-box
     +box-flex(1)
