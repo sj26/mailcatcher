@@ -1,7 +1,7 @@
 require 'rubygems'
 
 version_file = File.expand_path __FILE__ + '/../VERSION'
-version = File.read version_file
+version = File.read(version_file).strip
 
 spec_file = File.expand_path __FILE__ + '/../mailcatcher.gemspec'
 spec = Gem::Specification.load spec_file
