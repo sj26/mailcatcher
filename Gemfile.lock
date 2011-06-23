@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mailcatcher (0.4.4)
+    mailcatcher (0.4.5)
       activesupport (~> 3.0)
       eventmachine (~> 0.12)
       haml (~> 3.1)
