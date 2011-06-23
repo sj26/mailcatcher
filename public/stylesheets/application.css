@@ -112,7 +112,10 @@ body > header {
   border-bottom: 1px solid #cccccc; }
   body > header h1 {
     float: left;
+    margin-left: 6px;
     padding: 6px;
+    padding-left: 30px;
+    background: url(/images/logo.png) left no-repeat;
     font-size: 18px;
     font-weight: bold; }
     body > header h1 a {
