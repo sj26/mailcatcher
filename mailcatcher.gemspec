@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
     "README.md", "LICENSE",
     "bin/*",
     "lib/**/*.rb",
+    "public/images/**/*",
     "public/javascripts/**/*.js",
     "public/stylesheets/**/*.css",
     "views/**/*"
