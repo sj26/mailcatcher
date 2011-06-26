@@ -45,13 +45,24 @@ class MailCatcher
     message = message.id if message.id?
     $("#messages tbody tr[data-message-id=\"#{message}\"]").length > 0
 
+  isBlank: (value) ->
+    !value? or value.blank
+
+  formatSubject: (subject) ->
+    if @isBlank(subject)
+      'No subject specified'
+    else
+      subject
+
   addMessage: (message) ->
     $('#messages tbody').append \
       $('<tr />').attr('data-message-id', message.id.toString())
         .append($('<td/>').text(message.sender))
         .append($('<td/>').text((message.recipients || []).join(', ')))
-        .append($('<td/>').text(message.subject))
+        .append($('<td/>').text(@formatSubject message.subject))
         .append($('<td/>').text @formatDate message.created_at)
+    if @isBlank(message.subject)
+      $('#messages tbody tr:last td:nth-child(3)').addClass 'blank'
 
   loadMessage: (id) ->
     id = id.id if id?.id?
@@ -65,7 +76,7 @@ class MailCatcher
         $('#message .metadata dd.created_at').text @formatDate message.created_at
         $('#message .metadata dd.from').text message.sender
         $('#message .metadata dd.to').text (message.recipients || []).join(', ')
-        $('#message .metadata dd.subject').text message.subject
+        $('#message .metadata dd.subject').text(@formatSubject message.subject)
         $('#message .views .tab.format').each (i, el) ->
           $el = $(el)
           format = $el.attr 'data-message-format'

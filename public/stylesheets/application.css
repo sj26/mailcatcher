@@ -311,3 +311,5 @@ body > header {
     box-flex: 1;
     width: 100%;
     background: white; }
+.blank {
+  font-style: italic; }

@@ -60,8 +60,21 @@
       }
       return $("#messages tbody tr[data-message-id=\"" + message + "\"]").length > 0;
     };
+    MailCatcher.prototype.isBlank = function(value) {
+      return !(value != null) || value.blank;
+    };
+    MailCatcher.prototype.formatSubject = function(subject) {
+      if (this.isBlank(subject)) {
+        return 'No subject specified';
+      } else {
+        return subject;
+      }
+    };
     MailCatcher.prototype.addMessage = function(message) {
-      return $('#messages tbody').append($('<tr />').attr('data-message-id', message.id.toString()).append($('<td/>').text(message.sender)).append($('<td/>').text((message.recipients || []).join(', '))).append($('<td/>').text(message.subject)).append($('<td/>').text(this.formatDate(message.created_at))));
+      $('#messages tbody').append($('<tr />').attr('data-message-id', message.id.toString()).append($('<td/>').text(message.sender)).append($('<td/>').text((message.recipients || []).join(', '))).append($('<td/>').text(this.formatSubject(message.subject))).append($('<td/>').text(this.formatDate(message.created_at))));
+      if (this.isBlank(message.subject)) {
+        return $('#messages tbody tr:last td:nth-child(3)').addClass('blank');
+      }
     };
     MailCatcher.prototype.loadMessage = function(id) {
       if ((id != null ? id.id : void 0) != null) {
@@ -75,7 +88,7 @@
           $('#message .metadata dd.created_at').text(this.formatDate(message.created_at));
           $('#message .metadata dd.from').text(message.sender);
           $('#message .metadata dd.to').text((message.recipients || []).join(', '));
-          $('#message .metadata dd.subject').text(message.subject);
+          $('#message .metadata dd.subject').text(this.formatSubject(message.subject));
           $('#message .views .tab.format').each(function(i, el) {
             var $el, format;
             $el = $(el);
