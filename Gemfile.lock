@@ -35,11 +35,11 @@ GEM
     guard-coffeescript (0.2.4)
       coffee-script (~> 2.2.0)
       guard (~> 0.3.0)
+    guard-compass (0.0.6)
+      compass (>= 0.10.5)
+      guard (>= 0.2.1)
     guard-ego (0.0.1)
       guard (>= 0.2.1)
-    guard-sass (0.1.2)
-      guard (>= 0.2.1)
-      sass (>= 3.1)
     haml (3.1.1)
     i18n (0.6.0)
     mail (2.3.0)
@@ -77,8 +77,8 @@ DEPENDENCIES
   growl
   guard
   guard-coffeescript
+  guard-compass
   guard-ego
-  guard-sass
   mailcatcher!
   rb-fsevent
   sass (~> 3.1)

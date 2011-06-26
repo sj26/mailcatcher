@@ -5,7 +5,7 @@ gemspec
 group :guard do
   gem 'guard'
   gem 'guard-ego'
-  gem 'guard-sass'
+  gem 'guard-compass'
   gem 'guard-coffeescript'
 end
 

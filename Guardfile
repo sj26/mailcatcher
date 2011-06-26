@@ -5,7 +5,7 @@ guard 'ego' do
   watch 'Guardfile'
 end
 
-guard 'sass', :output => 'stylesheets' do
+guard 'compass', :sass_dir => "public/stylesheets", :css_dir => "public/stylesheets" do
   watch %r{^public/stylesheets/.+\.s[ac]ss}
 end
 
