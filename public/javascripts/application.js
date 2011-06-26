@@ -61,7 +61,7 @@
       return $("#messages tbody tr[data-message-id=\"" + message + "\"]").length > 0;
     };
     MailCatcher.prototype.addMessage = function(message) {
-      return $('#messages tbody').append($('<tr />').attr('data-message-id', message.id.toString()).append($('<td/>').text(message.sender)).append($('<td/>').text((message.recipients || []).join(', '))).append($('<td/>').text(message.subject)).append($('<td/>').text(this.formatDate(message.created_at))));
+      return $('#messages tbody').append($('<tr />').attr('data-message-id', message.id.toString()).append($('<td/>').text(message.sender || "No sender").toggleClass("blank", !message.sender)).append($('<td/>').text((message.recipients || []).join(', ') || "No receipients").toggleClass("blank", !message.recipients.length)).append($('<td/>').text(message.subject || "No subject").toggleClass("blank", !message.subject)).append($('<td/>').text(this.formatDate(message.created_at))));
     };
     MailCatcher.prototype.loadMessage = function(id) {
       if ((id != null ? id.id : void 0) != null) {

@@ -291,8 +291,13 @@ body > header nav li a:active, body > header nav li a.active {
 #messages table tbody tr td {
   padding: 0.25em;
 }
+/* line 117, application.sass */
+#messages table tbody tr td.blank {
+  color: #666666;
+  font-style: italic;
+}
 
-/* line 118, application.sass */
+/* line 121, application.sass */
 #message {
   display: -moz-box;
   display: -webkit-box;
@@ -305,22 +310,22 @@ body > header nav li a:active, body > header nav li a.active {
   box-flex: 1;
   border-top: 1px solid white;
 }
-/* line 123, application.sass */
+/* line 126, application.sass */
 #message > header {
   overflow: hidden;
   *zoom: 1;
 }
-/* line 125, application.sass */
+/* line 128, application.sass */
 #message > header .metadata {
   overflow: hidden;
   *zoom: 1;
   padding: 0.5em;
 }
-/* line 128, application.sass */
+/* line 131, application.sass */
 #message > header .metadata dt, #message > header .metadata dd {
   padding: 0.25em;
 }
-/* line 130, application.sass */
+/* line 133, application.sass */
 #message > header .metadata dt {
   float: left;
   clear: left;
@@ -331,19 +336,19 @@ body > header nav li a:active, body > header nav li a.active {
   color: #666666;
   text-shadow: 0 1px 0 white;
 }
-/* line 139, application.sass */
+/* line 142, application.sass */
 #message > header .metadata dd.subject {
   font-weight: bold;
 }
-/* line 141, application.sass */
+/* line 144, application.sass */
 #message > header .metadata .attachments {
   display: none;
 }
-/* line 143, application.sass */
+/* line 146, application.sass */
 #message > header .metadata .attachments ul {
   display: inline;
 }
-/* line 145, application.sass */
+/* line 148, application.sass */
 #message > header .metadata .attachments ul li {
   display: -moz-inline-box;
   -moz-box-orient: vertical;
@@ -356,12 +361,12 @@ body > header nav li a:active, body > header nav li a.active {
 #message > header .metadata .attachments ul li {
   *display: inline;
 }
-/* line 149, application.sass */
+/* line 152, application.sass */
 #message > header .views ul {
   padding: 0 0.5em;
   border-bottom: 1px solid #cccccc;
 }
-/* line 152, application.sass */
+/* line 155, application.sass */
 #message > header .views .tab {
   display: -moz-inline-box;
   -moz-box-orient: vertical;
@@ -380,11 +385,11 @@ body > header nav li a:active, body > header nav li a.active {
 #message > header .views .tab {
   *display: inline;
 }
-/* line 161, application.sass */
+/* line 164, application.sass */
 #message > header .views .tab:not(.selected):hover {
   background-color: #eeeeee;
 }
-/* line 163, application.sass */
+/* line 166, application.sass */
 #message > header .views .tab.selected {
   background: white;
   color: black;
@@ -396,7 +401,7 @@ body > header nav li a:active, body > header nav li a.active {
   margin-bottom: -2px;
   cursor: default;
 }
-/* line 170, application.sass */
+/* line 173, application.sass */
 #message > header .views .action {
   display: -moz-inline-box;
   -moz-box-orient: vertical;
@@ -410,7 +415,7 @@ body > header nav li a:active, body > header nav li a.active {
 #message > header .views .action {
   *display: inline;
 }
-/* line 174, application.sass */
+/* line 177, application.sass */
 #message .body {
   display: -moz-box;
   display: -webkit-box;
