@@ -62,7 +62,7 @@ A fairly RESTful URL schema means you can download a list of messages in JSON fr
 
 ## Caveats
 
-* Mail processing is fairly basic but easily modified. If something doesn't work for you, fork and fix it or file an issue and let me know. Include the whole message you're having problems with.
+* Mail processing is fairly basic but easily modified. If something doesn't work for you, fork and fix it or [file an issue][mailcatcher-issues] and let me know. Include the whole message you're having problems with.
 * The interface is very basic and has not been tested on many browsers yet.
 
 ## TODO
@@ -97,6 +97,7 @@ For dream catching, try [this](http://goo.gl/kgbh). OR [THIS](http://www.nyanico
   [fractal]: http://getfractal.com
   [license]: https://github.com/sj26/mailcatcher/blob/master/LICENSE
   [mailcatcher-github]: https://github.com/sj26/mailcatcher
+  [mailcatcher-issues]: https://github.com/sj26/mailcatcher/issues
   [tfg]: http://www.thefrontiergroup.com.au
   [websockets]: http://www.whatwg.org/specs/web-socket-protocol/
   [withphp]: http://webschuur.com/publications/blogs/2011-05-29-catchmail_for_drupal_and_other_phpapplications_the_simple_version
