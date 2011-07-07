@@ -6,6 +6,18 @@ class MailCatcher
     $('#message .views .tab').live 'click', (e) =>
       @loadMessageBody $('#messages tr.selected').attr('data-message-id'), $(e.currentTarget).attr 'data-message-format'
 
+    $('#resizer').live
+      mousedown: (e) ->
+        e.preventDefault()
+        $(window).bind events =
+          mouseup: (e) ->
+            e.preventDefault()
+            $(window).unbind events
+          mousemove: (e) ->
+            e.preventDefault()
+            $('#messages').css
+              height: e.clientY - $('#messages').offset().top
+
     $('nav.app .clear a').live 'click', (e) =>
       if confirm "You will lose all your received messages.\n\nAre you sure you want to clear all messages?"
         $.ajax

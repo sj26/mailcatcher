@@ -9,6 +9,24 @@
       $('#message .views .tab').live('click', __bind(function(e) {
         return this.loadMessageBody($('#messages tr.selected').attr('data-message-id'), $(e.currentTarget).attr('data-message-format'));
       }, this));
+      $('#resizer').live({
+        mousedown: function(e) {
+          var events;
+          e.preventDefault();
+          return $(window).bind(events = {
+            mouseup: function(e) {
+              e.preventDefault();
+              return $(window).unbind(events);
+            },
+            mousemove: function(e) {
+              e.preventDefault();
+              return $('#messages').css({
+                height: e.clientY - $('#messages').offset().top
+              });
+            }
+          });
+        }
+      });
       $('nav.app .clear a').live('click', __bind(function(e) {
         if (confirm("You will lose all your received messages.\n\nAre you sure you want to clear all messages?")) {
           return $.ajax({
