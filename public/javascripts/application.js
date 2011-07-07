@@ -99,6 +99,7 @@
             $el = $(el);
             format = $el.attr('data-message-format');
             if ($.inArray(format, message.formats) >= 0) {
+              $el.find('a').attr('href', '/messages/' + id + '.' + format);
               return $el.show();
             } else {
               return $el.hide();

@@ -163,22 +163,25 @@ body > header
         border-bottom: 1px solid #ccc
       .tab
         +inline-block
-        padding: .5em
-        border: 1px solid #ccc
-        background: #ddd
-        color: #333
-        border-width: 1px 1px 0 1px
-        cursor: pointer
-        +text-shadow(0 1px 0 #eeeeee)
-      .tab:not(.selected):hover
-        background-color: #eee
-      .tab.selected
-        background: #fff
-        color: #000
-        height: 13px
-        +box-shadow(1px 1px 0 #ccc)
-        margin-bottom: -2px
-        cursor: default
+        a
+          +inline-block
+          padding: .5em
+          border: 1px solid #ccc
+          background: #ddd
+          color: #333
+          border-width: 1px 1px 0 1px
+          cursor: pointer
+          +text-shadow(0 1px 0 #eeeeee)
+          text-decoration: none
+        &:not(.selected):hover a
+          background-color: #eee
+        &.selected a
+          background: #fff
+          color: #000
+          height: 13px
+          +box-shadow(1px 1px 0 #ccc)
+          margin-bottom: -2px
+          cursor: default
       .action
         +inline-block
         float: right

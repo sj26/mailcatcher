@@ -82,6 +82,7 @@ class MailCatcher
           $el = $(el)
           format = $el.attr 'data-message-format'
           if $.inArray(format, message.formats) >= 0
+            $el.find('a').attr('href', '/messages/' + id + '.' + format)
             $el.show()
           else
             $el.hide()
