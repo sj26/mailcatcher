@@ -1,10 +1,12 @@
 class MailCatcher
   constructor: ->
     $('#messages tr').live 'click', (e) =>
+      e.preventDefault()
       @loadMessage $(e.currentTarget).attr 'data-message-id'
 
-    $('#message .views .tab').live 'click', (e) =>
-      @loadMessageBody $('#messages tr.selected').attr('data-message-id'), $(e.currentTarget).attr 'data-message-format'
+    $('#message .views .format.tab a').live 'click', (e) =>
+      e.preventDefault()
+      @loadMessageBody @selectedMessage(), $($(e.currentTarget).parent('li')).data 'message-format'
 
     $('#resizer').live
       mousedown: (e) ->
@@ -57,6 +59,9 @@ class MailCatcher
     message = message.id if message.id?
     $("#messages tbody tr[data-message-id=\"#{message}\"]").length > 0
 
+  selectedMessage: ->
+    $('#messages tr.selected').data 'message-id'
+
   addMessage: (message) ->
     $('#messages tbody').append \
       $('<tr />').attr('data-message-id', message.id.toString())
@@ -104,7 +109,7 @@ class MailCatcher
         @loadMessageBody()
 
   loadMessageBody: (id, format) ->
-    id ||= $('#messages tr.selected').attr 'data-message-id'
+    id ||= @selectedMessage()
     format ||= $('#message .views .tab.format.selected').attr 'data-message-format'
     format ||= 'html'
 

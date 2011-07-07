@@ -4,10 +4,12 @@
   MailCatcher = (function() {
     function MailCatcher() {
       $('#messages tr').live('click', __bind(function(e) {
+        e.preventDefault();
         return this.loadMessage($(e.currentTarget).attr('data-message-id'));
       }, this));
-      $('#message .views .tab').live('click', __bind(function(e) {
-        return this.loadMessageBody($('#messages tr.selected').attr('data-message-id'), $(e.currentTarget).attr('data-message-format'));
+      $('#message .views .format.tab a').live('click', __bind(function(e) {
+        e.preventDefault();
+        return this.loadMessageBody(this.selectedMessage(), $($(e.currentTarget).parent('li')).data('message-format'));
       }, this));
       $('#resizer').live({
         mousedown: function(e) {
@@ -78,6 +80,9 @@
       }
       return $("#messages tbody tr[data-message-id=\"" + message + "\"]").length > 0;
     };
+    MailCatcher.prototype.selectedMessage = function() {
+      return $('#messages tr.selected').data('message-id');
+    };
     MailCatcher.prototype.addMessage = function(message) {
       return $('#messages tbody').append($('<tr />').attr('data-message-id', message.id.toString()).append($('<td/>').text(message.sender || "No sender").toggleClass("blank", !message.sender)).append($('<td/>').text((message.recipients || []).join(', ') || "No receipients").toggleClass("blank", !message.recipients.length)).append($('<td/>').text(message.subject || "No subject").toggleClass("blank", !message.subject)).append($('<td/>').text(this.formatDate(message.created_at))));
     };
@@ -124,7 +129,7 @@
       }
     };
     MailCatcher.prototype.loadMessageBody = function(id, format) {
-      id || (id = $('#messages tr.selected').attr('data-message-id'));
+      id || (id = this.selectedMessage());
       format || (format = $('#message .views .tab.format.selected').attr('data-message-format'));
       format || (format = 'html');
       $("#message .views .tab[data-message-format=\"" + format + "\"]:not(.selected)").addClass('selected');
