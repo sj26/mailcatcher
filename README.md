@@ -11,6 +11,7 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 * Catches all mail and stores it for display.
 * Shows HTML, Plain Text and Source version of messages, as applicable.
 * Rewrites HTML enabling display of embedded, inline images/etc and open links in a new window. (currently very basic)
+* Can send HTML for analysis by [Fractal][fractal].
 * Lists attachments and allows separate downloading of parts.
 * Download original email to view in your native mail client(s).
 * Command line options to override the default SMTP/HTTP IP and port settings.
@@ -93,6 +94,7 @@ Copyright © 2010-2011 Samuel Cochran (sj26@sj26.com). Released under the MIT Li
 For dream catching, try [this](http://goo.gl/kgbh). OR [THIS](http://www.nyanicorn.com), OMG.
 
   [donate]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=522WUPLRWUSKE
+  [fractal]: http://getfractal.com
   [license]: https://github.com/sj26/mailcatcher/blob/master/LICENSE
   [mailcatcher-github]: https://github.com/sj26/mailcatcher
   [tfg]: http://www.thefrontiergroup.com.au
