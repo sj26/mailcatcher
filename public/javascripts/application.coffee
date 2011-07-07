@@ -137,13 +137,14 @@ class MailCatcher
     if id?
       # Makes a new iframe which will have a foreign origin eventually, and populate it with a quick intro and a form to send to Fractal.
       $iframe = $('#message iframe').contents().children().html("""
-          <html class="mailcatcher"><body><iframe></iframe></body></html>
+          <html class="mailcatcher"><head>#{$('link[rel="stylesheet"]')[0].outerHTML}</head><body><iframe></iframe></body></html>
         """)
         .find("head").append($('link[rel="stylesheet"]').clone()).end()
         .find('iframe').contents().children().html("""
           <html>
           <head>
           <title>Analysis</title>
+          #{$('link[rel="stylesheet"]')[0].outerHTML}
           </head>
           <body class="iframe">
           <h1>Analyse your email with Fractal</h1>
@@ -156,7 +157,6 @@ class MailCatcher
           </body>
           </html>
         """)
-        .find("head").append($('link[rel="stylesheet"]').clone()).end()
       # This should be cached if already accessed, so it's actually quite quick
       $.get "/messages/#{id}.html", (html) ->
         $iframe
