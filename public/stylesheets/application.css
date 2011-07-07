@@ -1,4 +1,3 @@
-/* line 17, ../../../../.rvm/gems/ruby-1.9.2-p180-patched@mailcatcher/gems/compass-0.11.1/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -17,60 +16,40 @@ time, mark, audio, video {
   border: 0;
   font-size: 100%;
   font: inherit;
-  vertical-align: baseline;
-}
+  vertical-align: baseline; }
 
-/* line 20, ../../../../.rvm/gems/ruby-1.9.2-p180-patched@mailcatcher/gems/compass-0.11.1/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 body {
-  line-height: 1;
-}
+  line-height: 1; }
 
-/* line 22, ../../../../.rvm/gems/ruby-1.9.2-p180-patched@mailcatcher/gems/compass-0.11.1/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 ol, ul {
-  list-style: none;
-}
+  list-style: none; }
 
-/* line 24, ../../../../.rvm/gems/ruby-1.9.2-p180-patched@mailcatcher/gems/compass-0.11.1/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 table {
   border-collapse: collapse;
-  border-spacing: 0;
-}
+  border-spacing: 0; }
 
-/* line 26, ../../../../.rvm/gems/ruby-1.9.2-p180-patched@mailcatcher/gems/compass-0.11.1/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 caption, th, td {
   text-align: left;
   font-weight: normal;
-  vertical-align: middle;
-}
+  vertical-align: middle; }
 
-/* line 28, ../../../../.rvm/gems/ruby-1.9.2-p180-patched@mailcatcher/gems/compass-0.11.1/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 q, blockquote {
-  quotes: none;
-}
-/* line 101, ../../../../.rvm/gems/ruby-1.9.2-p180-patched@mailcatcher/gems/compass-0.11.1/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
-q:before, q:after, blockquote:before, blockquote:after {
-  content: "";
-  content: none;
-}
+  quotes: none; }
+  q:before, q:after, blockquote:before, blockquote:after {
+    content: "";
+    content: none; }
 
-/* line 30, ../../../../.rvm/gems/ruby-1.9.2-p180-patched@mailcatcher/gems/compass-0.11.1/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 a img {
-  border: none;
-}
+  border: none; }
 
-/* line 115, ../../../../.rvm/gems/ruby-1.9.2-p180-patched@mailcatcher/gems/compass-0.11.1/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
-  display: block;
-}
+  display: block; }
 
-/* line 4, application.sass */
 html, body {
   width: 100%;
-  height: 100%;
-}
+  height: 100%; }
 
-/* line 8, application.sass */
 body {
   display: -moz-box;
   display: -webkit-box;
@@ -81,37 +60,24 @@ body {
   background: #eeeeee;
   color: black;
   font-size: 12px;
-  font-family: Helvetica, sans-serif;
-}
-/* line 26, ../../../../.rvm/gems/ruby-1.9.2-p180-patched@mailcatcher/gems/compass-0.11.1/frameworks/compass/stylesheets/compass/typography/_vertical_rhythm.scss */
-body body {
-  font-size: 75%;
-  line-height: 2em;
-}
-/* line 30, ../../../../.rvm/gems/ruby-1.9.2-p180-patched@mailcatcher/gems/compass-0.11.1/frameworks/compass/stylesheets/compass/typography/_vertical_rhythm.scss */
-body html > body {
-  font-size: 12px;
-}
-/* line 17, application.sass */
-body.iframe {
-  background: white;
-}
-/* line 20, application.sass */
-body.iframe h1 {
-  font-size: 1.3em;
-  margin: 12px;
-}
-/* line 23, application.sass */
-body.iframe p, body.iframe form {
-  margin: 0 12px 12px 12px;
-  line-height: 1.25;
-}
-/* line 26, application.sass */
-body.iframe .loading {
-  margin-left: 0.5em;
-}
+  font-family: Helvetica, sans-serif; }
+  body body {
+    font-size: 75%;
+    line-height: 2em; }
+  body html > body {
+    font-size: 12px; }
+  body.iframe {
+    background: white; }
+    body.iframe h1 {
+      font-size: 1.3em;
+      margin: 12px; }
+    body.iframe p, body.iframe form {
+      margin: 0 12px 12px 12px;
+      line-height: 1.25; }
+    body.iframe .loading {
+      color: #666666;
+      margin-left: 0.5em; }
 
-/* line 30, application.sass */
 .button {
   padding: 0.5em 1em;
   border: 1px solid #cccccc;
@@ -128,207 +94,153 @@ body.iframe .loading {
   background: linear-gradient(#f4f4f4, #ececec), #ececec;
   color: #666666;
   text-shadow: 1px 1px 0 white;
-  text-decoration: none;
-}
-/* line 38, application.sass */
-.button:hover, .button:focus {
-  border-color: #999999;
-  border-bottom-color: #666666;
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #eeeeee), color-stop(100%, #dddddd)), #dddddd;
-  background: -webkit-linear-gradient(#eeeeee, #dddddd), #dddddd;
-  background: -moz-linear-gradient(#eeeeee, #dddddd), #dddddd;
-  background: -o-linear-gradient(#eeeeee, #dddddd), #dddddd;
-  background: linear-gradient(#eeeeee, #dddddd), #dddddd;
-  color: #333333;
-  text-decoration: none;
-}
-/* line 44, application.sass */
-.button:active, .button.active {
-  border-color: #666666;
-  border-bottom-color: #999999;
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #dddddd), color-stop(100%, #eeeeee)), #eeeeee;
-  background: -webkit-linear-gradient(#dddddd, #eeeeee), #eeeeee;
-  background: -moz-linear-gradient(#dddddd, #eeeeee), #eeeeee;
-  background: -o-linear-gradient(#dddddd, #eeeeee), #eeeeee;
-  background: linear-gradient(#dddddd, #eeeeee), #eeeeee;
-  color: #333333;
-  text-decoration: none;
-  text-shadow: -1px -1px 0 #eeeeee;
-}
+  text-decoration: none; }
+  .button:hover, .button:focus {
+    border-color: #999999;
+    border-bottom-color: #666666;
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #eeeeee), color-stop(100%, #dddddd)), #dddddd;
+    background: -webkit-linear-gradient(#eeeeee, #dddddd), #dddddd;
+    background: -moz-linear-gradient(#eeeeee, #dddddd), #dddddd;
+    background: -o-linear-gradient(#eeeeee, #dddddd), #dddddd;
+    background: linear-gradient(#eeeeee, #dddddd), #dddddd;
+    color: #333333;
+    text-decoration: none; }
+  .button:active, .button.active {
+    border-color: #666666;
+    border-bottom-color: #999999;
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #dddddd), color-stop(100%, #eeeeee)), #eeeeee;
+    background: -webkit-linear-gradient(#dddddd, #eeeeee), #eeeeee;
+    background: -moz-linear-gradient(#dddddd, #eeeeee), #eeeeee;
+    background: -o-linear-gradient(#dddddd, #eeeeee), #eeeeee;
+    background: linear-gradient(#dddddd, #eeeeee), #eeeeee;
+    color: #333333;
+    text-decoration: none;
+    text-shadow: -1px -1px 0 #eeeeee; }
 
-/* line 52, application.sass */
 body > header {
   overflow: hidden;
   *zoom: 1;
-  border-bottom: 1px solid #cccccc;
-}
-/* line 55, application.sass */
-body > header h1 {
-  float: left;
-  margin-left: 6px;
-  padding: 6px;
-  padding-left: 30px;
-  background: url(/images/logo.png) left no-repeat;
-  font-size: 18px;
-  font-weight: bold;
-}
-/* line 63, application.sass */
-body > header h1 a {
-  color: black;
-  text-decoration: none;
-  text-shadow: 0 1px 0 white;
-  -moz-transition-property: 0.1s ease;
-  -webkit-transition-property: 0.1s ease;
-  -o-transition-property: 0.1s ease;
-  transition-property: 0.1s ease;
-  -moz-transition-duration: 1s;
-  -webkit-transition-duration: 1s;
-  -o-transition-duration: 1s;
-  transition-duration: 1s;
-}
-/* line 68, application.sass */
-body > header h1 a:hover {
-  color: #4183c4;
-}
-/* line 70, application.sass */
-body > header nav {
-  border-left: 1px solid #cccccc;
-}
-/* line 71, application.sass */
-body > header nav.project {
-  float: left;
-}
-/* line 73, application.sass */
-body > header nav.app {
-  float: right;
-}
-/* line 76, application.sass */
-body > header nav li {
-  display: inline;
-}
-/* line 78, application.sass */
-body > header nav li a {
-  display: -moz-inline-box;
-  -moz-box-orient: vertical;
-  display: inline-block;
-  vertical-align: middle;
-  *vertical-align: auto;
-  float: left;
-  padding: 9px;
-  border-left: 1px solid white;
-  border-right: 1px solid #cccccc;
-  text-decoration: none;
-  text-shadow: 0 1px 0 white;
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f4f4f4), color-stop(100%, #ececec)), #ececec;
-  background: -webkit-linear-gradient(#f4f4f4, #ececec), #ececec;
-  background: -moz-linear-gradient(#f4f4f4, #ececec), #ececec;
-  background: -o-linear-gradient(#f4f4f4, #ececec), #ececec;
-  background: linear-gradient(#f4f4f4, #ececec), #ececec;
-  color: #666666;
-  text-shadow: 1px 1px 0 white;
-  text-decoration: none;
-}
-/* line 7, ../../../../.rvm/gems/ruby-1.9.2-p180-patched@mailcatcher/gems/compass-0.11.1/frameworks/compass/stylesheets/compass/css3/_inline-block.scss */
-body > header nav li a {
-  *display: inline;
-}
-/* line 90, application.sass */
-body > header nav li a:hover, body > header nav li a:focus {
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #eeeeee), color-stop(100%, #dddddd)), #dddddd;
-  background: -webkit-linear-gradient(#eeeeee, #dddddd), #dddddd;
-  background: -moz-linear-gradient(#eeeeee, #dddddd), #dddddd;
-  background: -o-linear-gradient(#eeeeee, #dddddd), #dddddd;
-  background: linear-gradient(#eeeeee, #dddddd), #dddddd;
-  color: #333333;
-  text-decoration: none;
-}
-/* line 94, application.sass */
-body > header nav li a:active, body > header nav li a.active {
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #dddddd), color-stop(100%, #eeeeee)), #eeeeee;
-  background: -webkit-linear-gradient(#dddddd, #eeeeee), #eeeeee;
-  background: -moz-linear-gradient(#dddddd, #eeeeee), #eeeeee;
-  background: -o-linear-gradient(#dddddd, #eeeeee), #eeeeee;
-  background: linear-gradient(#dddddd, #eeeeee), #eeeeee;
-  color: #333333;
-  text-decoration: none;
-  text-shadow: -1px -1px 0 #eeeeee;
-}
+  border-bottom: 1px solid #cccccc; }
+  body > header h1 {
+    float: left;
+    margin-left: 6px;
+    padding: 6px;
+    padding-left: 30px;
+    background: url(/images/logo.png) left no-repeat;
+    font-size: 18px;
+    font-weight: bold; }
+    body > header h1 a {
+      color: black;
+      text-decoration: none;
+      text-shadow: 0 1px 0 white;
+      -moz-transition-property: 0.1s ease;
+      -webkit-transition-property: 0.1s ease;
+      -o-transition-property: 0.1s ease;
+      transition-property: 0.1s ease;
+      -moz-transition-duration: 1s;
+      -webkit-transition-duration: 1s;
+      -o-transition-duration: 1s;
+      transition-duration: 1s; }
+      body > header h1 a:hover {
+        color: #4183c4; }
+  body > header nav {
+    border-left: 1px solid #cccccc; }
+    body > header nav.project {
+      float: left; }
+    body > header nav.app {
+      float: right; }
+    body > header nav li {
+      display: inline; }
+      body > header nav li a {
+        display: -moz-inline-box;
+        -moz-box-orient: vertical;
+        display: inline-block;
+        vertical-align: middle;
+        *vertical-align: auto;
+        float: left;
+        padding: 9px;
+        border-left: 1px solid white;
+        border-right: 1px solid #cccccc;
+        text-decoration: none;
+        text-shadow: 0 1px 0 white;
+        background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f4f4f4), color-stop(100%, #ececec)), #ececec;
+        background: -webkit-linear-gradient(#f4f4f4, #ececec), #ececec;
+        background: -moz-linear-gradient(#f4f4f4, #ececec), #ececec;
+        background: -o-linear-gradient(#f4f4f4, #ececec), #ececec;
+        background: linear-gradient(#f4f4f4, #ececec), #ececec;
+        color: #666666;
+        text-shadow: 1px 1px 0 white;
+        text-decoration: none; }
+        body > header nav li a {
+          *display: inline; }
+        body > header nav li a:hover, body > header nav li a:focus {
+          background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #eeeeee), color-stop(100%, #dddddd)), #dddddd;
+          background: -webkit-linear-gradient(#eeeeee, #dddddd), #dddddd;
+          background: -moz-linear-gradient(#eeeeee, #dddddd), #dddddd;
+          background: -o-linear-gradient(#eeeeee, #dddddd), #dddddd;
+          background: linear-gradient(#eeeeee, #dddddd), #dddddd;
+          color: #333333;
+          text-decoration: none; }
+        body > header nav li a:active, body > header nav li a.active {
+          background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #dddddd), color-stop(100%, #eeeeee)), #eeeeee;
+          background: -webkit-linear-gradient(#dddddd, #eeeeee), #eeeeee;
+          background: -moz-linear-gradient(#dddddd, #eeeeee), #eeeeee;
+          background: -o-linear-gradient(#dddddd, #eeeeee), #eeeeee;
+          background: linear-gradient(#dddddd, #eeeeee), #eeeeee;
+          color: #333333;
+          text-decoration: none;
+          text-shadow: -1px -1px 0 #eeeeee; }
 
-/* line 100, application.sass */
 #messages {
   width: 100%;
   height: 10em;
   min-height: 3em;
   overflow: auto;
   background: white;
-  border-top: 1px solid white;
-}
-/* line 108, application.sass */
-#messages table {
-  overflow: hidden;
-  *zoom: 1;
-  width: 100%;
-}
-/* line 111, application.sass */
-#messages table thead tr {
-  background: #eeeeee;
-  color: #333333;
-}
-/* line 114, application.sass */
-#messages table thead tr th {
-  padding: 0.25em;
-  font-weight: bold;
-  color: #666666;
-  text-shadow: 0 1px 0 white;
-}
-/* line 119, application.sass */
-#messages table tbody tr {
-  cursor: pointer;
-  -moz-transition-property: 0.1s ease;
-  -webkit-transition-property: 0.1s ease;
-  -o-transition-property: 0.1s ease;
-  transition-property: 0.1s ease;
-  -moz-transition-duration: 1s;
-  -webkit-transition-duration: 1s;
-  -o-transition-duration: 1s;
-  transition-duration: 1s;
-  color: #333333;
-}
-/* line 123, application.sass */
-#messages table tbody tr:hover {
-  color: black;
-}
-/* line 125, application.sass */
-#messages table tbody tr:nth-child(even) {
-  background: #f0f0f0;
-}
-/* line 127, application.sass */
-#messages table tbody tr.selected {
-  background: Highlight;
-  color: HighlightText;
-}
-/* line 130, application.sass */
-#messages table tbody tr td {
-  padding: 0.25em;
-}
-/* line 132, application.sass */
-#messages table tbody tr td.blank {
-  color: #666666;
-  font-style: italic;
-}
+  border-top: 1px solid white; }
+  #messages table {
+    overflow: hidden;
+    *zoom: 1;
+    width: 100%; }
+    #messages table thead tr {
+      background: #eeeeee;
+      color: #333333; }
+      #messages table thead tr th {
+        padding: 0.25em;
+        font-weight: bold;
+        color: #666666;
+        text-shadow: 0 1px 0 white; }
+    #messages table tbody tr {
+      cursor: pointer;
+      -moz-transition-property: 0.1s ease;
+      -webkit-transition-property: 0.1s ease;
+      -o-transition-property: 0.1s ease;
+      transition-property: 0.1s ease;
+      -moz-transition-duration: 1s;
+      -webkit-transition-duration: 1s;
+      -o-transition-duration: 1s;
+      transition-duration: 1s;
+      color: #333333; }
+      #messages table tbody tr:hover {
+        color: black; }
+      #messages table tbody tr:nth-child(even) {
+        background: #f0f0f0; }
+      #messages table tbody tr.selected {
+        background: Highlight;
+        color: HighlightText; }
+      #messages table tbody tr td {
+        padding: 0.25em; }
+        #messages table tbody tr td.blank {
+          color: #666666;
+          font-style: italic; }
 
-/* line 135, application.sass */
 #resizer {
   padding-bottom: 5px;
-  cursor: ns-resize;
-}
-/* line 138, application.sass */
-#resizer .ruler {
-  border-top: 1px solid #cccccc;
-  border-bottom: 1px solid white;
-}
+  cursor: ns-resize; }
+  #resizer .ruler {
+    border-top: 1px solid #cccccc;
+    border-bottom: 1px solid white; }
 
-/* line 142, application.sass */
 #message {
   display: -moz-box;
   display: -webkit-box;
@@ -338,129 +250,91 @@ body > header nav li a:active, body > header nav li a.active {
   box-orient: vertical;
   -moz-box-flex: 1;
   -webkit-box-flex: 1;
-  box-flex: 1;
-}
-/* line 146, application.sass */
-#message > header {
-  overflow: hidden;
-  *zoom: 1;
-}
-/* line 148, application.sass */
-#message > header .metadata {
-  overflow: hidden;
-  *zoom: 1;
-  padding: 0.5em;
-  padding-top: 0;
-}
-/* line 153, application.sass */
-#message > header .metadata dt, #message > header .metadata dd {
-  padding: 0.25em;
-}
-/* line 155, application.sass */
-#message > header .metadata dt {
-  float: left;
-  clear: left;
-  width: 8em;
-  margin-right: 0.5em;
-  text-align: right;
-  font-weight: bold;
-  color: #666666;
-  text-shadow: 0 1px 0 white;
-}
-/* line 164, application.sass */
-#message > header .metadata dd.subject {
-  font-weight: bold;
-}
-/* line 166, application.sass */
-#message > header .metadata .attachments {
-  display: none;
-}
-/* line 168, application.sass */
-#message > header .metadata .attachments ul {
-  display: inline;
-}
-/* line 170, application.sass */
-#message > header .metadata .attachments ul li {
-  display: -moz-inline-box;
-  -moz-box-orient: vertical;
-  display: inline-block;
-  vertical-align: middle;
-  *vertical-align: auto;
-  margin-right: 0.5em;
-}
-/* line 7, ../../../../.rvm/gems/ruby-1.9.2-p180-patched@mailcatcher/gems/compass-0.11.1/frameworks/compass/stylesheets/compass/css3/_inline-block.scss */
-#message > header .metadata .attachments ul li {
-  *display: inline;
-}
-/* line 174, application.sass */
-#message > header .views ul {
-  padding: 0 0.5em;
-  border-bottom: 1px solid #cccccc;
-}
-/* line 177, application.sass */
-#message > header .views .tab {
-  display: -moz-inline-box;
-  -moz-box-orient: vertical;
-  display: inline-block;
-  vertical-align: middle;
-  *vertical-align: auto;
-}
-/* line 7, ../../../../.rvm/gems/ruby-1.9.2-p180-patched@mailcatcher/gems/compass-0.11.1/frameworks/compass/stylesheets/compass/css3/_inline-block.scss */
-#message > header .views .tab {
-  *display: inline;
-}
-/* line 179, application.sass */
-#message > header .views .tab a {
-  display: -moz-inline-box;
-  -moz-box-orient: vertical;
-  display: inline-block;
-  vertical-align: middle;
-  *vertical-align: auto;
-  padding: 0.5em;
-  border: 1px solid #cccccc;
-  background: #dddddd;
-  color: #333333;
-  border-width: 1px 1px 0 1px;
-  cursor: pointer;
-  text-shadow: 0 1px 0 #eeeeee;
-  text-decoration: none;
-}
-/* line 7, ../../../../.rvm/gems/ruby-1.9.2-p180-patched@mailcatcher/gems/compass-0.11.1/frameworks/compass/stylesheets/compass/css3/_inline-block.scss */
-#message > header .views .tab a {
-  *display: inline;
-}
-/* line 189, application.sass */
-#message > header .views .tab:not(.selected):hover a {
-  background-color: #eeeeee;
-}
-/* line 191, application.sass */
-#message > header .views .tab.selected a {
-  background: white;
-  color: black;
-  height: 13px;
-  -moz-box-shadow: 1px 1px 0 #cccccc;
-  -webkit-box-shadow: 1px 1px 0 #cccccc;
-  -o-box-shadow: 1px 1px 0 #cccccc;
-  box-shadow: 1px 1px 0 #cccccc;
-  margin-bottom: -2px;
-  cursor: default;
-}
-/* line 198, application.sass */
-#message > header .views .action {
-  display: -moz-inline-box;
-  -moz-box-orient: vertical;
-  display: inline-block;
-  vertical-align: middle;
-  *vertical-align: auto;
-  float: right;
-  margin: 0 0.25em;
-}
-/* line 7, ../../../../.rvm/gems/ruby-1.9.2-p180-patched@mailcatcher/gems/compass-0.11.1/frameworks/compass/stylesheets/compass/css3/_inline-block.scss */
-#message > header .views .action {
-  *display: inline;
-}
+  box-flex: 1; }
+  #message > header {
+    overflow: hidden;
+    *zoom: 1; }
+    #message > header .metadata {
+      overflow: hidden;
+      *zoom: 1;
+      padding: 0.5em;
+      padding-top: 0; }
+      #message > header .metadata dt, #message > header .metadata dd {
+        padding: 0.25em; }
+      #message > header .metadata dt {
+        float: left;
+        clear: left;
+        width: 8em;
+        margin-right: 0.5em;
+        text-align: right;
+        font-weight: bold;
+        color: #666666;
+        text-shadow: 0 1px 0 white; }
+      #message > header .metadata dd.subject {
+        font-weight: bold; }
+      #message > header .metadata .attachments {
+        display: none; }
+        #message > header .metadata .attachments ul {
+          display: inline; }
+          #message > header .metadata .attachments ul li {
+            display: -moz-inline-box;
+            -moz-box-orient: vertical;
+            display: inline-block;
+            vertical-align: middle;
+            *vertical-align: auto;
+            margin-right: 0.5em; }
+            #message > header .metadata .attachments ul li {
+              *display: inline; }
+    #message > header .views ul {
+      padding: 0 0.5em;
+      border-bottom: 1px solid #cccccc; }
+    #message > header .views .tab {
+      display: -moz-inline-box;
+      -moz-box-orient: vertical;
+      display: inline-block;
+      vertical-align: middle;
+      *vertical-align: auto; }
+      #message > header .views .tab {
+        *display: inline; }
+      #message > header .views .tab a {
+        display: -moz-inline-box;
+        -moz-box-orient: vertical;
+        display: inline-block;
+        vertical-align: middle;
+        *vertical-align: auto;
+        padding: 0.5em;
+        border: 1px solid #cccccc;
+        background: #dddddd;
+        color: #333333;
+        border-width: 1px 1px 0 1px;
+        cursor: pointer;
+        text-shadow: 0 1px 0 #eeeeee;
+        text-decoration: none; }
+        #message > header .views .tab a {
+          *display: inline; }
+      #message > header .views .tab:not(.selected):hover a {
+        background-color: #eeeeee; }
+      #message > header .views .tab.selected a {
+        background: white;
+        color: black;
+        height: 13px;
+        -moz-box-shadow: 1px 1px 0 #cccccc;
+        -webkit-box-shadow: 1px 1px 0 #cccccc;
+        -o-box-shadow: 1px 1px 0 #cccccc;
+        box-shadow: 1px 1px 0 #cccccc;
+        margin-bottom: -2px;
+        cursor: default; }
+    #message > header .views .action {
+      display: -moz-inline-box;
+      -moz-box-orient: vertical;
+      display: inline-block;
+      vertical-align: middle;
+      *vertical-align: auto;
+      float: right;
+      margin: 0 0.25em; }
+      #message > header .views .action {
+        *display: inline; }
 
-/* line 203, application.sass */
 iframe {
   display: -moz-box;
   display: -webkit-box;
@@ -468,5 +342,4 @@ iframe {
   -moz-box-flex: 1;
   -webkit-box-flex: 1;
   box-flex: 1;
-  background: white;
-}
+  background: white; }
