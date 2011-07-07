@@ -63,7 +63,7 @@
     MailCatcher.prototype.parseDate = function(date) {
       var match;
       if (match = this.parseDateRegexp.exec(date)) {
-        return new Date(match[1], match[2], match[3], match[4], match[5], match[6], 0);
+        return new Date(match[1], match[2] - 1, match[3], match[4], match[5], match[6], 0);
       }
     };
     MailCatcher.prototype.formatDate = function(date) {

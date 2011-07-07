@@ -47,7 +47,7 @@ class MailCatcher
   parseDateRegexp: /^(\d{4})[-\/\\](\d{2})[-\/\\](\d{2})(?:\s+|T)(\d{2})[:-](\d{2})[:-](\d{2})(?:([ +-]\d{2}:\d{2}|\s*\S+|Z?))?$/
   parseDate: (date) ->
     if match = @parseDateRegexp.exec(date)
-      new Date match[1], match[2], match[3], match[4], match[5], match[6], 0
+      new Date match[1], match[2] - 1, match[3], match[4], match[5], match[6], 0
 
   formatDate: (date) ->
     date &&= @parseDate(date) if typeof(date) == "string"
