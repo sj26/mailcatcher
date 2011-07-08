@@ -99,6 +99,7 @@
         $('#messages tbody tr:not([data-message-id="' + id + '"])').removeClass('selected');
         $('#messages tbody tr[data-message-id="' + id + '"]').addClass('selected');
         return $.getJSON('/messages/' + id + '.json', __bind(function(message) {
+          var $ul;
           $('#message .metadata dd.created_at').text(this.formatDate(message.created_at));
           $('#message .metadata dd.from').text(message.sender);
           $('#message .metadata dd.to').text((message.recipients || []).join(', '));
@@ -119,9 +120,9 @@
             $("#message .views .tab:visible:first").addClass("selected");
           }
           if (message.attachments.length) {
-            $('#message .metadata dd.attachments ul').empty();
+            $ul = $('<ul/>').appendTo($('#message .metadata dd.attachments').empty());
             $.each(message.attachments, function(i, attachment) {
-              return $('#message .metadata dd.attachments ul').append($('<li>').append($('<a>').attr('href', attachment['href']).addClass(attachment['type'].split('/', 1)[0]).addClass(attachment['type'].replace('/', '-')).text(attachment['filename'])));
+              return $ul.append($('<li>').append($('<a>').attr('href', attachment['href']).addClass(attachment['type'].split('/', 1)[0]).addClass(attachment['type'].replace('/', '-')).text(attachment['filename'])));
             });
             $('#message .metadata .attachments').show();
           } else {

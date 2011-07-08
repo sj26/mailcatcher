@@ -101,9 +101,10 @@ class MailCatcher
           $("#message .views .tab:visible:first").addClass "selected"
 
         if message.attachments.length
-          $('#message .metadata dd.attachments ul').empty()
+          $ul = $('<ul/>').appendTo($('#message .metadata dd.attachments').empty())
+
           $.each message.attachments, (i, attachment) ->
-            $('#message .metadata dd.attachments ul').append($('<li>').append($('<a>').attr('href', attachment['href']).addClass(attachment['type'].split('/', 1)[0]).addClass(attachment['type'].replace('/', '-')).text(attachment['filename'])));
+            $ul.append($('<li>').append($('<a>').attr('href', attachment['href']).addClass(attachment['type'].split('/', 1)[0]).addClass(attachment['type'].replace('/', '-')).text(attachment['filename'])));
           $('#message .metadata .attachments').show()
         else
           $('#message .metadata .attachments').hide()
