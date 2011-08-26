@@ -6,7 +6,8 @@ module MailCatcher
     end
 
     def notify message
-      system "growlnotify", "--name", "MailCatcher", "--message", "Message received:\n#{message["subject"]}"
+      image_path = File.expand_path(File.join(__FILE__, '..', '..', '..', 'public', 'images', 'logo_large.png'))
+      system "growlnotify", "--image", image_path, "--name", "MailCatcher", "--message", "Message received:\n#{message["subject"]}"
     end
 
     # TODO: Native support on MacRuby with click backs
