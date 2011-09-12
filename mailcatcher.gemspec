@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
 
   s.author = "Samuel Cochran"
   s.email = "sj26@sj26.com"
-  s.homepage = "http://github.com/sj26/mailcatcher"
+  s.homepage = "http://mailcatcher.me"
 
   s.files = Dir[
     "README.md", "LICENSE",
