@@ -148,15 +148,22 @@
       }
     };
     MailCatcher.prototype.loadMessageAnalysis = function(id) {
-      var $iframe;
+      var $form, $iframe;
       id || (id = this.selectedMessage());
       $("#message .views .analysis.tab:not(.selected)").addClass('selected');
       $("#message .views :not(.analysis).tab.selected").removeClass('selected');
       if (id != null) {
-        $iframe = $('#message iframe').contents().children().html("<html class=\"mailcatcher\"><head>" + ($('link[rel="stylesheet"]')[0].outerHTML) + "</head><body><iframe></iframe></body></html>").find("head").append($('link[rel="stylesheet"]').clone()).end().find('iframe').contents().children().html("<html>\n<head>\n<title>Analysis</title>\n" + ($('link[rel="stylesheet"]')[0].outerHTML) + "\n</head>\n<body class=\"iframe\">\n<h1>Analyse your email with Fractal</h1>\n<p><a href=\"http://getfractal.com/\" target=\"_blank\">Fractal</a> is a really neat service that applies common email design and development knowledge from <a href=\"http://www.email-standards.org/\" target=\"_blank\">Email Standards Project</a> to your HTML email and tells you what you've done wrong or what you should do instead.</p>\n<p>Please note that this <strong>sends your email to the Fractal service</strong> for analysis. Read their <a href=\"http://getfractal.com/terms\" target=\"_blank\">terms of service</a> if you're paranoid.</p>\n<form action=\"http://getfractal.com/validate\" method=\"POST\">\n<input type=\"hidden\" name=\"html\" />\n<input type=\"submit\" value=\"Analyse\" disabled=\"disabled\" /><span class=\"loading\" style=\"color: #999\">Loading your email...</span>\n</form>\n</body>\n</html>");
-        return $.get("/messages/" + id + ".html", function(html) {
-          return $iframe.find('input[name="html"]').attr('value', html).end().find('.loading').hide().end().find('input[type="submit"]').attr('disabled', null).end().find('form').submit(function() {
-            return $(this).find('input[type="submit"]').attr('disabled', 'disabled').end().find('.loading').text('Analysing...').show();
+        $iframe = $('#message iframe').contents().children().html("<html>\n<head>\n<title>Analysis</title>\n" + ($('link[rel="stylesheet"]')[0].outerHTML) + "\n</head>\n<body class=\"iframe\">\n<h1>Analyse your email with Fractal</h1>\n<p><a href=\"http://getfractal.com/\" target=\"_blank\">Fractal</a> is a really neat service that applies common email design and development knowledge from <a href=\"http://www.email-standards.org/\" target=\"_blank\">Email Standards Project</a> to your HTML email and tells you what you've done wrong or what you should do instead.</p>\n<p>Please note that this <strong>sends your email to the Fractal service</strong> for analysis. Read their <a href=\"http://getfractal.com/terms\" target=\"_blank\">terms of service</a> if you're paranoid.</p>\n<p>(This output is still just raw XML. Someone keen to transform this into something prettier would be greatly appreciated!)</p>\n<form>\n<input type=\"submit\" value=\"Analyse\" /><span class=\"loading\" style=\"color: #999; display: none\">Analysing&hellip;</span>\n</form>\n</body>\n</html>");
+        return $form = $iframe.find('form').submit(function(e) {
+          e.preventDefault();
+          $(this).find('input[type="submit"]').attr('disabled', 'disabled').end().find('.loading').show();
+          return $.ajax({
+            url: "/messages/" + id + "/analysis.xml",
+            dataType: "text",
+            success: function(data) {
+              $form.replaceWith('<h2>Results</h2><pre id="result"></pre>');
+              return $iframe.find("#result").text(data);
+            }
           });
         });
       }

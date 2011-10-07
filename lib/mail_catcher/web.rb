@@ -124,6 +124,7 @@ module MailCatcher
     get "/messages/:id/analysis.?:format?" do
       id = params[:id].to_i
       if part = MailCatcher::Mail.message_part_html(id)
+        # TODO: Server-side cache? Make the browser cache based on message create time? Hmm.
         uri = URI.parse("http://api.getfractal.com/api/v2/validate#{"/format/#{params[:format]}" if params[:format].present?}")
         response = Net::HTTP.post_form(uri, api_key: "5c463877265251386f516f7428", html: part["body"])
         content_type ".#{params[:format]}" if params[:format].present?

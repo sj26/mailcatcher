@@ -136,12 +136,9 @@ class MailCatcher
     $("#message .views :not(.analysis).tab.selected").removeClass 'selected'
 
     if id?
-      # Makes a new iframe which will have a foreign origin eventually, and populate it with a quick intro and a form to send to Fractal.
-      $iframe = $('#message iframe').contents().children().html("""
-          <html class="mailcatcher"><head>#{$('link[rel="stylesheet"]')[0].outerHTML}</head><body><iframe></iframe></body></html>
-        """)
-        .find("head").append($('link[rel="stylesheet"]').clone()).end()
-        .find('iframe').contents().children().html("""
+      # Makes a new iframe and populate it with a quick intro and a button
+      $iframe = $('#message iframe').contents().children()
+        .html("""
           <html>
           <head>
           <title>Analysis</title>
@@ -151,34 +148,25 @@ class MailCatcher
           <h1>Analyse your email with Fractal</h1>
           <p><a href="http://getfractal.com/" target="_blank">Fractal</a> is a really neat service that applies common email design and development knowledge from <a href="http://www.email-standards.org/" target="_blank">Email Standards Project</a> to your HTML email and tells you what you've done wrong or what you should do instead.</p>
           <p>Please note that this <strong>sends your email to the Fractal service</strong> for analysis. Read their <a href="http://getfractal.com/terms" target="_blank">terms of service</a> if you're paranoid.</p>
-          <form action="http://getfractal.com/validate" method="POST">
-          <input type="hidden" name="html" />
-          <input type="submit" value="Analyse" disabled="disabled" /><span class="loading" style="color: #999">Loading your email...</span>
+          <p>(This output is still just raw XML. Someone keen to transform this into something prettier would be greatly appreciated!)</p>
+          <form>
+          <input type="submit" value="Analyse" /><span class="loading" style="color: #999; display: none">Analysing&hellip;</span>
           </form>
           </body>
           </html>
         """)
-      # This should be cached if already accessed, so it's actually quite quick
-      $.get "/messages/#{id}.html", (html) ->
-        $iframe
-          .find('input[name="html"]').attr('value', html).end()
-          .find('.loading').hide().end()
-          .find('input[type="submit"]').attr('disabled', null).end()
-          .find('form').submit ->
-            $(this)
-              .find('input[type="submit"]').attr('disabled', 'disabled').end()
-              .find('.loading').text('Analysing...').show()
-
-      # FIXME: Fractal need to allow GET requests to their JSONP endpoint, then we can use the API:
-      #   $.ajax
-      #     url: 'http://getfractal.com/api/v1/validate/format/jsonp'
-      #     data:
-      #       api_key: '59372c4f65426f78282c5c657d'
-      #       html: html
-      #     dataType: 'jsonp'
-      #     success: (json) ->
-      #       console.log json
-      #       $iframe.children().html json
+      $form = $iframe.find('form')
+        .submit (e) ->
+          e.preventDefault()
+          $(this)
+            .find('input[type="submit"]').attr('disabled', 'disabled').end()
+            .find('.loading').show()
+          $.ajax
+            url: "/messages/#{id}/analysis.xml",
+            dataType: "text"
+            success: (data) ->
+              $form.replaceWith('<h2>Results</h2><pre id="result"></pre>')
+              $iframe.find("#result").text data
 
   refresh: ->
     $.getJSON '/messages', (messages) =>
