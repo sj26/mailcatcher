@@ -34,6 +34,7 @@
         }
       });
       $('nav.app .clear a').live('click', __bind(function(e) {
+        e.preventDefault();
         if (confirm("You will lose all your received messages.\n\nAre you sure you want to clear all messages?")) {
           return $.ajax({
             url: '/messages',
@@ -50,6 +51,7 @@
         }
       }, this));
       $('nav.app .quit a').live('click', __bind(function(e) {
+        e.preventDefault();
         if (confirm("You will lose all your received messages.\n\nAre you sure you want to quit?")) {
           return $.ajax({
             type: 'DELETE',
