@@ -1,5 +1,7 @@
 require 'sinatra'
 require 'pathname'
+require 'net/http'
+require 'uri'
 
 require 'skinny'
 
@@ -114,6 +116,18 @@ module MailCatcher
         content_type part["type"], :charset => (part["charset"] || "utf8")
         attachment part["filename"] if part["is_attachment"] == 1
         body part["body"].to_s
+      else
+        not_found
+      end
+    end
+
+    get "/messages/:id/analysis.?:format?" do
+      id = params[:id].to_i
+      if part = MailCatcher::Mail.message_part_html(id)
+        uri = URI.parse("http://api.getfractal.com/api/v2/validate#{"/format/#{params[:format]}" if params[:format].present?}")
+        response = Net::HTTP.post_form(uri, api_key: "5c463877265251386f516f7428", html: part["body"])
+        content_type ".#{params[:format]}" if params[:format].present?
+        body response.body
       else
         not_found
       end
