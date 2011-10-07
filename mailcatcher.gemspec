@@ -38,6 +38,8 @@ Gem::Specification.new do |s|
   s.add_dependency "sinatra",       "~> 1.2"
   s.add_dependency "haml",          "~> 3.1"
 
+  s.add_development_dependency "rake"
+  s.add_development_dependency "rdoc"
   s.add_development_dependency "sass", "~> 3.1"
   s.add_development_dependency "compass", "~> 0.11.1"
   s.add_development_dependency "coffee-script", "~> 2.2"
