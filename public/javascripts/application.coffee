@@ -25,6 +25,7 @@ class MailCatcher
               height: e.clientY - $('#messages').offset().top
 
     $('nav.app .clear a').live 'click', (e) =>
+      e.preventDefault()
       if confirm "You will lose all your received messages.\n\nAre you sure you want to clear all messages?"
         $.ajax
           url: '/messages'
@@ -37,6 +38,7 @@ class MailCatcher
             alert 'Error while quitting.'
 
     $('nav.app .quit a').live 'click', (e) =>
+      e.preventDefault()
       if confirm "You will lose all your received messages.\n\nAre you sure you want to quit?"
         $.ajax
           type: 'DELETE'
