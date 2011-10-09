@@ -33,9 +33,7 @@ task "build:coffee" do
   end
 end
 
-task "build:rdoc" => "rdoc"
-
-multitask "build" => ["build:sass", "build:coffee", "build:rdoc"]
+multitask "build" => ["build:sass", "build:coffee"]
 
 desc "Package as Gem"
 task "package:gem" do
