@@ -55,6 +55,7 @@ module_function
     @@defaults.dup.tap do |options|
       OptionParser.new do |parser|
         parser.banner = "Usage: mailcatcher [options]"
+        parser.version = File.read(File.expand_path("../../VERSION", __FILE__))
 
         parser.on("--ip IP", "Set the ip address of both servers") do |ip|
           options[:smtp_ip] = options[:http_ip] = ip

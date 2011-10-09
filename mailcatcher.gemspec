@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://mailcatcher.me"
 
   s.files = Dir[
-    "README.md", "LICENSE",
+    "README.md", "LICENSE", "VERSION",
     "bin/*",
     "lib/**/*.rb",
     "public/images/**/*",
