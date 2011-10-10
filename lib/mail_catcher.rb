@@ -16,11 +16,11 @@ module MailCatcher
 module_function
 
   def mac?
-    Config::CONFIG['host_os'] =~ /darwin/
+    RbConfig::CONFIG['host_os'] =~ /darwin/
   end
 
   def windows?
-    Config::CONFIG['host_os'] =~ /mswin|mingw/
+    RbConfig::CONFIG['host_os'] =~ /mswin|mingw/
   end
 
   def macruby?
