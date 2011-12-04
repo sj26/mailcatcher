@@ -53,7 +53,7 @@ class MailCatcher::Web < Sinatra::Base
           ("plain" if MailCatcher::Mail.message_has_plain? id),
         ].compact,
         "attachments" => MailCatcher::Mail.message_attachments(id).map do |attachment|
-          attachment.merge({"href" => "/messages/#{escape(id)}/#{escape(attachment['cid'])}"})
+          attachment.merge({"href" => "/messages/#{escape(id)}/parts/#{escape(attachment['cid'])}"})
         end,
       }).to_json
     else
