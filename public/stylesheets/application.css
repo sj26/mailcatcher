@@ -335,6 +335,23 @@ body > header {
       #message > header .views .action {
         *display: inline; }
 
+.fractal-analysis .report-intro {
+  background: #eef4f5;
+  margin-top: 1.5em;
+  padding: 1em; }
+  .fractal-analysis .report-intro strong {
+    font-weight: bold; }
+  .fractal-analysis .report-intro .code {
+    background-color: white;
+    font-family: comic Sans MS;
+    padding: 1px 5px; }
+.fractal-analysis .unsupported-clients {
+  margin: 1em; }
+  .fractal-analysis .unsupported-clients dt {
+    padding-left: 1em; }
+  .fractal-analysis .unsupported-clients dd {
+    padding-left: 2em; }
+
 iframe {
   display: -moz-box;
   display: -webkit-box;

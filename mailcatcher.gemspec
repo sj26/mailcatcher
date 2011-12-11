@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
     "public/images/**/*",
     "public/javascripts/**/*.js",
     "public/stylesheets/**/*.css",
+    "public/stylesheets/**/*.xsl",
     "views/**/*"
   ]
   s.require_paths = ["lib"]

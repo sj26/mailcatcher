@@ -150,7 +150,6 @@ class MailCatcher
           <h1>Analyse your email with Fractal</h1>
           <p><a href="http://getfractal.com/" target="_blank">Fractal</a> is a really neat service that applies common email design and development knowledge from <a href="http://www.email-standards.org/" target="_blank">Email Standards Project</a> to your HTML email and tells you what you've done wrong or what you should do instead.</p>
           <p>Please note that this <strong>sends your email to the Fractal service</strong> for analysis. Read their <a href="http://getfractal.com/terms" target="_blank">terms of service</a> if you're paranoid.</p>
-          <p>(This output is still just raw XML. Someone keen to transform this into something prettier would be greatly appreciated!)</p>
           <form>
           <input type="submit" value="Analyse" /><span class="loading" style="color: #999; display: none">Analysing&hellip;</span>
           </form>
@@ -163,13 +162,8 @@ class MailCatcher
           $(this)
             .find('input[type="submit"]').attr('disabled', 'disabled').end()
             .find('.loading').show()
-          $.ajax
-            url: "/messages/#{id}/analysis.xml",
-            dataType: "text"
-            success: (data) ->
-              $form.replaceWith('<h2>Results</h2><pre id="result"></pre>')
-              $iframe.find("#result").text data
-
+          $form.xslt("/messages/#{id}/analysis.xml", "/stylesheets/analysis.xsl")
+  
   refresh: ->
     $.getJSON '/messages', (messages) =>
       $.each messages, (i, message) =>
