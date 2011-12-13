@@ -129,7 +129,7 @@ class MailCatcher::Web < Sinatra::Base
       uri = URI.parse("http://api.getfractal.com/api/v2/validate#{"/format/#{params[:format]}" if params[:format].present?}")
       response = Net::HTTP.post_form(uri, :api_key => "5c463877265251386f516f7428", :html => part["body"])
       content_type ".#{params[:format]}" if params[:format].present?
-      body response.body
+      body pretty_xml(response.body)
     else
       not_found
     end
@@ -137,5 +137,14 @@ class MailCatcher::Web < Sinatra::Base
 
   not_found do
     "<html><body><h1>No Dice</h1><p>The message you were looking for does not exist, or doesn't have content of this type.</p></body></html>"
+  end
+
+  helpers do
+    def pretty_xml(ugly_xml)
+      require 'rexml/document'
+      output = String.new
+      REXML::Document.new(ugly_xml).write(output, 4)
+      return output
+    end
   end
 end
