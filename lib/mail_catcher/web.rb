@@ -13,6 +13,7 @@ class MailCatcher::Web < Sinatra::Base
   set :root, Pathname.new(__FILE__).dirname.parent.parent
   set :haml, :format => :html5
 
+
   get '/' do
     haml :index
   end
@@ -69,10 +70,10 @@ class MailCatcher::Web < Sinatra::Base
       body = part["body"]
 
       # Rewrite body to link to embedded attachments served by cid
-      body.gsub! /cid:([^'"> ]+)/, "#{id}/parts/\\1"
+      body.gsub!(/cid:([^'"> ]+)/, "#{id}/parts/\\1")
 
       # Rewrite body to open links in a new window
-      body.gsub! /<a\s+/, '<a target="_blank" '
+      body.gsub!(/<a\s+/, '<a target="_blank" ')
 
       body
     else
