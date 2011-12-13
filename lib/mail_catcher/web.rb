@@ -129,7 +129,7 @@ class MailCatcher::Web < Sinatra::Base
       uri = URI.parse("http://api.getfractal.com/api/v2/validate#{"/format/#{params[:format]}" if params[:format].present?}")
       response = Net::HTTP.post_form(uri, :api_key => "5c463877265251386f516f7428", :html => part["body"])
       content_type ".#{params[:format]}" if params[:format].present?
-      body pretty_xml(response.body)
+      body prettyprint(response.body, params[:format] || 'xml')
     else
       not_found
     end
@@ -140,11 +140,24 @@ class MailCatcher::Web < Sinatra::Base
   end
 
   helpers do
+    def prettyprint(string, format)
+      case format
+      when 'json', 'js' then pretty_json(string)
+      when 'xml'  then pretty_xml(string)
+      end
+    end
+
     def pretty_xml(ugly_xml)
       require 'rexml/document'
       output = String.new
       REXML::Document.new(ugly_xml).write(output, 4)
       return output
     end
+
+    def pretty_json(ugly_json)
+      require 'json'
+      JSON.pretty_generate(JSON.parse(ugly_json))
+    end
+
   end
 end
