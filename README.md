@@ -42,7 +42,7 @@ Under RVM your mailcatcher command may only available under the ruby you install
 To set up your rails app, I recommend adding this to your `environment/development.rb`:
 
     config.action_mailer.delivery_method = :smtp
-    config.action_mailer.smtp_settings = { :host => "localhost", :port => 1025 }
+    config.action_mailer.smtp_settings = { :address => "localhost", :port => 1025 }
 
 ### PHP
 
