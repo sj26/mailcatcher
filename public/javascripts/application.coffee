@@ -162,8 +162,8 @@ class MailCatcher
           $(this)
             .find('input[type="submit"]').attr('disabled', 'disabled').end()
             .find('.loading').show()
-          $form.xslt("/messages/#{id}/analysis.xml", "/stylesheets/analysis.xsl")
-  
+          $('#message iframe').contents().find('body').xslt("/messages/#{id}/analysis.xml", "/stylesheets/analysis.xsl")
+
   refresh: ->
     $.getJSON '/messages', (messages) =>
       $.each messages, (i, message) =>

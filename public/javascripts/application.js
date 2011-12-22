@@ -1,20 +1,22 @@
 (function() {
   var MailCatcher;
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
   MailCatcher = (function() {
+
     function MailCatcher() {
-      $('#messages tr').live('click', __bind(function(e) {
+      var _this = this;
+      $('#messages tr').live('click', function(e) {
         e.preventDefault();
-        return this.loadMessage($(e.currentTarget).attr('data-message-id'));
-      }, this));
-      $('#message .views .format.tab a').live('click', __bind(function(e) {
+        return _this.loadMessage($(e.currentTarget).attr('data-message-id'));
+      });
+      $('#message .views .format.tab a').live('click', function(e) {
         e.preventDefault();
-        return this.loadMessageBody(this.selectedMessage(), $($(e.currentTarget).parent('li')).data('message-format'));
-      }, this));
-      $('#message .views .analysis.tab a').live('click', __bind(function(e) {
+        return _this.loadMessageBody(_this.selectedMessage(), $($(e.currentTarget).parent('li')).data('message-format'));
+      });
+      $('#message .views .analysis.tab a').live('click', function(e) {
         e.preventDefault();
-        return this.loadMessageAnalysis(this.selectedMessage());
-      }, this));
+        return _this.loadMessageAnalysis(_this.selectedMessage());
+      });
       $('#resizer').live({
         mousedown: function(e) {
           var events;
@@ -33,7 +35,7 @@
           });
         }
       });
-      $('nav.app .clear a').live('click', __bind(function(e) {
+      $('nav.app .clear a').live('click', function(e) {
         e.preventDefault();
         if (confirm("You will lose all your received messages.\n\nAre you sure you want to clear all messages?")) {
           return $.ajax({
@@ -49,8 +51,8 @@
             }
           });
         }
-      }, this));
-      $('nav.app .quit a').live('click', __bind(function(e) {
+      });
+      $('nav.app .quit a').live('click', function(e) {
         e.preventDefault();
         if (confirm("You will lose all your received messages.\n\nAre you sure you want to quit?")) {
           return $.ajax({
@@ -63,46 +65,48 @@
             }
           });
         }
-      }, this));
+      });
       this.refresh();
       this.subscribe();
     }
+
     MailCatcher.prototype.parseDateRegexp = /^(\d{4})[-\/\\](\d{2})[-\/\\](\d{2})(?:\s+|T)(\d{2})[:-](\d{2})[:-](\d{2})(?:([ +-]\d{2}:\d{2}|\s*\S+|Z?))?$/;
+
     MailCatcher.prototype.parseDate = function(date) {
       var match;
       if (match = this.parseDateRegexp.exec(date)) {
         return new Date(match[1], match[2] - 1, match[3], match[4], match[5], match[6], 0);
       }
     };
+
     MailCatcher.prototype.formatDate = function(date) {
-      if (typeof date === "string") {
-        date && (date = this.parseDate(date));
-      }
+      if (typeof date === "string") date && (date = this.parseDate(date));
       return date && (date = date.toString("dddd, d MMM yyyy h:mm:ss tt"));
     };
+
     MailCatcher.prototype.haveMessage = function(message) {
-      if (message.id != null) {
-        message = message.id;
-      }
+      if (message.id != null) message = message.id;
       return $("#messages tbody tr[data-message-id=\"" + message + "\"]").length > 0;
     };
+
     MailCatcher.prototype.selectedMessage = function() {
       return $('#messages tr.selected').data('message-id');
     };
+
     MailCatcher.prototype.addMessage = function(message) {
       return $('#messages tbody').append($('<tr />').attr('data-message-id', message.id.toString()).append($('<td/>').text(message.sender || "No sender").toggleClass("blank", !message.sender)).append($('<td/>').text((message.recipients || []).join(', ') || "No receipients").toggleClass("blank", !message.recipients.length)).append($('<td/>').text(message.subject || "No subject").toggleClass("blank", !message.subject)).append($('<td/>').text(this.formatDate(message.created_at))));
     };
+
     MailCatcher.prototype.loadMessage = function(id) {
-      if ((id != null ? id.id : void 0) != null) {
-        id = id.id;
-      }
+      var _this = this;
+      if ((id != null ? id.id : void 0) != null) id = id.id;
       id || (id = $('#messages tr.selected').attr('data-message-id'));
       if (id != null) {
         $('#messages tbody tr:not([data-message-id="' + id + '"])').removeClass('selected');
         $('#messages tbody tr[data-message-id="' + id + '"]').addClass('selected');
-        return $.getJSON('/messages/' + id + '.json', __bind(function(message) {
+        return $.getJSON('/messages/' + id + '.json', function(message) {
           var $ul;
-          $('#message .metadata dd.created_at').text(this.formatDate(message.created_at));
+          $('#message .metadata dd.created_at').text(_this.formatDate(message.created_at));
           $('#message .metadata dd.from').text(message.sender);
           $('#message .metadata dd.to').text((message.recipients || []).join(', '));
           $('#message .metadata dd.subject').text(message.subject);
@@ -132,13 +136,14 @@
           }
           $('#message .views .download a').attr('href', "/messages/" + id + ".eml");
           if ($('#message .views .tab.analysis.selected').length) {
-            return this.loadMessageAnalysis();
+            return _this.loadMessageAnalysis();
           } else {
-            return this.loadMessageBody();
+            return _this.loadMessageBody();
           }
-        }, this));
+        });
       }
     };
+
     MailCatcher.prototype.loadMessageBody = function(id, format) {
       id || (id = this.selectedMessage());
       format || (format = $('#message .views .tab.format.selected').attr('data-message-format'));
@@ -149,6 +154,7 @@
         return $('#message iframe').attr("src", "/messages/" + id + "." + format);
       }
     };
+
     MailCatcher.prototype.loadMessageAnalysis = function(id) {
       var $form, $iframe;
       id || (id = this.selectedMessage());
@@ -159,19 +165,21 @@
         return $form = $iframe.find('form').submit(function(e) {
           e.preventDefault();
           $(this).find('input[type="submit"]').attr('disabled', 'disabled').end().find('.loading').show();
-          return $form.xslt("/messages/" + id + "/analysis.xml", "/stylesheets/analysis.xsl");
+          console.log($('#message iframe').contents().find('body'));
+          return $('#message iframe').contents().find('body').xslt("/messages/" + id + "/analysis.xml", "/stylesheets/analysis.xsl");
         });
       }
     };
+
     MailCatcher.prototype.refresh = function() {
-      return $.getJSON('/messages', __bind(function(messages) {
-        return $.each(messages, __bind(function(i, message) {
-          if (!this.haveMessage(message)) {
-            return this.addMessage(message);
-          }
-        }, this));
-      }, this));
+      var _this = this;
+      return $.getJSON('/messages', function(messages) {
+        return $.each(messages, function(i, message) {
+          if (!_this.haveMessage(message)) return _this.addMessage(message);
+        });
+      });
     };
+
     MailCatcher.prototype.subscribe = function() {
       if (typeof WebSocket !== "undefined" && WebSocket !== null) {
         return this.subscribeWebSocket();
@@ -179,24 +187,32 @@
         return this.subscribePoll();
       }
     };
+
     MailCatcher.prototype.subscribeWebSocket = function() {
       var secure;
+      var _this = this;
       secure = window.location.scheme === 'https';
       this.websocket = new WebSocket("" + (secure ? 'wss' : 'ws') + "://" + window.location.host + "/messages");
-      return this.websocket.onmessage = __bind(function(event) {
-        return this.addMessage($.parseJSON(event.data));
-      }, this);
+      return this.websocket.onmessage = function(event) {
+        return _this.addMessage($.parseJSON(event.data));
+      };
     };
+
     MailCatcher.prototype.subscribePoll = function() {
+      var _this = this;
       if (this.refreshInterval == null) {
-        return this.refreshInterval = setInterval((__bind(function() {
-          return this.refresh();
-        }, this)), 1000);
+        return this.refreshInterval = setInterval((function() {
+          return _this.refresh();
+        }), 1000);
       }
     };
+
     return MailCatcher;
+
   })();
+
   $(function() {
     return window.MailCatcher = new MailCatcher;
   });
+
 }).call(this);
