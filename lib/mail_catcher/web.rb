@@ -13,6 +13,7 @@ class MailCatcher::Web < Sinatra::Base
   set :root, Pathname.new(__FILE__).dirname.parent.parent
   set :haml, :format => :html5
 
+
   get '/' do
     haml :index
   end
@@ -69,10 +70,10 @@ class MailCatcher::Web < Sinatra::Base
       body = part["body"]
 
       # Rewrite body to link to embedded attachments served by cid
-      body.gsub! /cid:([^'"> ]+)/, "#{id}/parts/\\1"
+      body.gsub!(/cid:([^'"> ]+)/, "#{id}/parts/\\1")
 
       # Rewrite body to open links in a new window
-      body.gsub! /<a\s+/, '<a target="_blank" '
+      body.gsub!(/<a\s+/, '<a target="_blank" ')
 
       body
     else
@@ -128,7 +129,7 @@ class MailCatcher::Web < Sinatra::Base
       uri = URI.parse("http://api.getfractal.com/api/v2/validate#{"/format/#{params[:format]}" if params[:format].present?}")
       response = Net::HTTP.post_form(uri, :api_key => "5c463877265251386f516f7428", :html => part["body"])
       content_type ".#{params[:format]}" if params[:format].present?
-      body response.body
+      body prettyprint(response.body, params[:format] || 'xml')
     else
       not_found
     end
@@ -136,5 +137,27 @@ class MailCatcher::Web < Sinatra::Base
 
   not_found do
     "<html><body><h1>No Dice</h1><p>The message you were looking for does not exist, or doesn't have content of this type.</p></body></html>"
+  end
+
+  helpers do
+    def prettyprint(string, format)
+      case format
+      when 'json', 'js' then pretty_json(string)
+      when 'xml'  then pretty_xml(string)
+      end
+    end
+
+    def pretty_xml(ugly_xml)
+      require 'rexml/document'
+      output = String.new
+      REXML::Document.new(ugly_xml).write(output, 4)
+      return output
+    end
+
+    def pretty_json(ugly_json)
+      require 'json'
+      JSON.pretty_generate(JSON.parse(ugly_json))
+    end
+
   end
 end
