@@ -42,8 +42,7 @@ q, blockquote {
 a img {
   border: none; }
 
-article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary {
   display: block; }
 
 html, body {
@@ -51,11 +50,13 @@ html, body {
   height: 100%; }
 
 body {
-  display: -moz-box;
   display: -webkit-box;
+  display: -moz-box;
+  display: -ms-box;
   display: box;
-  -moz-box-orient: vertical;
   -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  -ms-box-orient: vertical;
   box-orient: vertical;
   background: #eeeeee;
   color: black;
@@ -81,16 +82,16 @@ body {
 .button {
   padding: 0.5em 1em;
   border: 1px solid #cccccc;
-  -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
-  -o-border-radius: 2px;
+  -moz-border-radius: 2px;
   -ms-border-radius: 2px;
-  -khtml-border-radius: 2px;
+  -o-border-radius: 2px;
   border-radius: 2px;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f4f4f4), color-stop(100%, #ececec)), #ececec;
   background: -webkit-linear-gradient(#f4f4f4, #ececec), #ececec;
   background: -moz-linear-gradient(#f4f4f4, #ececec), #ececec;
   background: -o-linear-gradient(#f4f4f4, #ececec), #ececec;
+  background: -ms-linear-gradient(#f4f4f4, #ececec), #ececec;
   background: linear-gradient(#f4f4f4, #ececec), #ececec;
   color: #666666;
   text-shadow: 1px 1px 0 white;
@@ -102,6 +103,7 @@ body {
     background: -webkit-linear-gradient(#eeeeee, #dddddd), #dddddd;
     background: -moz-linear-gradient(#eeeeee, #dddddd), #dddddd;
     background: -o-linear-gradient(#eeeeee, #dddddd), #dddddd;
+    background: -ms-linear-gradient(#eeeeee, #dddddd), #dddddd;
     background: linear-gradient(#eeeeee, #dddddd), #dddddd;
     color: #333333;
     text-decoration: none; }
@@ -112,6 +114,7 @@ body {
     background: -webkit-linear-gradient(#dddddd, #eeeeee), #eeeeee;
     background: -moz-linear-gradient(#dddddd, #eeeeee), #eeeeee;
     background: -o-linear-gradient(#dddddd, #eeeeee), #eeeeee;
+    background: -ms-linear-gradient(#dddddd, #eeeeee), #eeeeee;
     background: linear-gradient(#dddddd, #eeeeee), #eeeeee;
     color: #333333;
     text-decoration: none;
@@ -133,14 +136,10 @@ body > header {
       color: black;
       text-decoration: none;
       text-shadow: 0 1px 0 white;
-      -moz-transition-property: 0.1s ease;
-      -webkit-transition-property: 0.1s ease;
-      -o-transition-property: 0.1s ease;
-      transition-property: 0.1s ease;
-      -moz-transition-duration: 1s;
-      -webkit-transition-duration: 1s;
-      -o-transition-duration: 1s;
-      transition-duration: 1s; }
+      -webkit-transition: 0.1s ease;
+      -moz-transition: 0.1s ease;
+      -o-transition: 0.1s ease;
+      transition: 0.1s ease; }
       body > header h1 a:hover {
         color: #4183c4; }
   body > header nav {
@@ -167,6 +166,7 @@ body > header {
         background: -webkit-linear-gradient(#f4f4f4, #ececec), #ececec;
         background: -moz-linear-gradient(#f4f4f4, #ececec), #ececec;
         background: -o-linear-gradient(#f4f4f4, #ececec), #ececec;
+        background: -ms-linear-gradient(#f4f4f4, #ececec), #ececec;
         background: linear-gradient(#f4f4f4, #ececec), #ececec;
         color: #666666;
         text-shadow: 1px 1px 0 white;
@@ -178,6 +178,7 @@ body > header {
           background: -webkit-linear-gradient(#eeeeee, #dddddd), #dddddd;
           background: -moz-linear-gradient(#eeeeee, #dddddd), #dddddd;
           background: -o-linear-gradient(#eeeeee, #dddddd), #dddddd;
+          background: -ms-linear-gradient(#eeeeee, #dddddd), #dddddd;
           background: linear-gradient(#eeeeee, #dddddd), #dddddd;
           color: #333333;
           text-decoration: none; }
@@ -186,6 +187,7 @@ body > header {
           background: -webkit-linear-gradient(#dddddd, #eeeeee), #eeeeee;
           background: -moz-linear-gradient(#dddddd, #eeeeee), #eeeeee;
           background: -o-linear-gradient(#dddddd, #eeeeee), #eeeeee;
+          background: -ms-linear-gradient(#dddddd, #eeeeee), #eeeeee;
           background: linear-gradient(#dddddd, #eeeeee), #eeeeee;
           color: #333333;
           text-decoration: none;
@@ -212,14 +214,10 @@ body > header {
         text-shadow: 0 1px 0 white; }
     #messages table tbody tr {
       cursor: pointer;
-      -moz-transition-property: 0.1s ease;
-      -webkit-transition-property: 0.1s ease;
-      -o-transition-property: 0.1s ease;
-      transition-property: 0.1s ease;
-      -moz-transition-duration: 1s;
-      -webkit-transition-duration: 1s;
-      -o-transition-duration: 1s;
-      transition-duration: 1s;
+      -webkit-transition: 0.1s ease;
+      -moz-transition: 0.1s ease;
+      -o-transition: 0.1s ease;
+      transition: 0.1s ease;
       color: #333333; }
       #messages table tbody tr:hover {
         color: black; }
@@ -242,14 +240,17 @@ body > header {
     border-bottom: 1px solid white; }
 
 #message {
-  display: -moz-box;
   display: -webkit-box;
+  display: -moz-box;
+  display: -ms-box;
   display: box;
-  -moz-box-orient: vertical;
   -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  -ms-box-orient: vertical;
   box-orient: vertical;
-  -moz-box-flex: 1;
   -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  -ms-box-flex: 1;
   box-flex: 1; }
   #message > header {
     overflow: hidden;
@@ -318,8 +319,8 @@ body > header {
         background: white;
         color: black;
         height: 13px;
-        -moz-box-shadow: 1px 1px 0 #cccccc;
         -webkit-box-shadow: 1px 1px 0 #cccccc;
+        -moz-box-shadow: 1px 1px 0 #cccccc;
         -o-box-shadow: 1px 1px 0 #cccccc;
         box-shadow: 1px 1px 0 #cccccc;
         margin-bottom: -2px;
@@ -335,28 +336,45 @@ body > header {
       #message > header .views .action {
         *display: inline; }
 
-.fractal-analysis .report-intro {
-  background: #eef4f5;
-  margin-top: 1.5em;
-  padding: 1em; }
-  .fractal-analysis .report-intro strong {
+.fractal-analysis {
+  margin: 12px 0; }
+  .fractal-analysis .report-intro {
     font-weight: bold; }
-  .fractal-analysis .report-intro .code {
-    background-color: white;
-    font-family: comic Sans MS;
-    padding: 1px 5px; }
-.fractal-analysis .unsupported-clients {
-  margin: 1em; }
+    .fractal-analysis .report-intro.valid {
+      color: #009900; }
+    .fractal-analysis .report-intro.invalid {
+      color: #cc3333; }
+  .fractal-analysis code {
+    font-family: Monaco, "Courier New", Courier, monospace;
+    background-color: #f8f8ff;
+    color: #444444;
+    padding: 0 0.2em;
+    border: 1px solid #dedede; }
+  .fractal-analysis ul {
+    margin: 1em 0 1em 1em;
+    list-style-type: square; }
+  .fractal-analysis ol {
+    margin: 1em 0 1em 2em;
+    list-style-type: decimal; }
+  .fractal-analysis ul li, .fractal-analysis ol li {
+    display: list-item;
+    margin: 0.5em 0 0.5em 1em; }
+  .fractal-analysis .error-intro strong {
+    font-weight: bold; }
   .fractal-analysis .unsupported-clients dt {
     padding-left: 1em; }
   .fractal-analysis .unsupported-clients dd {
     padding-left: 2em; }
+    .fractal-analysis .unsupported-clients dd ul li {
+      display: list-item; }
 
 iframe {
-  display: -moz-box;
   display: -webkit-box;
+  display: -moz-box;
+  display: -ms-box;
   display: box;
-  -moz-box-flex: 1;
   -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  -ms-box-flex: 1;
   box-flex: 1;
   background: white; }

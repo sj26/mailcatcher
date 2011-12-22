@@ -201,23 +201,40 @@ body > header
         margin: 0 .25em
 
 .fractal-analysis
+  margin: 12px 0
   .report-intro
-    background: #EEF4F5
-    margin-top: 1.5em
-    padding: 1em
+    font-weight: bold
+    &.valid
+      color: #090
+    &.invalid
+      color: #c33
+  code
+    font-family: Monaco, "Courier New", Courier, monospace
+    background-color: #f8f8ff
+    color: #444
+    padding: 0 .2em
+    border: 1px solid #dedede
+  ul
+    margin: 1em 0 1em 1em
+    list-style-type: square
+  ol
+    margin: 1em 0 1em 2em
+    list-style-type: decimal
+  ul li, ol li
+    display: list-item
+    margin: .5em 0 .5em 1em
+  .error-intro
     strong
       font-weight: bold
-    .code
-      background-color: white
-      font-family: comic Sans MS
-      padding: 1px 5px
   .unsupported-clients
-    margin: 1em
     dt
       padding-left: 1em
     dd
       padding-left: 2em
-      
+      ul
+        li
+          display: list-item
+
 iframe
   +display-box
   +box-flex(1)
