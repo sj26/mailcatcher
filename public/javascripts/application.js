@@ -79,8 +79,17 @@
       }
     };
 
+    MailCatcher.prototype.offsetTimeZone = function(date) {
+      var offset;
+      offset = Date.now().getTimezoneOffset() * 60000;
+      date.setTime(date.getTime() - offset);
+      return date;
+    };
+
     MailCatcher.prototype.formatDate = function(date) {
-      if (typeof date === "string") date && (date = this.parseDate(date));
+      if (typeof date === "string") {
+        date && (date = this.offsetTimeZone(this.parseDate(date)));
+      }
       return date && (date = date.toString("dddd, d MMM yyyy h:mm:ss tt"));
     };
 
@@ -165,7 +174,6 @@
         return $form = $iframe.find('form').submit(function(e) {
           e.preventDefault();
           $(this).find('input[type="submit"]').attr('disabled', 'disabled').end().find('.loading').show();
-          console.log($('#message iframe').contents().find('body'));
           return $('#message iframe').contents().find('body').xslt("/messages/" + id + "/analysis.xml", "/stylesheets/analysis.xsl");
         });
       }
@@ -189,8 +197,8 @@
     };
 
     MailCatcher.prototype.subscribeWebSocket = function() {
-      var secure;
-      var _this = this;
+      var secure,
+        _this = this;
       secure = window.location.scheme === 'https';
       this.websocket = new WebSocket("" + (secure ? 'wss' : 'ws') + "://" + window.location.host + "/messages");
       return this.websocket.onmessage = function(event) {

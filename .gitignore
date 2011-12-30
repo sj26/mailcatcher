@@ -2,3 +2,4 @@ rdoc
 *.gem
 
 .sass-cache
+.DS_Store
