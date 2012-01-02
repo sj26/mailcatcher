@@ -58,12 +58,13 @@ class MailCatcher
       new Date match[1], match[2] - 1, match[3], match[4], match[5], match[6], 0
 
   offsetTimeZone: (date) ->
-    offset = Date.now().getTimezoneOffset()*60000 #convert timezone difference to milliseconds
+    offset = Date.now().getTimezoneOffset() * 60000 #convert timezone difference to milliseconds
     date.setTime(date.getTime() - offset)
     date
 
   formatDate: (date) ->
-    date &&= @offsetTimeZone(@parseDate(date)) if typeof(date) == "string"
+    date &&= @parseDate(date) if typeof(date) == "string"
+    date &&= @offsetTimeZone(date)
     date &&= date.toString("dddd, d MMM yyyy h:mm:ss tt")
 
   haveMessage: (message) ->

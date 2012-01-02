@@ -87,9 +87,8 @@
     };
 
     MailCatcher.prototype.formatDate = function(date) {
-      if (typeof date === "string") {
-        date && (date = this.offsetTimeZone(this.parseDate(date)));
-      }
+      if (typeof date === "string") date && (date = this.parseDate(date));
+      date && (date = this.offsetTimeZone(date));
       return date && (date = date.toString("dddd, d MMM yyyy h:mm:ss tt"));
     };
 
@@ -197,8 +196,8 @@
     };
 
     MailCatcher.prototype.subscribeWebSocket = function() {
-      var secure,
-        _this = this;
+      var secure;
+      var _this = this;
       secure = window.location.scheme === 'https';
       this.websocket = new WebSocket("" + (secure ? 'wss' : 'ws') + "://" + window.location.host + "/messages");
       return this.websocket.onmessage = function(event) {
