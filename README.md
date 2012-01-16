@@ -32,7 +32,7 @@ The brave can get the source from [the GitHub repository][mailcatcher-github].
 
 ### RVM
 
-Under RVM your mailcatcher command may only available under the ruby you install mailcatcher into. To prevent this, and to prevent gem conflicts, install mailcatcher into a dedicated gemset and create wrapper scripts:
+Under RVM your mailcatcher command may only be available under the ruby you install mailcatcher into. To prevent this, and to prevent gem conflicts, install mailcatcher into a dedicated gemset and create wrapper scripts:
 
     rvm default@mailcatcher --create gem install mailcatcher
     rvm wrapper default@mailcatcher --no-prefix mailcatcher catchmail
