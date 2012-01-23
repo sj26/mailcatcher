@@ -29,6 +29,10 @@ OptionParser.new do |parser|
     options[:smtp_port] = port
   end
 
+  parser.on('-f FROM', 'Set the sending address') do |from|
+    options[:from] = from
+  end
+
   parser.on('-h', '--help', 'Display this help information') do
     puts parser
     exit!
@@ -41,4 +45,6 @@ Mail.defaults do
     :port => options[:smtp_port]
 end
 
-Mail.deliver ARGF.read
+message = Mail.new ARGF.read
+message.return_path = options[:from] if options[:from]
+message.deliver
