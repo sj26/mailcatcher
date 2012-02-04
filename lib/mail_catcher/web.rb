@@ -153,6 +153,9 @@ class MailCatcher::Web < Sinatra::Base
   end
 
   def protected!
+    if request.websocket?
+      return
+    end
     unless authorized?
       response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
       throw(:halt, [401, "Not authorized\n"])
