@@ -13,16 +13,21 @@ class MailCatcher::Web < Sinatra::Base
   set :root, Pathname.new(__FILE__).dirname.parent.parent
   set :haml, :format => :html5
 
+  @@authentication_enabled = false
+
   get '/' do
+    protected! unless @@authentication_enabled != true
     haml :index
   end
 
   delete '/' do
+    protected! unless @@authentication_enabled != true
     MailCatcher.quit!
     status 204
   end
 
   get '/messages' do
+    protected! unless @@authentication_enabled != true
     if request.websocket?
       puts "Gots a websocket"
       request.websocket!(
@@ -39,11 +44,13 @@ class MailCatcher::Web < Sinatra::Base
   end
 
   delete '/messages' do
+    protected! unless @@authentication_enabled != true
     MailCatcher::Mail.delete!
     status 204
   end
 
   get '/messages/:id.json' do
+    protected! unless @@authentication_enabled != true
     id = params[:id].to_i
     if message = MailCatcher::Mail.message(id)
       message.merge({
@@ -62,6 +69,7 @@ class MailCatcher::Web < Sinatra::Base
   end
 
   get '/messages/:id.html' do
+    protected! unless @@authentication_enabled != true
     id = params[:id].to_i
     if part = MailCatcher::Mail.message_part_html(id)
       content_type part["type"], :charset => (part["charset"] || "utf8")
@@ -81,6 +89,7 @@ class MailCatcher::Web < Sinatra::Base
   end
 
   get "/messages/:id.plain" do
+    protected! unless @@authentication_enabled != true
     id = params[:id].to_i
     if part = MailCatcher::Mail.message_part_plain(id)
       content_type part["type"], :charset => (part["charset"] || "utf8")
@@ -91,6 +100,7 @@ class MailCatcher::Web < Sinatra::Base
   end
 
   get "/messages/:id.source" do
+    protected! unless @@authentication_enabled != true
     id = params[:id].to_i
     if message = MailCatcher::Mail.message(id)
       content_type "text/plain"
@@ -101,6 +111,7 @@ class MailCatcher::Web < Sinatra::Base
   end
 
   get "/messages/:id.eml" do
+    protected! unless @@authentication_enabled != true
     id = params[:id].to_i
     if message = MailCatcher::Mail.message(id)
       content_type "message/rfc822"
@@ -111,6 +122,7 @@ class MailCatcher::Web < Sinatra::Base
   end
 
   get "/messages/:id/parts/:cid" do
+    protected! unless @@authentication_enabled != true
     id = params[:id].to_i
     if part = MailCatcher::Mail.message_part_cid(id, params[:cid])
       content_type part["type"], :charset => (part["charset"] || "utf8")
@@ -122,6 +134,7 @@ class MailCatcher::Web < Sinatra::Base
   end
 
   get "/messages/:id/analysis.?:format?" do
+    protected! unless @@authentication_enabled != true
     id = params[:id].to_i
     if part = MailCatcher::Mail.message_part_html(id)
       # TODO: Server-side cache? Make the browser cache based on message create time? Hmm.
@@ -135,6 +148,28 @@ class MailCatcher::Web < Sinatra::Base
   end
 
   not_found do
+    protected! unless @@authentication_enabled != true
     "<html><body><h1>No Dice</h1><p>The message you were looking for does not exist, or doesn't have content of this type.</p></body></html>"
   end
+
+  # Authentication 
+
+  def self.set_auth_information(username, password)
+    @@username = username
+    @@password = password
+    @@authentication_enabled = true
+  end
+
+  def protected!
+    unless authorized?
+      response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+      throw(:halt, [401, "Not authorized\n"])
+    end
+  end
+
+  def authorized?
+    @auth ||=  Rack::Auth::Basic::Request.new(request.env)
+    @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == [@@username, @@password]
+  end
+
 end
