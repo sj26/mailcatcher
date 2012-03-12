@@ -15,6 +15,8 @@
         %a{:href => "http://mailcatcher.me", :target => '_blank'} MailCatcher
       %nav.app
         %ul
+          %li.search
+            %input{:type => 'search', :name => 'search', :placeholder => 'Search messages...', :incremental => true}
           %li.clear
             %a{:href => '#', :title => 'Clear all messages'} Clear
           %li.quit

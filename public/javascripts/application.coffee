@@ -4,6 +4,13 @@ class MailCatcher
       e.preventDefault()
       @loadMessage $(e.currentTarget).attr 'data-message-id'
 
+    $('input[name=search]').live 'keyup', (e) =>
+      e.preventDefault()
+      if e.currentTarget.value == ""
+        @clearSearch()
+      else
+        @searchMessages e.currentTarget.value
+
     $('#message .views .format.tab a').live 'click', (e) =>
       e.preventDefault()
       @loadMessageBody @selectedMessage(), $($(e.currentTarget).parent('li')).data 'message-format'
@@ -73,6 +80,13 @@ class MailCatcher
 
   selectedMessage: ->
     $('#messages tr.selected').data 'message-id'
+
+  searchMessages: (term) ->
+    $('#messages tbody tr:not(:contains("' + term + '"))').hide()
+    $('#messages tbody tr(:contains("' + term + '"))').show()
+
+  clearSearch: ->
+    $('#messages tbody tr').show()
 
   addMessage: (message) ->
     $('#messages tbody').append \
