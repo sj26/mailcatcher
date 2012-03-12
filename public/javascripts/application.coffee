@@ -6,7 +6,6 @@ class MailCatcher
 
     $('input[name=search]').live 'keyup', (e) =>
       e.preventDefault()
-      console.log(e)
       if e.currentTarget.value == ""
         @clearSearch()
       else

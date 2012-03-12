@@ -11,7 +11,6 @@
       });
       $('input[name=search]').live('keyup', function(e) {
         e.preventDefault();
-        console.log(e);
         if (e.currentTarget.value === "") {
           return _this.clearSearch();
         } else {
