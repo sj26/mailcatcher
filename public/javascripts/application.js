@@ -9,6 +9,15 @@
         e.preventDefault();
         return _this.loadMessage($(e.currentTarget).attr('data-message-id'));
       });
+      $('input[name=search]').live('keyup', function(e) {
+        e.preventDefault();
+        console.log(e);
+        if (e.currentTarget.value === "") {
+          return _this.clearSearch();
+        } else {
+          return _this.searchMessages(e.currentTarget.value);
+        }
+      });
       $('#message .views .format.tab a').live('click', function(e) {
         e.preventDefault();
         return _this.loadMessageBody(_this.selectedMessage(), $($(e.currentTarget).parent('li')).data('message-format'));
@@ -99,6 +108,15 @@
 
     MailCatcher.prototype.selectedMessage = function() {
       return $('#messages tr.selected').data('message-id');
+    };
+
+    MailCatcher.prototype.searchMessages = function(term) {
+      $('#messages tbody tr:not(:contains("' + term + '"))').hide();
+      return $('#messages tbody tr(:contains("' + term + '"))').show();
+    };
+
+    MailCatcher.prototype.clearSearch = function() {
+      return $('#messages tbody tr').show();
     };
 
     MailCatcher.prototype.addMessage = function(message) {
@@ -196,8 +214,8 @@
     };
 
     MailCatcher.prototype.subscribeWebSocket = function() {
-      var secure;
-      var _this = this;
+      var secure,
+        _this = this;
       secure = window.location.scheme === 'https';
       this.websocket = new WebSocket("" + (secure ? 'wss' : 'ws') + "://" + window.location.host + "/messages");
       return this.websocket.onmessage = function(event) {
