@@ -8,7 +8,7 @@ module MailCatcher
   extend ActiveSupport::Autoload
 
   autoload :Events
-  autoload :Growl
+  autoload :Notify
   autoload :Mail
   autoload :Smtp
   autoload :Web
@@ -23,12 +23,16 @@ module_function
     RbConfig::CONFIG['host_os'] =~ /mswin|mingw/
   end
 
+  def linux?
+    not mac? and not windows?
+  end
+
   def macruby?
     mac? and const_defined? :MACRUBY_VERSION
   end
 
   def growlnotify?
-    system "which", "-s", "growlnotify"
+    mac? and system "which", "-s", "growlnotify"
   end
 
   def growlframework?
@@ -48,7 +52,7 @@ module_function
     :http_port => '1080',
     :verbose => false,
     :daemon => !windows?,
-    :growl => growlnotify?,
+    :notify => nil,
   }
 
   def parse! arguments=ARGV, defaults=@@defaults
@@ -86,7 +90,13 @@ module_function
               exit!
             end
 
-            options[:growl] = growl
+            options[:notify] = "growl" if growl
+          end
+        end
+
+        unless mac? and windows?
+          parser.on("--[no-]libnotify", "libnotify to the local machine when a message arrives") do |libnotify|
+            options[:notify] = "libnotify" if libnotify
           end
         end
 
@@ -121,7 +131,7 @@ module_function
     # One EventMachine loop...
     EventMachine.run do
       # Get our lion on if asked
-      MailCatcher::Growl.start if options[:growl]
+      MailCatcher::Notify.start(options[:notify]) if options[:notify]
 
       # TODO: DRY this up
 
