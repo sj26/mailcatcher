@@ -13,6 +13,12 @@ class MailCatcher::Web < Sinatra::Base
   set :root, Pathname.new(__FILE__).dirname.parent.parent
   set :haml, :format => :html5
 
+  @@authentication_enabled = false
+
+  before do
+    protected! unless @@authentication_enabled != true
+  end
+
   get '/' do
     haml :index
   end
@@ -137,4 +143,28 @@ class MailCatcher::Web < Sinatra::Base
   not_found do
     "<html><body><h1>No Dice</h1><p>The message you were looking for does not exist, or doesn't have content of this type.</p></body></html>"
   end
+
+  # Authentication 
+
+  def self.set_auth_information(username, password)
+    @@username = username
+    @@password = password
+    @@authentication_enabled = true
+  end
+
+  def protected!
+    if request.websocket?
+      return
+    end
+    unless authorized?
+      response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+      throw(:halt, [401, "Not authorized\n"])
+    end
+  end
+
+  def authorized?
+    @auth ||=  Rack::Auth::Basic::Request.new(request.env)
+    @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == [@@username, @@password]
+  end
+
 end

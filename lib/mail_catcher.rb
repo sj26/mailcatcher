@@ -104,6 +104,15 @@ module_function
           puts parser
           exit!
         end
+
+        parser.on('--username USERNAME', 'Username for web basic authentication') do |username|
+          options[:web_username] = username
+        end
+
+        parser.on('--password PASSWORD', 'Password for web basic authentication') do |password|
+          options[:web_password] = password
+        end
+
       end.parse!
     end
   end
@@ -113,6 +122,19 @@ module_function
     options &&= @@defaults.merge options
     # Otherwise, parse them from ARGV
     options ||= parse!
+
+    if( options[:web_password].nil? && options[:web_username] != nil ) then
+      puts "You need to define a username if you define a password."
+      puts
+      exit!
+    elsif( options[:web_username].nil? && options[:web_password] != nil ) then
+      puts "You need to define a password if you define a username."
+      puts
+      exit!
+    end
+    if( options[:web_username] && options[:web_password] ) then
+      MailCatcher::Web.set_auth_information( options[:web_username], options[:web_password] )
+    end
 
     puts "Starting MailCatcher"
 
