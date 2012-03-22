@@ -74,16 +74,15 @@ body > header
       float: right
     border-left: 1px solid #ccc
     li
-      display: inline
+      display: block
+      float: left
+      border-left: 1px solid #fff
+      border-right: 1px solid #ccc
       input
-        float: left
         margin: 6px
       a
-        +inline-block
-        float: left
-        padding: 9px
-        border-left: 1px solid #fff
-        border-right: 1px solid #ccc
+        display: block
+        padding: 10px
         text-decoration: none
         +text-shadow(0 1px 0 white)
         +background(linear-gradient(color-stops(#f4f4f4, #ececec)), #ececec)

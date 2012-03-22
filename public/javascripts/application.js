@@ -1,6 +1,11 @@
 (function() {
   var MailCatcher;
 
+  jQuery.expr[':'].icontains = function(a, i, m) {
+    var _ref, _ref2;
+    return ((_ref = (_ref2 = a.textContent) != null ? _ref2 : a.innerText) != null ? _ref : "").toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
+  };
+
   MailCatcher = (function() {
 
     function MailCatcher() {
@@ -9,13 +14,13 @@
         e.preventDefault();
         return _this.loadMessage($(e.currentTarget).attr('data-message-id'));
       });
-      $('input[name=search]').live('keyup', function(e) {
-        e.preventDefault();
-        console.log(e);
-        if (e.currentTarget.value === "") {
-          return _this.clearSearch();
+      $('input[name=search]').keyup(function(e) {
+        var query;
+        query = $.trim($(e.currentTarget).val());
+        if (query) {
+          return _this.searchMessages(query);
         } else {
-          return _this.searchMessages(e.currentTarget.value);
+          return _this.clearSearch();
         }
       });
       $('#message .views .format.tab a').live('click', function(e) {
@@ -110,9 +115,21 @@
       return $('#messages tr.selected').data('message-id');
     };
 
-    MailCatcher.prototype.searchMessages = function(term) {
-      $('#messages tbody tr:not(:contains("' + term + '"))').hide();
-      return $('#messages tbody tr(:contains("' + term + '"))').show();
+    MailCatcher.prototype.searchMessages = function(query) {
+      var $rows, selector, token;
+      selector = ((function() {
+        var _i, _len, _ref, _results;
+        _ref = query.split(/\s+/);
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          token = _ref[_i];
+          _results.push(":icontains('" + token + "')");
+        }
+        return _results;
+      })()).join("");
+      $rows = $("#messages tbody tr");
+      $rows.not(selector).hide();
+      return $rows.filter(selector).show();
     };
 
     MailCatcher.prototype.clearSearch = function() {

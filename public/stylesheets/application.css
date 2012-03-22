@@ -60,12 +60,12 @@ html, body {
 }
 
 body {
-  display: -moz-box;
   display: -webkit-box;
+  display: -moz-box;
   display: -ms-box;
   display: box;
-  -moz-box-orient: vertical;
   -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
   -ms-box-orient: vertical;
   box-orient: vertical;
   background: #eeeeee;
@@ -99,11 +99,10 @@ body.iframe .loading {
 .button {
   padding: 0.5em 1em;
   border: 1px solid #cccccc;
-  -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
-  -o-border-radius: 2px;
+  -moz-border-radius: 2px;
   -ms-border-radius: 2px;
-  -khtml-border-radius: 2px;
+  -o-border-radius: 2px;
   border-radius: 2px;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f4f4f4), color-stop(100%, #ececec)), #ececec;
   background: -webkit-linear-gradient(#f4f4f4, #ececec), #ececec;
@@ -159,8 +158,9 @@ body > header h1 a {
   color: black;
   text-decoration: none;
   text-shadow: 0 1px 0 white;
-  -moz-transition: 0.1s ease;
   -webkit-transition: 0.1s ease;
+  -moz-transition: 0.1s ease;
+  -ms-transition: 0.1s ease;
   -o-transition: 0.1s ease;
   transition: 0.1s ease;
 }
@@ -177,22 +177,17 @@ body > header nav.app {
   float: right;
 }
 body > header nav li {
-  display: inline;
+  display: block;
+  float: left;
+  border-left: 1px solid white;
+  border-right: 1px solid #cccccc;
 }
 body > header nav li input {
-  float: left;
   margin: 6px;
 }
 body > header nav li a {
-  display: -moz-inline-box;
-  -moz-box-orient: vertical;
-  display: inline-block;
-  vertical-align: middle;
-  *vertical-align: auto;
-  float: left;
-  padding: 9px;
-  border-left: 1px solid white;
-  border-right: 1px solid #cccccc;
+  display: block;
+  padding: 10px;
   text-decoration: none;
   text-shadow: 0 1px 0 white;
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f4f4f4), color-stop(100%, #ececec)), #ececec;
@@ -204,9 +199,6 @@ body > header nav li a {
   color: #666666;
   text-shadow: 1px 1px 0 white;
   text-decoration: none;
-}
-body > header nav li a {
-  *display: inline;
 }
 body > header nav li a:hover, body > header nav li a:focus {
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #eeeeee), color-stop(100%, #dddddd)), #dddddd;
@@ -255,8 +247,9 @@ body > header nav li a:active, body > header nav li a.active {
 }
 #messages table tbody tr {
   cursor: pointer;
-  -moz-transition: 0.1s ease;
   -webkit-transition: 0.1s ease;
+  -moz-transition: 0.1s ease;
+  -ms-transition: 0.1s ease;
   -o-transition: 0.1s ease;
   transition: 0.1s ease;
   color: #333333;
@@ -289,16 +282,16 @@ body > header nav li a:active, body > header nav li a.active {
 }
 
 #message {
-  display: -moz-box;
   display: -webkit-box;
+  display: -moz-box;
   display: -ms-box;
   display: box;
-  -moz-box-orient: vertical;
   -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
   -ms-box-orient: vertical;
   box-orient: vertical;
-  -moz-box-flex: 1;
   -webkit-box-flex: 1;
+  -moz-box-flex: 1;
   -ms-box-flex: 1;
   box-flex: 1;
 }
@@ -384,9 +377,8 @@ body > header nav li a:active, body > header nav li a.active {
   background: white;
   color: black;
   height: 13px;
-  -moz-box-shadow: 1px 1px 0 #cccccc;
   -webkit-box-shadow: 1px 1px 0 #cccccc;
-  -o-box-shadow: 1px 1px 0 #cccccc;
+  -moz-box-shadow: 1px 1px 0 #cccccc;
   box-shadow: 1px 1px 0 #cccccc;
   margin-bottom: -2px;
   cursor: default;
@@ -449,12 +441,12 @@ body > header nav li a:active, body > header nav li a.active {
 }
 
 iframe {
-  display: -moz-box;
   display: -webkit-box;
+  display: -moz-box;
   display: -ms-box;
   display: box;
-  -moz-box-flex: 1;
   -webkit-box-flex: 1;
+  -moz-box-flex: 1;
   -ms-box-flex: 1;
   box-flex: 1;
   background: white;

@@ -1,16 +1,19 @@
+# Add a new jQuery selector expression which does a case-insensitive :contains
+jQuery.expr[':'].icontains = (a, i, m) ->
+  (a.textContent ? a.innerText ? "").toUpperCase().indexOf(m[3].toUpperCase()) >= 0
+
 class MailCatcher
   constructor: ->
     $('#messages tr').live 'click', (e) =>
       e.preventDefault()
       @loadMessage $(e.currentTarget).attr 'data-message-id'
 
-    $('input[name=search]').live 'keyup', (e) =>
-      e.preventDefault()
-      console.log(e)
-      if e.currentTarget.value == ""
-        @clearSearch()
+    $('input[name=search]').keyup (e) =>
+      query = $.trim $(e.currentTarget).val()
+      if query
+        @searchMessages query
       else
-        @searchMessages e.currentTarget.value
+        @clearSearch()
 
     $('#message .views .format.tab a').live 'click', (e) =>
       e.preventDefault()
@@ -82,9 +85,11 @@ class MailCatcher
   selectedMessage: ->
     $('#messages tr.selected').data 'message-id'
 
-  searchMessages: (term) ->
-    $('#messages tbody tr:not(:contains("' + term + '"))').hide()
-    $('#messages tbody tr(:contains("' + term + '"))').show()
+  searchMessages: (query) ->
+    selector = (":icontains('#{token}')" for token in query.split /\s+/).join ""
+    $rows = $("#messages tbody tr")
+    $rows.not(selector).hide()
+    $rows.filter(selector).show()
 
   clearSearch: ->
     $('#messages tbody tr').show()
