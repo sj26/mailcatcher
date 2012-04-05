@@ -3,6 +3,7 @@ require 'eventmachine'
 require 'optparse'
 require 'rbconfig'
 require 'thin'
+require 'launchy'
 
 module MailCatcher
   extend ActiveSupport::Autoload
@@ -96,6 +97,10 @@ module_function
           end
         end
 
+        parser.on('-o', '--open', 'Open the web interface in your default browser on startup') do |open|
+          options[:open] = open
+        end
+
         parser.on('-v', '--verbose', 'Be more verbose') do
           options[:verbose] = true
         end
@@ -123,19 +128,27 @@ module_function
       # Get our lion on if asked
       MailCatcher::Growl.start if options[:growl]
 
+      smtp_url = "smtp://#{options[:smtp_ip]}:#{options[:smtp_port]}"
+      http_url = "http://#{options[:http_ip]}:#{options[:http_port]}"
+
       # TODO: DRY this up
 
       # Set up an SMTP server to run within EventMachine
       rescue_port options[:smtp_port] do
         EventMachine.start_server options[:smtp_ip], options[:smtp_port], Smtp
-        puts "==> smtp://#{options[:smtp_ip]}:#{options[:smtp_port]}"
+        puts "==> #{smtp_url}"
       end
 
       # Let Thin set itself up inside our EventMachine loop
       # (Skinny/WebSockets just works on the inside)
       rescue_port options[:http_port] do
         Thin::Server.start options[:http_ip], options[:http_port], Web
-        puts "==> http://#{options[:http_ip]}:#{options[:http_port]}"
+        puts "==> #{http_url}"
+      end
+
+      # Open the web interface if asked
+      if options[:open]
+        Launchy.open(http_url)
       end
 
       # Daemonize, if we should, but only after the servers have started.
