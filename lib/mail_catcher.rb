@@ -15,6 +15,10 @@ module MailCatcher
 
 module_function
 
+  def which command
+    IO.popen(["which", command], "r", :err => :close).read.chomp.presence
+  end
+
   def mac?
     RbConfig::CONFIG['host_os'] =~ /darwin/
   end
@@ -28,17 +32,23 @@ module_function
   end
 
   def growlnotify?
-    system "which", "-s", "growlnotify"
-  end
-
-  def growlframework?
-    macruby? and
-    # TODO: Look for growl framework accessible
-    false
+    which "growlnotify"
   end
 
   def growl?
-    growlnotify? or growlframework?
+    growlnotify?
+  end
+
+  def browse?
+    windows? or which "open"
+  end
+
+  def browse url
+    if windows?
+      system "start", "/b", url
+    elsif which "open"
+      system "open", url
+    end
   end
 
   @@defaults = {
@@ -49,6 +59,7 @@ module_function
     :verbose => false,
     :daemon => !windows?,
     :growl => growlnotify?,
+    :browse => false,
   }
 
   def parse! arguments=ARGV, defaults=@@defaults
@@ -96,6 +107,12 @@ module_function
           end
         end
 
+        if browse?
+          parser.on('-b', '--browse', 'Open web browser') do
+            options[:browse] = true
+          end
+        end
+
         parser.on('-v', '--verbose', 'Be more verbose') do
           options[:verbose] = true
         end
@@ -123,19 +140,27 @@ module_function
       # Get our lion on if asked
       MailCatcher::Growl.start if options[:growl]
 
-      # TODO: DRY this up
+      smtp_url = "smtp://#{options[:smtp_ip]}:#{options[:smtp_port]}"
+      http_url = "http://#{options[:http_ip]}:#{options[:http_port]}"
 
       # Set up an SMTP server to run within EventMachine
       rescue_port options[:smtp_port] do
         EventMachine.start_server options[:smtp_ip], options[:smtp_port], Smtp
-        puts "==> smtp://#{options[:smtp_ip]}:#{options[:smtp_port]}"
+        puts "==> #{smtp_url}"
       end
 
       # Let Thin set itself up inside our EventMachine loop
       # (Skinny/WebSockets just works on the inside)
       rescue_port options[:http_port] do
         Thin::Server.start options[:http_ip], options[:http_port], Web
-        puts "==> http://#{options[:http_ip]}:#{options[:http_port]}"
+        puts "==> #{http_url}"
+      end
+
+      # Open the web browser before detatching console
+      if options[:browse]
+        EventMachine.next_tick do
+          browse http_url
+        end
       end
 
       # Daemonize, if we should, but only after the servers have started.
