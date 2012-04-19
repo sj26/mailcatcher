@@ -20,6 +20,7 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 * Runs as a daemon run in the background.
 * Sendmail-analogue command, `catchmail`, makes [using mailcatcher from PHP][withphp] a lot easier.
 * Written super-simply in EventMachine, easy to dig in and change.
+* Keyboard navigation between messages
 
 ## How
 
