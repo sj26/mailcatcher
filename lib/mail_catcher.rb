@@ -5,18 +5,19 @@ require 'rbconfig'
 require 'thin'
 
 module MailCatcher
-  extend ActiveSupport::Autoload
 
-  autoload :Events
-  autoload :Growl
-  autoload :Mail
-  autoload :Smtp
-  autoload :Web
+  autoload :Events, 'mail_catcher/events'
+  autoload :Growl,  'mail_catcher/growl'
+  autoload :Mail,   'mail_catcher/mail'
+  autoload :Smtp,   'mail_catcher/smtp'
+  autoload :Web,    'mail_catcher/web'
 
 module_function
 
   def which command
-    IO.popen(["which", command], "r", :err => :close).read.chomp.presence
+    IO.popen(["which", command].join(' '), "r") do |io|
+      io.read.chomp
+    end
   end
 
   def mac?
