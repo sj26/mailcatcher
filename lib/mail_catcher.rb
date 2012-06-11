@@ -56,6 +56,7 @@ module_function
     :smtp_port => '1025',
     :http_ip => '127.0.0.1',
     :http_port => '1080',
+    :pid_file => '/tmp/mailcatcher.pid',
     :verbose => false,
     :daemon => !windows?,
     :growl => growlnotify?,
@@ -86,6 +87,10 @@ module_function
 
         parser.on("--http-port PORT", Integer, "Set the port address of the http server") do |port|
           options[:http_port] = port
+        end
+        
+        parser.on("--pid-file FILE", "Set the file that will contain the PID for mailcatcher process") do |pid_file|
+          options[:pid_file] = pid_file
         end
 
         if mac?
@@ -167,7 +172,15 @@ module_function
       if options[:daemon]
         EventMachine.next_tick do
           puts "*** MailCatcher now runs as a daemon by default. Go to the web interface to quit."
+          begin
+            $pid_file = File.new(options[:pid_file], "w")
+          rescue Errno::EACCES, Errno::ENOENT
+            puts "*** Cannot create PID file. Check the permissions and try again!"
+            exit
+          end
           Process.daemon
+          $pid_file.sync = true
+          $pid_file.puts(Process.pid.to_s)
         end
       end
     end
