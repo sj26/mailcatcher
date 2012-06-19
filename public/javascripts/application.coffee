@@ -58,6 +58,28 @@ class MailCatcher
           error: ->
             alert 'Error while quitting.'
 
+    key 'up', =>
+      id = @selectedMessage() || 1
+      id -=  1  if id > 1
+      @loadMessage(id)
+
+    key 'down', =>
+      id = @selectedMessage() || @messagesCount()
+      id += 1 if id < @messagesCount()
+      @loadMessage(id)
+
+    key '⌘+up, ctrl+up', =>
+      @loadMessage(1)
+
+    key '⌘+down, ctrl+down', =>
+      @loadMessage @messagesCount()
+
+    key 'left', =>
+      @openTab @previousTab()
+
+    key 'right', =>
+      @openTab @nextTab()
+
     @refresh()
     @subscribe()
 
@@ -77,6 +99,37 @@ class MailCatcher
     date &&= @parseDate(date) if typeof(date) == "string"
     date &&= @offsetTimeZone(date)
     date &&= date.toString("dddd, d MMM yyyy h:mm:ss tt")
+
+  messagesCount: ->
+    $('#messages tr').length - 1
+
+  tabs: ->
+    $('#message ul').children('.tab')
+
+  getTab: (i) =>
+    $(@tabs()[i])
+
+  selectedTab: =>
+    @tabs().index($('#message li.tab.selected'))
+
+  openTab: (i) =>
+    @getTab(i).children('a').click()
+
+  previousTab: (tab)=>
+    i = if tab || tab is 0 then tab else @selectedTab() - 1
+    i = @tabs().length - 1 if i < 0
+    if @getTab(i).is(":visible")
+      i
+    else
+      @previousTab(i-1)
+
+  nextTab: (tab) =>
+    i = if tab then tab else @selectedTab() + 1
+    i = 0 if i > @tabs().length - 1
+    if @getTab(i).is(":visible")
+      i
+    else
+      @nextTab(i+1)
 
   haveMessage: (message) ->
     message = message.id if message.id?
