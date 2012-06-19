@@ -1,3 +1,5 @@
+require 'open3'
+
 require 'active_support/all'
 require 'eventmachine'
 require 'optparse'
@@ -16,7 +18,9 @@ module MailCatcher
 module_function
 
   def which command
-    IO.popen(["which", command], "r", :err => :close).read.chomp.presence
+    Open3.popen3 'which', 'command' do |stdin, stdout, stderr|
+      return stdout.read.chomp.presence
+    end
   end
 
   def mac?
