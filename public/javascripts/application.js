@@ -1,37 +1,42 @@
 (function() {
-  var MailCatcher;
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  var MailCatcher,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
   jQuery.expr[':'].icontains = function(a, i, m) {
     var _ref, _ref2;
     return ((_ref = (_ref2 = a.textContent) != null ? _ref2 : a.innerText) != null ? _ref : "").toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
   };
+
   MailCatcher = (function() {
+
     function MailCatcher() {
-      this.nextTab = __bind(this.nextTab, this);;
-      this.previousTab = __bind(this.previousTab, this);;
-      this.openTab = __bind(this.openTab, this);;
-      this.selectedTab = __bind(this.selectedTab, this);;
-      this.getTab = __bind(this.getTab, this);;      $('#messages tr').live('click', __bind(function(e) {
+      this.nextTab = __bind(this.nextTab, this);
+      this.previousTab = __bind(this.previousTab, this);
+      this.openTab = __bind(this.openTab, this);
+      this.selectedTab = __bind(this.selectedTab, this);
+      this.getTab = __bind(this.getTab, this);
+      var _this = this;
+      $('#messages tr').live('click', function(e) {
         e.preventDefault();
-        return this.loadMessage($(e.currentTarget).attr('data-message-id'));
-      }, this));
-      $('input[name=search]').keyup(__bind(function(e) {
+        return _this.loadMessage($(e.currentTarget).attr('data-message-id'));
+      });
+      $('input[name=search]').keyup(function(e) {
         var query;
         query = $.trim($(e.currentTarget).val());
         if (query) {
-          return this.searchMessages(query);
+          return _this.searchMessages(query);
         } else {
-          return this.clearSearch();
+          return _this.clearSearch();
         }
-      }, this));
-      $('#message .views .format.tab a').live('click', __bind(function(e) {
+      });
+      $('#message .views .format.tab a').live('click', function(e) {
         e.preventDefault();
-        return this.loadMessageBody(this.selectedMessage(), $($(e.currentTarget).parent('li')).data('message-format'));
-      }, this));
-      $('#message .views .analysis.tab a').live('click', __bind(function(e) {
+        return _this.loadMessageBody(_this.selectedMessage(), $($(e.currentTarget).parent('li')).data('message-format'));
+      });
+      $('#message .views .analysis.tab a').live('click', function(e) {
         e.preventDefault();
-        return this.loadMessageAnalysis(this.selectedMessage());
-      }, this));
+        return _this.loadMessageAnalysis(_this.selectedMessage());
+      });
       $('#resizer').live({
         mousedown: function(e) {
           var events;
@@ -50,7 +55,7 @@
           });
         }
       });
-      $('nav.app .clear a').live('click', __bind(function(e) {
+      $('nav.app .clear a').live('click', function(e) {
         e.preventDefault();
         if (confirm("You will lose all your received messages.\n\nAre you sure you want to clear all messages?")) {
           return $.ajax({
@@ -66,8 +71,8 @@
             }
           });
         }
-      }, this));
-      $('nav.app .quit a').live('click', __bind(function(e) {
+      });
+      $('nav.app .quit a').live('click', function(e) {
         e.preventDefault();
         if (confirm("You will lose all your received messages.\n\nAre you sure you want to quit?")) {
           return $.ajax({
@@ -80,106 +85,108 @@
             }
           });
         }
-      }, this));
-      key('up', __bind(function() {
+      });
+      key('up', function() {
         var id;
-        id = this.selectedMessage() || 1;
-        if (id > 1) {
-          id -= 1;
-        }
-        return this.loadMessage(id);
-      }, this));
-      key('down', __bind(function() {
+        id = _this.selectedMessage() || 1;
+        if (id > 1) id -= 1;
+        return _this.loadMessage(id);
+      });
+      key('down', function() {
         var id;
-        id = this.selectedMessage() || this.messagesCount();
-        if (id < this.messagesCount()) {
-          id += 1;
-        }
-        return this.loadMessage(id);
-      }, this));
-      key('⌘+up, ctrl+up', __bind(function() {
-        return this.loadMessage(1);
-      }, this));
-      key('⌘+down, ctrl+down', __bind(function() {
-        return this.loadMessage(this.messagesCount());
-      }, this));
-      key('left', __bind(function() {
-        return this.openTab(this.previousTab());
-      }, this));
-      key('right', __bind(function() {
-        return this.openTab(this.nextTab());
-      }, this));
+        id = _this.selectedMessage() || _this.messagesCount();
+        if (id < _this.messagesCount()) id += 1;
+        return _this.loadMessage(id);
+      });
+      key('⌘+up, ctrl+up', function() {
+        return _this.loadMessage(1);
+      });
+      key('⌘+down, ctrl+down', function() {
+        return _this.loadMessage(_this.messagesCount());
+      });
+      key('left', function() {
+        return _this.openTab(_this.previousTab());
+      });
+      key('right', function() {
+        return _this.openTab(_this.nextTab());
+      });
       this.refresh();
       this.subscribe();
     }
+
     MailCatcher.prototype.parseDateRegexp = /^(\d{4})[-\/\\](\d{2})[-\/\\](\d{2})(?:\s+|T)(\d{2})[:-](\d{2})[:-](\d{2})(?:([ +-]\d{2}:\d{2}|\s*\S+|Z?))?$/;
+
     MailCatcher.prototype.parseDate = function(date) {
       var match;
       if (match = this.parseDateRegexp.exec(date)) {
         return new Date(match[1], match[2] - 1, match[3], match[4], match[5], match[6], 0);
       }
     };
+
     MailCatcher.prototype.offsetTimeZone = function(date) {
       var offset;
       offset = Date.now().getTimezoneOffset() * 60000;
       date.setTime(date.getTime() - offset);
       return date;
     };
+
     MailCatcher.prototype.formatDate = function(date) {
-      if (typeof date === "string") {
-        date && (date = this.parseDate(date));
-      }
+      if (typeof date === "string") date && (date = this.parseDate(date));
       date && (date = this.offsetTimeZone(date));
       return date && (date = date.toString("dddd, d MMM yyyy h:mm:ss tt"));
     };
+
     MailCatcher.prototype.messagesCount = function() {
       return $('#messages tr').length - 1;
     };
+
     MailCatcher.prototype.tabs = function() {
       return $('#message ul').children('.tab');
     };
+
     MailCatcher.prototype.getTab = function(i) {
       return $(this.tabs()[i]);
     };
+
     MailCatcher.prototype.selectedTab = function() {
       return this.tabs().index($('#message li.tab.selected'));
     };
+
     MailCatcher.prototype.openTab = function(i) {
       return this.getTab(i).children('a').click();
     };
+
     MailCatcher.prototype.previousTab = function(tab) {
       var i;
       i = tab || tab === 0 ? tab : this.selectedTab() - 1;
-      if (i < 0) {
-        i = this.tabs().length - 1;
-      }
+      if (i < 0) i = this.tabs().length - 1;
       if (this.getTab(i).is(":visible")) {
         return i;
       } else {
         return this.previousTab(i - 1);
       }
     };
+
     MailCatcher.prototype.nextTab = function(tab) {
       var i;
       i = tab ? tab : this.selectedTab() + 1;
-      if (i > this.tabs().length - 1) {
-        i = 0;
-      }
+      if (i > this.tabs().length - 1) i = 0;
       if (this.getTab(i).is(":visible")) {
         return i;
       } else {
         return this.nextTab(i + 1);
       }
     };
+
     MailCatcher.prototype.haveMessage = function(message) {
-      if (message.id != null) {
-        message = message.id;
-      }
+      if (message.id != null) message = message.id;
       return $("#messages tbody tr[data-message-id=\"" + message + "\"]").length > 0;
     };
+
     MailCatcher.prototype.selectedMessage = function() {
       return $('#messages tr.selected').data('message-id');
     };
+
     MailCatcher.prototype.searchMessages = function(query) {
       var $rows, selector, token;
       selector = ((function() {
@@ -196,23 +203,25 @@
       $rows.not(selector).hide();
       return $rows.filter(selector).show();
     };
+
     MailCatcher.prototype.clearSearch = function() {
       return $('#messages tbody tr').show();
     };
+
     MailCatcher.prototype.addMessage = function(message) {
       return $('#messages tbody').append($('<tr />').attr('data-message-id', message.id.toString()).append($('<td/>').text(message.sender || "No sender").toggleClass("blank", !message.sender)).append($('<td/>').text((message.recipients || []).join(', ') || "No receipients").toggleClass("blank", !message.recipients.length)).append($('<td/>').text(message.subject || "No subject").toggleClass("blank", !message.subject)).append($('<td/>').text(this.formatDate(message.created_at))));
     };
+
     MailCatcher.prototype.loadMessage = function(id) {
-      if ((id != null ? id.id : void 0) != null) {
-        id = id.id;
-      }
+      var _this = this;
+      if ((id != null ? id.id : void 0) != null) id = id.id;
       id || (id = $('#messages tr.selected').attr('data-message-id'));
       if (id != null) {
         $('#messages tbody tr:not([data-message-id="' + id + '"])').removeClass('selected');
         $('#messages tbody tr[data-message-id="' + id + '"]').addClass('selected');
-        return $.getJSON('/messages/' + id + '.json', __bind(function(message) {
+        return $.getJSON('/messages/' + id + '.json', function(message) {
           var $ul;
-          $('#message .metadata dd.created_at').text(this.formatDate(message.created_at));
+          $('#message .metadata dd.created_at').text(_this.formatDate(message.created_at));
           $('#message .metadata dd.from').text(message.sender);
           $('#message .metadata dd.to').text((message.recipients || []).join(', '));
           $('#message .metadata dd.subject').text(message.subject);
@@ -242,13 +251,14 @@
           }
           $('#message .views .download a').attr('href', "/messages/" + id + ".eml");
           if ($('#message .views .tab.analysis.selected').length) {
-            return this.loadMessageAnalysis();
+            return _this.loadMessageAnalysis();
           } else {
-            return this.loadMessageBody();
+            return _this.loadMessageBody();
           }
-        }, this));
+        });
       }
     };
+
     MailCatcher.prototype.loadMessageBody = function(id, format) {
       id || (id = this.selectedMessage());
       format || (format = $('#message .views .tab.format.selected').attr('data-message-format'));
@@ -259,6 +269,7 @@
         return $('#message iframe').attr("src", "/messages/" + id + "." + format);
       }
     };
+
     MailCatcher.prototype.loadMessageAnalysis = function(id) {
       var $form, $iframe;
       id || (id = this.selectedMessage());
@@ -273,40 +284,49 @@
         });
       }
     };
+
     MailCatcher.prototype.refresh = function() {
-      return $.getJSON('/messages', __bind(function(messages) {
-        return $.each(messages, __bind(function(i, message) {
-          if (!this.haveMessage(message)) {
-            return this.addMessage(message);
-          }
-        }, this));
-      }, this));
+      var _this = this;
+      return $.getJSON('/messages', function(messages) {
+        return $.each(messages, function(i, message) {
+          if (!_this.haveMessage(message)) return _this.addMessage(message);
+        });
+      });
     };
+
     MailCatcher.prototype.subscribe = function() {
-      if (typeof WebSocket != "undefined" && WebSocket !== null) {
+      if (typeof WebSocket !== "undefined" && WebSocket !== null) {
         return this.subscribeWebSocket();
       } else {
         return this.subscribePoll();
       }
     };
+
     MailCatcher.prototype.subscribeWebSocket = function() {
-      var secure;
+      var secure,
+        _this = this;
       secure = window.location.scheme === 'https';
       this.websocket = new WebSocket("" + (secure ? 'wss' : 'ws') + "://" + window.location.host + "/messages");
-      return this.websocket.onmessage = __bind(function(event) {
-        return this.addMessage($.parseJSON(event.data));
-      }, this);
+      return this.websocket.onmessage = function(event) {
+        return _this.addMessage($.parseJSON(event.data));
+      };
     };
+
     MailCatcher.prototype.subscribePoll = function() {
+      var _this = this;
       if (this.refreshInterval == null) {
-        return this.refreshInterval = setInterval((__bind(function() {
-          return this.refresh();
-        }, this)), 1000);
+        return this.refreshInterval = setInterval((function() {
+          return _this.refresh();
+        }), 1000);
       }
     };
+
     return MailCatcher;
+
   })();
+
   $(function() {
     return window.MailCatcher = new MailCatcher;
   });
+
 }).call(this);

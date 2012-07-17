@@ -24,9 +24,7 @@ class MailCatcher::Web < Sinatra::Base
 
   get '/messages' do
     if request.websocket?
-      puts "Gots a websocket"
       request.websocket!(
-        :protocol => "MailCatcher 0.2 Message Push",
         :on_start => proc do |websocket|
           subscription = MailCatcher::Events::MessageAdded.subscribe { |message| websocket.send_message message.to_json }
           websocket.on_close do |websocket|
