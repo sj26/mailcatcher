@@ -6,6 +6,8 @@ require 'optparse'
 require 'rbconfig'
 require 'thin'
 
+require 'ext/em'
+
 module MailCatcher
   extend ActiveSupport::Autoload
 
