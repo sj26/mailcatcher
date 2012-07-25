@@ -185,7 +185,7 @@ module_function
     rescue RuntimeError
       if $!.to_s =~ /\bno acceptor\b/
         puts "~~> ERROR: Something's using port #{port}. Are you already running MailCatcher?"
-        exit -1
+        exit(-1)
       else
         raise
       end
