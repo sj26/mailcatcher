@@ -5,11 +5,11 @@ spec_file = File.expand_path __FILE__ + '/../mailcatcher.gemspec'
 spec = Gem::Specification.load spec_file
 
 require 'rdoc/task'
-RDoc::Task.new :rdoc => "rdoc",
-    :clobber_rdoc => "rdoc:clean",
-    :rerdoc => "rdoc:force" do |rdoc|
+RDoc::Task.new :rdoc => "doc",
+    :clobber_rdoc => "doc:clean",
+    :rerdoc => "doc:force" do |rdoc|
   rdoc.title = "MailCatcher #{MailCatcher::VERSION}"
-  rdoc.rdoc_dir = 'rdoc'
+  rdoc.rdoc_dir = 'doc'
   rdoc.main = 'README.md'
   rdoc.rdoc_files.include 'lib/**/*.rb'
 end
