@@ -20,10 +20,10 @@ Gem::Specification.new do |s|
     "README.md", "LICENSE", "VERSION",
     "bin/*",
     "lib/**/*.rb",
+    "public/favicon.ico",
     "public/images/**/*",
     "public/javascripts/**/*.js",
-    "public/stylesheets/**/*.css",
-    "public/stylesheets/**/*.xsl",
+    "public/stylesheets/**/*.{css,xsl}",
     "views/**/*"
   ]
   s.require_paths = ["lib"]
