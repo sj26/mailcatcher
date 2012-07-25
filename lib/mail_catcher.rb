@@ -6,6 +6,8 @@ require 'optparse'
 require 'rbconfig'
 require 'thin'
 
+require 'mail_catcher/version'
+
 module MailCatcher
   extend ActiveSupport::Autoload
 
@@ -70,7 +72,7 @@ module_function
     @@defaults.dup.tap do |options|
       OptionParser.new do |parser|
         parser.banner = "Usage: mailcatcher [options]"
-        parser.version = File.read(File.expand_path("../../VERSION", __FILE__))
+        parser.version = VERSION
 
         parser.on("--ip IP", "Set the ip address of both servers") do |ip|
           options[:smtp_ip] = options[:http_ip] = ip

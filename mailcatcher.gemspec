@@ -1,6 +1,8 @@
+require File.expand_path('../lib/mail_catcher/version', __FILE__)
+
 Gem::Specification.new do |s|
   s.name = "mailcatcher"
-  s.version = File.read(File.expand_path("../VERSION", __FILE__)).strip
+  s.version = MailCatcher::VERSION
   s.summary = "Runs an SMTP server, catches and displays email in a web interface."
   s.description = <<-END
     MailCatcher runs a super simple SMTP server which catches any
