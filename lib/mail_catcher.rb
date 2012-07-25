@@ -7,9 +7,7 @@ require 'thin'
 
 require 'mail_catcher/version'
 
-module MailCatcher
-module_function
-
+module MailCatcher extend self
   def which command
     Open3.popen3 'which', 'command' do |stdin, stdout, stderr|
       return stdout.read.chomp.presence
@@ -48,7 +46,7 @@ module_function
     end
   end
 
-  @@defaults = {
+  @defaults = {
     :smtp_ip => '127.0.0.1',
     :smtp_port => '1025',
     :http_ip => '127.0.0.1',
@@ -59,8 +57,8 @@ module_function
     :browse => false,
   }
 
-  def parse! arguments=ARGV, defaults=@@defaults
-    @@defaults.dup.tap do |options|
+  def parse! arguments=ARGV, defaults=@defaults
+    @defaults.dup.tap do |options|
       OptionParser.new do |parser|
         parser.banner = "Usage: mailcatcher [options]"
         parser.version = VERSION
@@ -124,7 +122,7 @@ module_function
 
   def run! options=nil
     # If we are passed options, fill in the blanks
-    options &&= @@defaults.merge options
+    options &&= @defaults.merge options
     # Otherwise, parse them from ARGV
     options ||= parse!
 
@@ -175,7 +173,6 @@ module_function
   end
 
 protected
-module_function
 
   def rescue_port port
     begin

@@ -1,6 +1,5 @@
 module MailCatcher
-  module Growl
-  module_function
+  module Growl extend self
     def start
       MailCatcher::Events::MessageAdded.subscribe MailCatcher::Growl.method :notify
     end
