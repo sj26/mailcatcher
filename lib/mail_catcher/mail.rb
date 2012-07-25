@@ -1,3 +1,4 @@
+require 'active_support/json'
 require 'mail'
 require 'sqlite3'
 require 'eventmachine'

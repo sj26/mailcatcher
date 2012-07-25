@@ -1,7 +1,6 @@
-require 'open3'
-
-require 'active_support/all'
+require 'active_support/core_ext'
 require 'eventmachine'
+require 'open3'
 require 'optparse'
 require 'rbconfig'
 require 'thin'
@@ -9,14 +8,6 @@ require 'thin'
 require 'mail_catcher/version'
 
 module MailCatcher
-  extend ActiveSupport::Autoload
-
-  autoload :Events
-  autoload :Growl
-  autoload :Mail
-  autoload :Smtp
-  autoload :Web
-
 module_function
 
   def which command
@@ -201,3 +192,9 @@ module_function
     end
   end
 end
+
+require 'mail_catcher/events'
+require 'mail_catcher/growl'
+require 'mail_catcher/mail'
+require 'mail_catcher/smtp'
+require 'mail_catcher/web'
