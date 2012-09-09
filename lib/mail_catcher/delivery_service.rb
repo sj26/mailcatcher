@@ -6,7 +6,9 @@ class MailCatcher::DeliveryService
   mattr_accessor :domain
   mattr_accessor :user_name
   mattr_accessor :password
-  mattr_accessor :authentication
+  mattr_accessor :recipient
+
+  mattr_accessor :authentication # authentication is currently hard-coded
   @@authentication = 'login'
 
   def initialize(message)
@@ -32,7 +34,7 @@ class MailCatcher::DeliveryService
       @@domain = options[:delivery_domain]
       @@user_name = options[:delivery_user_name]
       @@password = options[:delivery_password]
-      @@recipient = options["delivery_recipient"]
+      @@recipient = options[:delivery_recipient]
     end
   end
 end
