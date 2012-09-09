@@ -55,6 +55,12 @@ module MailCatcher extend self
     :daemon => !windows?,
     :growl => growlnotify?,
     :browse => false,
+    :delivery_address => 'smtp.gmail.com',
+    :delivery_port => '587',
+    :delivery_domain => 'gmail.com',
+    :delivery_user_name => '',
+    :delivery_password => '',
+    :delivery_recipient => nil,
   }
 
   def parse! arguments=ARGV, defaults=@defaults
@@ -81,6 +87,30 @@ module MailCatcher extend self
 
         parser.on("--http-port PORT", Integer, "Set the port address of the http server") do |port|
           options[:http_port] = port
+        end
+
+        parser.on("--delivery-address ADDRESS", "Set the SMTP address value for message delivery") do |delivery_address|
+          options[:delivery_address] = delivery_address
+        end
+
+        parser.on("--delivery-port PORT", Integer, "Set the SMTP port for message delivery") do |delivery_port|
+          options[:delivery_port] = delivery_port
+        end
+
+        parser.on("--delivery-domain DOMAIN", "Set the SMTP domain for message delivery") do |delivery_domain|
+          options[:delivery_domain] = delivery_domain
+        end
+
+        parser.on("--delivery-user-name USERNAME", "Set the SMTP user name for message delivery") do |delivery_user_name|
+          options[:delivery_user_name] = delivery_user_name
+        end
+
+        parser.on("--delivery-password USERNAME", "Set the SMTP password for message delivery") do |delivery_password|
+          options[:delivery_password] = delivery_password
+        end
+
+        parser.on("--delivery-recipient EMAIL", "(Optional) overwrite the to field for message delivery with the provided value") do |delivery_recipient|
+          options[:delivery_recipient] = delivery_recipient
         end
 
         if mac?
@@ -125,6 +155,8 @@ module MailCatcher extend self
     options &&= @defaults.merge options
     # Otherwise, parse them from ARGV
     options ||= parse!
+
+    DeliveryService.configure(options)
 
     puts "Starting MailCatcher"
 
@@ -190,6 +222,7 @@ protected
   end
 end
 
+require 'mail_catcher/delivery_service'
 require 'mail_catcher/events'
 require 'mail_catcher/growl'
 require 'mail_catcher/mail'
