@@ -21,6 +21,7 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 * Sendmail-analogue command, `catchmail`, makes [using mailcatcher from PHP][withphp] a lot easier.
 * Written super-simply in EventMachine, easy to dig in and change.
 * Keyboard navigation between messages
+* Can deliver caught messages to an SMTP server
 
 ## How
 
