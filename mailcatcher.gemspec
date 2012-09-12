@@ -38,8 +38,8 @@ Gem::Specification.new do |s|
   s.add_dependency "mail", "~> 2.3"
   s.add_dependency "sinatra", "~> 1.2"
   s.add_dependency "sqlite3", "~> 1.3"
-  s.add_dependency "thin"
-  s.add_dependency "skinny"
+  s.add_dependency "thin", "~> 1.4.1"
+  s.add_dependency "skinny", "~> 0.2.2"
 
   s.add_development_dependency "coffee-script"
   s.add_development_dependency "compass"
