@@ -1,4 +1,7 @@
 rdoc
+coverage
+
 *.gem
 
 .sass-cache
+.rspec
