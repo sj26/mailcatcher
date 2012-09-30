@@ -9,7 +9,7 @@ require 'mail_catcher/version'
 
 module MailCatcher extend self
   def which command
-    Open3.popen3 'which', 'command' do |stdin, stdout, stderr|
+    not windows? and Open3.popen3 'which', 'command' do |stdin, stdout, stderr|
       return stdout.read.chomp.presence
     end
   end
@@ -161,7 +161,7 @@ module MailCatcher extend self
       # Daemonize, if we should, but only after the servers have started.
       if options[:daemon]
         EventMachine.next_tick do
-          puts "*** MailCatcher now runs as a daemon by default. Go to the web interface to quit."
+          puts "*** MailCatcher runs as a daemon by default. Go to the web interface to quit."
           Process.daemon
         end
       end
