@@ -55,6 +55,7 @@ module MailCatcher extend self
     :daemon => !windows?,
     :growl => growlnotify?,
     :browse => false,
+    :db_path => ":memory:"
   }
 
   def parse! arguments=ARGV, defaults=@defaults
@@ -81,6 +82,11 @@ module MailCatcher extend self
 
         parser.on("--http-port PORT", Integer, "Set the port address of the http server") do |port|
           options[:http_port] = port
+        end
+
+        parser.on("--db-path PATH", String, "Set path to database") do |path|
+          puts path
+          options[:db_path] = path
         end
 
         if mac?
@@ -127,6 +133,9 @@ module MailCatcher extend self
     options ||= parse!
 
     puts "Starting MailCatcher"
+
+    # Initialize database
+    Mail.db(options[:db_path])
 
     Thin::Logging.silent = true
 

@@ -4,37 +4,45 @@ require 'sqlite3'
 require 'eventmachine'
 
 module MailCatcher::Mail extend self
-  def db
+  def db(db_path = ":memory:")
     @__db ||= begin
-      SQLite3::Database.new(':memory:', :type_translation => true).tap do |db|
-        db.execute(<<-SQL)
-          CREATE TABLE message (
-            id INTEGER PRIMARY KEY ASC,
-            sender TEXT,
-            recipients TEXT,
-            subject TEXT,
-            source BLOB,
-            size TEXT,
-            type TEXT,
-            created_at DATETIME DEFAULT CURRENT_DATETIME
-          )
-        SQL
-        db.execute(<<-SQL)
-          CREATE TABLE message_part (
-            id INTEGER PRIMARY KEY ASC,
-            message_id INTEGER NOT NULL,
-            cid TEXT,
-            type TEXT,
-            is_attachment INTEGER,
-            filename TEXT,
-            charset TEXT,
-            body BLOB,
-            size INTEGER,
-            created_at DATETIME DEFAULT CURRENT_DATETIME
-          )
-        SQL
+      SQLite3::Database.new(db_path, :type_translation => true).tap do |db|
+        unless db.table_info("message").any?
+          db.execute(<<-SQL)
+            CREATE TABLE message (
+              id INTEGER PRIMARY KEY ASC,
+              sender TEXT,
+              recipients TEXT,
+              subject TEXT,
+              source BLOB,
+              size TEXT,
+              type TEXT,
+              created_at DATETIME DEFAULT CURRENT_DATETIME
+            )
+          SQL
+        end
+        unless db.table_info("message_part").any?
+          db.execute(<<-SQL)
+            CREATE TABLE message_part (
+              id INTEGER PRIMARY KEY ASC,
+              message_id INTEGER NOT NULL,
+              cid TEXT,
+              type TEXT,
+              is_attachment INTEGER,
+              filename TEXT,
+              charset TEXT,
+              body BLOB,
+              size INTEGER,
+              created_at DATETIME DEFAULT CURRENT_DATETIME
+            )
+          SQL
+        end
       end
     end
+  end
+
+  def in_memory_db?
+    db.database_list[0].last == ""
   end
 
   def add_message(message)

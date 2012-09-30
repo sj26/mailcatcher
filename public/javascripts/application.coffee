@@ -50,7 +50,8 @@ class MailCatcher
 
     $('nav.app .quit a').live 'click', (e) =>
       e.preventDefault()
-      if confirm "You will lose all your received messages.\n\nAre you sure you want to quit?"
+      message = [$(this).attr("data-confirm-message"), "Are you sure you want to quit?"].join("")
+      if confirm message
         $.ajax
           type: 'DELETE'
           success: ->

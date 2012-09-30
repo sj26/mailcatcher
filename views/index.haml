@@ -21,7 +21,9 @@
           %li.clear
             %a{:href => '#', :title => 'Clear all messages'} Clear
           %li.quit
-            %a{:href => '#', :title => 'Quit MailCatcher'} Quit
+            - if MailCatcher::Mail.in_memory_db?
+              - message = "You will lose all your received messages.\n\n"
+            %a{:href => '#', :title => 'Quit MailCatcher', :"data-confirm-message" => message} Quit
     %nav#messages
       %table
         %thead
