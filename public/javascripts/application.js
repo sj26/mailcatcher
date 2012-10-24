@@ -124,10 +124,17 @@
             url: '/messages/' + id,
             type: 'DELETE',
             success: function() {
-              $('#messages tbody tr[data-message-id="' + id + '"]').remove();
-              $('#message .metadata dd').empty();
-              $('#message .metadata .attachments').hide();
-              return $('#message iframe').attr('src', 'about:blank');
+              var messageRow, switchTo, _ref, _ref1;
+              messageRow = $('#messages tbody tr[data-message-id="' + id + '"]');
+              switchTo = ((_ref = messageRow.next()) != null ? _ref.data('message-id') : void 0) || ((_ref1 = messageRow.prev()) != null ? _ref1.data('message-id') : void 0);
+              messageRow.remove();
+              if (switchTo) {
+                return _this.loadMessage(switchTo);
+              } else {
+                $('#message .metadata dd').empty();
+                $('#message .metadata .attachments').hide();
+                return $('#message iframe').attr('src', 'about:blank');
+              }
             },
             error: function() {
               return alert('Error while removing message.');

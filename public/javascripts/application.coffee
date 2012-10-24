@@ -92,11 +92,17 @@ class MailCatcher
         $.ajax
           url: '/messages/' + id
           type: 'DELETE'
-          success: ->
-            $('#messages tbody tr[data-message-id="'+id+'"]').remove()
-            $('#message .metadata dd').empty()
-            $('#message .metadata .attachments').hide()
-            $('#message iframe').attr 'src', 'about:blank'
+          success: =>
+            messageRow = $('#messages tbody tr[data-message-id="'+id+'"]')
+            switchTo = messageRow.next()?.data('message-id') || messageRow.prev()?.data('message-id')
+            messageRow.remove()
+            if switchTo
+              @loadMessage switchTo
+            else
+              $('#message .metadata dd').empty()
+              $('#message .metadata .attachments').hide()
+              $('#message iframe').attr 'src', 'about:blank'
+
           error: ->
             alert 'Error while removing message.'
       false
