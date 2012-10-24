@@ -53,8 +53,9 @@ task "test:send", :number do |t, args|
   end
 
   $stderr.puts "Sending #{number} mails to #{ip}:#{port}"
-  number.times do
+  number.times do |n|
     message = Mail.new mails.sample.read
+    message.subject += " (#{n + 1})"
     message.deliver
   end
 end
