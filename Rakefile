@@ -34,6 +34,33 @@ end
 
 multitask "build" => ["build:sass", "build:coffee"]
 
+desc "Send mails for testing"
+task "test:send", :number do |t, args|
+  require 'mail'
+  require 'pathname'
+  require 'active_support/core_ext/array/random_access'
+  require 'active_support/core_ext/object/blank'
+
+  number = (args[:number] || 10).to_i
+  ip, port = '127.0.0.1', 1025
+  ip = ENV['SMTP_IP'] if ENV['SMTP_IP'].present?
+  port = ENV['SMTP_PORT'].to_i if ENV['SMTP_PORT'].present?
+  mails = Pathname.glob('examples/*')
+
+  Mail.defaults do
+    delivery_method :smtp,
+      :address => ip,
+      :port => port
+  end
+
+  $stderr.puts "Sending #{number} mails to #{ip}:#{port}"
+  number.times do |n|
+    message = Mail.new mails.sample.read
+    message.subject += " (#{n + 1})"
+    message.deliver
+  end
+end
+
 desc "Package as Gem"
 task "package:gem" do
   Gem::Package.build spec
