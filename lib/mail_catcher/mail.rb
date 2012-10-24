@@ -150,4 +150,11 @@ module MailCatcher::Mail extend self
     @delete_messages_query.execute and
     @delete_message_parts_query.execute
   end
+
+  def delete_message!(message_id)
+    @delete_messages_query ||= db.prepare 'DELETE FROM message WHERE id = ?'
+    @delete_message_parts_query ||= db.prepare 'DELETE FROM message_part WHERE message_id = ?'
+    @delete_messages_query.execute(message_id) and
+    @delete_message_parts_query.execute(message_id)
+  end
 end

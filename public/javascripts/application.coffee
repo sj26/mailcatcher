@@ -86,6 +86,21 @@ class MailCatcher
       @openTab @nextTab()
       false
 
+    key 'backspace, delete', =>
+      id = @selectedMessage()
+      if id?
+        $.ajax
+          url: '/messages/' + id
+          type: 'DELETE'
+          success: ->
+            $('#messages tbody tr[data-message-id="'+id+'"]').remove()
+            $('#message .metadata dd').empty()
+            $('#message .metadata .attachments').hide()
+            $('#message iframe').attr 'src', 'about:blank'
+          error: ->
+            alert 'Error while removing message.'
+      false
+
     @refresh()
     @subscribe()
 

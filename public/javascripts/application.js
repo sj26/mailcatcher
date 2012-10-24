@@ -116,6 +116,26 @@
         _this.openTab(_this.nextTab());
         return false;
       });
+      key('backspace, delete', function() {
+        var id;
+        id = _this.selectedMessage();
+        if (id != null) {
+          $.ajax({
+            url: '/messages/' + id,
+            type: 'DELETE',
+            success: function() {
+              $('#messages tbody tr[data-message-id="' + id + '"]').remove();
+              $('#message .metadata dd').empty();
+              $('#message .metadata .attachments').hide();
+              return $('#message iframe').attr('src', 'about:blank');
+            },
+            error: function() {
+              return alert('Error while removing message.');
+            }
+          });
+        }
+        return false;
+      });
       this.refresh();
       this.subscribe();
     }
