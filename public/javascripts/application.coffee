@@ -161,13 +161,24 @@ class MailCatcher
         .append($('<td/>').text(message.subject or "No subject").toggleClass("blank", !message.subject))
         .append($('<td/>').text @formatDate message.created_at)
 
+  scrollToRow: (row) ->
+    relativePosition = row.offset().top - $('#messages').offset().top
+    if relativePosition < 0
+      $('#messages').scrollTop($('#messages').scrollTop() + relativePosition - 20)
+    else
+      overflow = relativePosition + row.height() - $('#messages').height()
+      if overflow > 0
+        $('#messages').scrollTop($('#messages').scrollTop() + overflow + 20)
+
   loadMessage: (id) ->
     id = id.id if id?.id?
     id ||= $('#messages tr.selected').attr 'data-message-id'
 
     if id?
       $('#messages tbody tr:not([data-message-id="'+id+'"])').removeClass 'selected'
-      $('#messages tbody tr[data-message-id="'+id+'"]').addClass 'selected'
+      messageRow = $('#messages tbody tr[data-message-id="'+id+'"]')
+      messageRow.addClass 'selected'
+      @scrollToRow(messageRow)
 
       $.getJSON '/messages/' + id + '.json', (message) =>
         $('#message .metadata dd.created_at').text @formatDate message.created_at
