@@ -87,25 +87,31 @@
         }
       });
       key('up', function() {
-        var id;
-        id = _this.selectedMessage() || 1;
-        if (id > 1) id -= 1;
-        _this.loadMessage(id);
+        var _ref, _ref1, _ref2;
+        if (_this.selectedMessage()) {
+          _this.loadMessage((_ref = $('#messages tr.selected')) != null ? (_ref1 = _ref.prev()) != null ? _ref1.data('message-id') : void 0 : void 0);
+        } else {
+          _this.loadMessage((_ref2 = $('#messages tbody tr[data-message-id]:first')) != null ? _ref2.data('message-id') : void 0);
+        }
         return false;
       });
       key('down', function() {
-        var id;
-        id = _this.selectedMessage() || _this.messagesCount();
-        if (id < _this.messagesCount()) id += 1;
-        _this.loadMessage(id);
+        var _ref, _ref1, _ref2;
+        if (_this.selectedMessage()) {
+          _this.loadMessage((_ref = $('#messages tr.selected')) != null ? (_ref1 = _ref.next()) != null ? _ref1.data('message-id') : void 0 : void 0);
+        } else {
+          _this.loadMessage((_ref2 = $('#messages tbody tr[data-message-id]:first')) != null ? _ref2.data('message-id') : void 0);
+        }
         return false;
       });
       key('⌘+up, ctrl+up', function() {
-        _this.loadMessage(1);
+        var _ref;
+        _this.loadMessage((_ref = $('#messages tbody tr[data-message-id]:first')) != null ? _ref.data('message-id') : void 0);
         return false;
       });
       key('⌘+down, ctrl+down', function() {
-        _this.loadMessage(_this.messagesCount());
+        var _ref;
+        _this.loadMessage((_ref = $('#messages tbody tr[data-message-id]:last')) != null ? _ref.data('message-id') : void 0);
         return false;
       });
       key('left', function() {

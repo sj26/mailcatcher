@@ -59,23 +59,25 @@ class MailCatcher
             alert 'Error while quitting.'
 
     key 'up', =>
-      id = @selectedMessage() || 1
-      id -=  1  if id > 1
-      @loadMessage(id)
+      if @selectedMessage()
+        @loadMessage $('#messages tr.selected')?.prev()?.data('message-id')
+      else
+        @loadMessage $('#messages tbody tr[data-message-id]:first')?.data('message-id')
       false
 
     key 'down', =>
-      id = @selectedMessage() || @messagesCount()
-      id += 1 if id < @messagesCount()
-      @loadMessage(id)
+      if @selectedMessage()
+        @loadMessage $('#messages tr.selected')?.next()?.data('message-id')
+      else
+        @loadMessage $('#messages tbody tr[data-message-id]:first')?.data('message-id')
       false
 
     key '⌘+up, ctrl+up', =>
-      @loadMessage(1)
+      @loadMessage $('#messages tbody tr[data-message-id]:first')?.data('message-id')
       false
 
     key '⌘+down, ctrl+down', =>
-      @loadMessage @messagesCount()
+      @loadMessage $('#messages tbody tr[data-message-id]:last')?.data('message-id')
       false
 
     key 'left', =>
