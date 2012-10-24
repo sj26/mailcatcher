@@ -90,25 +90,31 @@
         var id;
         id = _this.selectedMessage() || 1;
         if (id > 1) id -= 1;
-        return _this.loadMessage(id);
+        _this.loadMessage(id);
+        return false;
       });
       key('down', function() {
         var id;
         id = _this.selectedMessage() || _this.messagesCount();
         if (id < _this.messagesCount()) id += 1;
-        return _this.loadMessage(id);
+        _this.loadMessage(id);
+        return false;
       });
       key('⌘+up, ctrl+up', function() {
-        return _this.loadMessage(1);
+        _this.loadMessage(1);
+        return false;
       });
       key('⌘+down, ctrl+down', function() {
-        return _this.loadMessage(_this.messagesCount());
+        _this.loadMessage(_this.messagesCount());
+        return false;
       });
       key('left', function() {
-        return _this.openTab(_this.previousTab());
+        _this.openTab(_this.previousTab());
+        return false;
       });
       key('right', function() {
-        return _this.openTab(_this.nextTab());
+        _this.openTab(_this.nextTab());
+        return false;
       });
       this.refresh();
       this.subscribe();

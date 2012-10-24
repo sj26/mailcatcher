@@ -62,23 +62,29 @@ class MailCatcher
       id = @selectedMessage() || 1
       id -=  1  if id > 1
       @loadMessage(id)
+      false
 
     key 'down', =>
       id = @selectedMessage() || @messagesCount()
       id += 1 if id < @messagesCount()
       @loadMessage(id)
+      false
 
     key '⌘+up, ctrl+up', =>
       @loadMessage(1)
+      false
 
     key '⌘+down, ctrl+down', =>
       @loadMessage @messagesCount()
+      false
 
     key 'left', =>
       @openTab @previousTab()
+      false
 
     key 'right', =>
       @openTab @nextTab()
+      false
 
     @refresh()
     @subscribe()
