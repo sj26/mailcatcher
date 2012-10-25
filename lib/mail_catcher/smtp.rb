@@ -26,6 +26,20 @@ class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
     true
   end
 
+  def mslogger
+    #print fake log lines
+    ts = Time.now.to_i
+    puts '#{ts}@00/00-25004-31B987F3@00/00-03736-F4101B54@00/00-04532-A3456B54@R@bob@example.fict@info@postalengine.com@10.0.1.1@201@esmtp@default@default'
+    ts = Time.now.to_i
+    #if rand(1...100) > 1
+    #  #print a fake delivery log line
+    puts '1064871280@20/00-25593-945A87F3@00/00-03736-F4101B54@00/00-04532-A3456B54@D@postalengine.com@266@group-a@binding-a@0@0.393@10.0.0.1'
+    #else
+      #print a bounce log line
+    #end
+    ts = Time.now.to_i
+  end
+
   def receive_recipient(recipient)
     current_message[:recipients] ||= []
     current_message[:recipients] << recipient
@@ -43,6 +57,7 @@ class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
 
   def receive_message
     MailCatcher::Mail.add_message current_message
+    ms_logger 
     puts "==> SMTP: Received message from '#{current_message[:sender]}' (#{current_message[:source].length} bytes)"
     true
   rescue
