@@ -26,7 +26,7 @@ class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
     true
   end
 
-  def mslogger
+  def ms_logger
     #print fake log lines
     ts = Time.now.to_i
     puts '#{ts}@00/00-25004-31B987F3@00/00-03736-F4101B54@00/00-04532-A3456B54@R@bob@example.fict@info@postalengine.com@10.0.1.1@201@esmtp@default@default'
