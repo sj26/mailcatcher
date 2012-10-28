@@ -10,7 +10,7 @@ class Sinatra::Request
 end
 
 class MailCatcher::Web < Sinatra::Base
-  set :root, Pathname.new(__FILE__).dirname.parent.parent
+  set :root, Pathname.new(__FILE__).expand_path.dirname.parent.parent
   set :haml, :format => :html5
 
   get '/' do
