@@ -131,7 +131,7 @@
             type: 'DELETE',
             success: function() {
               var messageRow, switchTo, _ref, _ref1;
-              messageRow = $('#messages tbody tr[data-message-id="' + id + '"]');
+              messageRow = $("#messages tbody tr[data-message-id='" + id + "']");
               switchTo = ((_ref = messageRow.next()) != null ? _ref.data('message-id') : void 0) || ((_ref1 = messageRow.prev()) != null ? _ref1.data('message-id') : void 0);
               messageRow.remove();
               if (switchTo) {
@@ -270,11 +270,11 @@
       if ((id != null ? id.id : void 0) != null) id = id.id;
       id || (id = $('#messages tr.selected').attr('data-message-id'));
       if (id != null) {
-        $('#messages tbody tr:not([data-message-id="' + id + '"])').removeClass('selected');
-        messageRow = $('#messages tbody tr[data-message-id="' + id + '"]');
+        $("#messages tbody tr:not([data-message-id='" + id + "'])").removeClass('selected');
+        messageRow = $("#messages tbody tr[data-message-id='" + id + "']");
         messageRow.addClass('selected');
         this.scrollToRow(messageRow);
-        return $.getJSON('/messages/' + id + '.json', function(message) {
+        return $.getJSON("/messages/" + id + ".json", function(message) {
           var $ul;
           $('#message .metadata dd.created_at').text(_this.formatDate(message.created_at));
           $('#message .metadata dd.from').text(message.sender);
@@ -285,7 +285,7 @@
             $el = $(el);
             format = $el.attr('data-message-format');
             if ($.inArray(format, message.formats) >= 0) {
-              $el.find('a').attr('href', '/messages/' + id + '.' + format);
+              $el.find('a').attr('href', "/messages/" + id + "." + format);
               return $el.show();
             } else {
               return $el.hide();

@@ -95,7 +95,7 @@ class MailCatcher
           url: '/messages/' + id
           type: 'DELETE'
           success: =>
-            messageRow = $('#messages tbody tr[data-message-id="'+id+'"]')
+            messageRow = $("#messages tbody tr[data-message-id='#{id}']")
             switchTo = messageRow.next()?.data('message-id') || messageRow.prev()?.data('message-id')
             messageRow.remove()
             if switchTo
@@ -198,12 +198,12 @@ class MailCatcher
     id ||= $('#messages tr.selected').attr 'data-message-id'
 
     if id?
-      $('#messages tbody tr:not([data-message-id="'+id+'"])').removeClass 'selected'
-      messageRow = $('#messages tbody tr[data-message-id="'+id+'"]')
+      $("#messages tbody tr:not([data-message-id='#{id}'])").removeClass 'selected'
+      messageRow = $("#messages tbody tr[data-message-id='#{id}']")
       messageRow.addClass 'selected'
       @scrollToRow(messageRow)
 
-      $.getJSON '/messages/' + id + '.json', (message) =>
+      $.getJSON "/messages/#{id}.json", (message) =>
         $('#message .metadata dd.created_at').text @formatDate message.created_at
         $('#message .metadata dd.from').text message.sender
         $('#message .metadata dd.to').text (message.recipients || []).join(', ')
@@ -212,7 +212,7 @@ class MailCatcher
           $el = $(el)
           format = $el.attr 'data-message-format'
           if $.inArray(format, message.formats) >= 0
-            $el.find('a').attr('href', '/messages/' + id + '.' + format)
+            $el.find('a').attr('href', "/messages/#{id}.#{format}")
             $el.show()
           else
             $el.hide()
