@@ -251,13 +251,29 @@
       return $('#messages tbody').append($('<tr />').attr('data-message-id', message.id.toString()).append($('<td/>').text(message.sender || "No sender").toggleClass("blank", !message.sender)).append($('<td/>').text((message.recipients || []).join(', ') || "No receipients").toggleClass("blank", !message.recipients.length)).append($('<td/>').text(message.subject || "No subject").toggleClass("blank", !message.subject)).append($('<td/>').text(this.formatDate(message.created_at))));
     };
 
+    MailCatcher.prototype.scrollToRow = function(row) {
+      var overflow, relativePosition;
+      relativePosition = row.offset().top - $('#messages').offset().top;
+      if (relativePosition < 0) {
+        return $('#messages').scrollTop($('#messages').scrollTop() + relativePosition - 20);
+      } else {
+        overflow = relativePosition + row.height() - $('#messages').height();
+        if (overflow > 0) {
+          return $('#messages').scrollTop($('#messages').scrollTop() + overflow + 20);
+        }
+      }
+    };
+
     MailCatcher.prototype.loadMessage = function(id) {
-      var _this = this;
+      var messageRow,
+        _this = this;
       if ((id != null ? id.id : void 0) != null) id = id.id;
       id || (id = $('#messages tr.selected').attr('data-message-id'));
       if (id != null) {
         $('#messages tbody tr:not([data-message-id="' + id + '"])').removeClass('selected');
-        $('#messages tbody tr[data-message-id="' + id + '"]').addClass('selected');
+        messageRow = $('#messages tbody tr[data-message-id="' + id + '"]');
+        messageRow.addClass('selected');
+        this.scrollToRow(messageRow);
         return $.getJSON('/messages/' + id + '.json', function(message) {
           var $ul;
           $('#message .metadata dd.created_at').text(_this.formatDate(message.created_at));
