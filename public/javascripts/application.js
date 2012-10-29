@@ -87,31 +87,27 @@
         }
       });
       key('up', function() {
-        var _ref, _ref1, _ref2;
         if (_this.selectedMessage()) {
-          _this.loadMessage((_ref = $('#messages tr.selected')) != null ? (_ref1 = _ref.prev()) != null ? _ref1.data('message-id') : void 0 : void 0);
+          _this.loadMessage($('#messages tr.selected').prev().data('message-id'));
         } else {
-          _this.loadMessage((_ref2 = $('#messages tbody tr[data-message-id]:first')) != null ? _ref2.data('message-id') : void 0);
+          _this.loadMessage($('#messages tbody tr[data-message-id]:first').data('message-id'));
         }
         return false;
       });
       key('down', function() {
-        var _ref, _ref1, _ref2;
         if (_this.selectedMessage()) {
-          _this.loadMessage((_ref = $('#messages tr.selected')) != null ? (_ref1 = _ref.next()) != null ? _ref1.data('message-id') : void 0 : void 0);
+          _this.loadMessage($('#messages tr.selected').next().data('message-id'));
         } else {
-          _this.loadMessage((_ref2 = $('#messages tbody tr[data-message-id]:first')) != null ? _ref2.data('message-id') : void 0);
+          _this.loadMessage($('#messages tbody tr[data-message-id]:first').data('message-id'));
         }
         return false;
       });
       key('⌘+up, ctrl+up', function() {
-        var _ref;
-        _this.loadMessage((_ref = $('#messages tbody tr[data-message-id]:first')) != null ? _ref.data('message-id') : void 0);
+        _this.loadMessage($('#messages tbody tr[data-message-id]:first').data('message-id'));
         return false;
       });
       key('⌘+down, ctrl+down', function() {
-        var _ref;
-        _this.loadMessage((_ref = $('#messages tbody tr[data-message-id]:last')) != null ? _ref.data('message-id') : void 0);
+        _this.loadMessage($('#messages tbody tr[data-message-id]:last').data('message-id'));
         return false;
       });
       key('left', function() {
@@ -130,9 +126,9 @@
             url: '/messages/' + id,
             type: 'DELETE',
             success: function() {
-              var messageRow, switchTo, _ref, _ref1;
+              var messageRow, switchTo;
               messageRow = $("#messages tbody tr[data-message-id='" + id + "']");
-              switchTo = ((_ref = messageRow.next()) != null ? _ref.data('message-id') : void 0) || ((_ref1 = messageRow.prev()) != null ? _ref1.data('message-id') : void 0);
+              switchTo = messageRow.next().data('message-id') || messageRow.prev().data('message-id');
               messageRow.remove();
               if (switchTo) {
                 return _this.loadMessage(switchTo);

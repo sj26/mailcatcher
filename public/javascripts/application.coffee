@@ -60,24 +60,24 @@ class MailCatcher
 
     key 'up', =>
       if @selectedMessage()
-        @loadMessage $('#messages tr.selected')?.prev()?.data('message-id')
+        @loadMessage $('#messages tr.selected').prev().data('message-id')
       else
-        @loadMessage $('#messages tbody tr[data-message-id]:first')?.data('message-id')
+        @loadMessage $('#messages tbody tr[data-message-id]:first').data('message-id')
       false
 
     key 'down', =>
       if @selectedMessage()
-        @loadMessage $('#messages tr.selected')?.next()?.data('message-id')
+        @loadMessage $('#messages tr.selected').next().data('message-id')
       else
-        @loadMessage $('#messages tbody tr[data-message-id]:first')?.data('message-id')
+        @loadMessage $('#messages tbody tr[data-message-id]:first').data('message-id')
       false
 
     key '⌘+up, ctrl+up', =>
-      @loadMessage $('#messages tbody tr[data-message-id]:first')?.data('message-id')
+      @loadMessage $('#messages tbody tr[data-message-id]:first').data('message-id')
       false
 
     key '⌘+down, ctrl+down', =>
-      @loadMessage $('#messages tbody tr[data-message-id]:last')?.data('message-id')
+      @loadMessage $('#messages tbody tr[data-message-id]:last').data('message-id')
       false
 
     key 'left', =>
@@ -96,7 +96,7 @@ class MailCatcher
           type: 'DELETE'
           success: =>
             messageRow = $("#messages tbody tr[data-message-id='#{id}']")
-            switchTo = messageRow.next()?.data('message-id') || messageRow.prev()?.data('message-id')
+            switchTo = messageRow.next().data('message-id') || messageRow.prev().data('message-id')
             messageRow.remove()
             if switchTo
               @loadMessage switchTo
