@@ -62,9 +62,7 @@
             url: '/messages',
             type: 'DELETE',
             success: function() {
-              $('#messages tbody, #message .metadata dd').empty();
-              $('#message .metadata .attachments').hide();
-              return $('#message iframe').attr('src', 'about:blank');
+              return this.unselectMessage();
             },
             error: function() {
               return alert('Error while quitting.');
@@ -133,9 +131,7 @@
               if (switchTo) {
                 return _this.loadMessage(switchTo);
               } else {
-                $('#message .metadata dd').empty();
-                $('#message .metadata .attachments').hide();
-                return $('#message iframe').attr('src', 'about:blank');
+                return _this.unselectMessage();
               }
             },
             error: function() {
@@ -258,6 +254,13 @@
           return $('#messages').scrollTop($('#messages').scrollTop() + overflow + 20);
         }
       }
+    };
+
+    MailCatcher.prototype.unselectMessage = function() {
+      $('#messages tbody, #message .metadata dd').empty();
+      $('#message .metadata .attachments').hide();
+      $('#message iframe').attr('src', 'about:blank');
+      return null;
     };
 
     MailCatcher.prototype.loadMessage = function(id) {

@@ -42,9 +42,7 @@ class MailCatcher
           url: '/messages'
           type: 'DELETE'
           success: ->
-            $('#messages tbody, #message .metadata dd').empty()
-            $('#message .metadata .attachments').hide()
-            $('#message iframe').attr 'src', 'about:blank'
+            @unselectMessage()
           error: ->
             alert 'Error while quitting.'
 
@@ -101,9 +99,7 @@ class MailCatcher
             if switchTo
               @loadMessage switchTo
             else
-              $('#message .metadata dd').empty()
-              $('#message .metadata .attachments').hide()
-              $('#message iframe').attr 'src', 'about:blank'
+              @unselectMessage()
 
           error: ->
             alert 'Error while removing message.'
@@ -192,6 +188,12 @@ class MailCatcher
       overflow = relativePosition + row.height() - $('#messages').height()
       if overflow > 0
         $('#messages').scrollTop($('#messages').scrollTop() + overflow + 20)
+
+  unselectMessage: ->
+    $('#messages tbody, #message .metadata dd').empty()
+    $('#message .metadata .attachments').hide()
+    $('#message iframe').attr 'src', 'about:blank'
+    null
 
   loadMessage: (id) ->
     id = id.id if id?.id?
