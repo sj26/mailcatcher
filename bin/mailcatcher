@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 
-require 'lib/mail_catcher'
+require 'mail_catcher'
 MailCatcher.run!
