@@ -1,4 +1,5 @@
 require 'eventmachine'
+require 'mail'
 
 class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
   # We override EM's mail from processing to allow multiple mail-from commands
@@ -28,12 +29,17 @@ class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
 
   def ms_logger
     #print fake log lines
+    #m = Mail::AddressList.new(current_message[:recipients])
+    #recipient = m.addresses.first.to_s
+    recipient = current_message[:recipients][0]
+    #m = Mail::AddressList.new(current_message[:sender])
+    sender = current_message[:sender]
     ts = Time.now.to_i
-    puts '#{ts}@00/00-25004-31B987F3@00/00-03736-F4101B54@00/00-04532-A3456B54@R@bob@example.fict@info@postalengine.com@10.0.1.1@201@esmtp@default@default'
+    puts "#{ts}@00/00-25004-31B987F3@00/00-03736-F4101B54@00/00-04532-A3456B54@R@#{recipient}@#{sender}@10.0.1.1@201@esmtp@default@default"
     ts = Time.now.to_i
     #if rand(1...100) > 1
     #  #print a fake delivery log line
-    puts '1064871280@20/00-25593-945A87F3@00/00-03736-F4101B54@00/00-04532-A3456B54@D@postalengine.com@266@group-a@binding-a@0@0.393@10.0.0.1'
+    puts "#{ts}@20/00-25593-945A87F3@00/00-03736-F4101B54@00/00-04532-A3456B54@D@mail.vresp.com@266@group-a@binding-a@0@0.393@10.0.0.1"
     #else
       #print a bounce log line
     #end
