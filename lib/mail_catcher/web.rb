@@ -132,6 +132,16 @@ class MailCatcher::Web < Sinatra::Base
     end
   end
 
+  delete '/messages/:id' do
+    id = params[:id].to_i
+    if message = MailCatcher::Mail.message(id)
+      MailCatcher::Mail.delete_message!(id)
+      status 204
+    else
+      not_found
+    end
+  end
+
   not_found do
     "<html><body><h1>No Dice</h1><p>The message you were looking for does not exist, or doesn't have content of this type.</p></body></html>"
   end

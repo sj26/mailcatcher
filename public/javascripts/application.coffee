@@ -42,9 +42,7 @@ class MailCatcher
           url: '/messages'
           type: 'DELETE'
           success: ->
-            $('#messages tbody, #message .metadata dd').empty()
-            $('#message .metadata .attachments').hide()
-            $('#message iframe').attr 'src', 'about:blank'
+            @unselectMessage()
           error: ->
             alert 'Error while quitting.'
 
@@ -59,26 +57,53 @@ class MailCatcher
             alert 'Error while quitting.'
 
     key 'up', =>
-      id = @selectedMessage() || 1
-      id -=  1  if id > 1
-      @loadMessage(id)
+      if @selectedMessage()
+        @loadMessage $('#messages tr.selected').prev().data('message-id')
+      else
+        @loadMessage $('#messages tbody tr[data-message-id]:first').data('message-id')
+      false
 
     key 'down', =>
-      id = @selectedMessage() || @messagesCount()
-      id += 1 if id < @messagesCount()
-      @loadMessage(id)
+      if @selectedMessage()
+        @loadMessage $('#messages tr.selected').next().data('message-id')
+      else
+        @loadMessage $('#messages tbody tr[data-message-id]:first').data('message-id')
+      false
 
     key '⌘+up, ctrl+up', =>
-      @loadMessage(1)
+      @loadMessage $('#messages tbody tr[data-message-id]:first').data('message-id')
+      false
 
     key '⌘+down, ctrl+down', =>
-      @loadMessage @messagesCount()
+      @loadMessage $('#messages tbody tr[data-message-id]:last').data('message-id')
+      false
 
     key 'left', =>
       @openTab @previousTab()
+      false
 
     key 'right', =>
       @openTab @nextTab()
+      false
+
+    key 'backspace, delete', =>
+      id = @selectedMessage()
+      if id?
+        $.ajax
+          url: '/messages/' + id
+          type: 'DELETE'
+          success: =>
+            messageRow = $("#messages tbody tr[data-message-id='#{id}']")
+            switchTo = messageRow.next().data('message-id') || messageRow.prev().data('message-id')
+            messageRow.remove()
+            if switchTo
+              @loadMessage switchTo
+            else
+              @unselectMessage()
+
+          error: ->
+            alert 'Error while removing message.'
+      false
 
     @refresh()
     @subscribe()
@@ -155,15 +180,32 @@ class MailCatcher
         .append($('<td/>').text(message.subject or "No subject").toggleClass("blank", !message.subject))
         .append($('<td/>').text @formatDate message.created_at)
 
+  scrollToRow: (row) ->
+    relativePosition = row.offset().top - $('#messages').offset().top
+    if relativePosition < 0
+      $('#messages').scrollTop($('#messages').scrollTop() + relativePosition - 20)
+    else
+      overflow = relativePosition + row.height() - $('#messages').height()
+      if overflow > 0
+        $('#messages').scrollTop($('#messages').scrollTop() + overflow + 20)
+
+  unselectMessage: ->
+    $('#messages tbody, #message .metadata dd').empty()
+    $('#message .metadata .attachments').hide()
+    $('#message iframe').attr 'src', 'about:blank'
+    null
+
   loadMessage: (id) ->
     id = id.id if id?.id?
     id ||= $('#messages tr.selected').attr 'data-message-id'
 
     if id?
-      $('#messages tbody tr:not([data-message-id="'+id+'"])').removeClass 'selected'
-      $('#messages tbody tr[data-message-id="'+id+'"]').addClass 'selected'
+      $("#messages tbody tr:not([data-message-id='#{id}'])").removeClass 'selected'
+      messageRow = $("#messages tbody tr[data-message-id='#{id}']")
+      messageRow.addClass 'selected'
+      @scrollToRow(messageRow)
 
-      $.getJSON '/messages/' + id + '.json', (message) =>
+      $.getJSON "/messages/#{id}.json", (message) =>
         $('#message .metadata dd.created_at').text @formatDate message.created_at
         $('#message .metadata dd.from').text message.sender
         $('#message .metadata dd.to').text (message.recipients || []).join(', ')
@@ -172,7 +214,7 @@ class MailCatcher
           $el = $(el)
           format = $el.attr 'data-message-format'
           if $.inArray(format, message.formats) >= 0
-            $el.find('a').attr('href', '/messages/' + id + '.' + format)
+            $el.find('a').attr('href', "/messages/#{id}.#{format}")
             $el.show()
           else
             $el.hide()
