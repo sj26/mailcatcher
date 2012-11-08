@@ -14,17 +14,17 @@ module MailCatcher
         puts "Bounce Event: no email found."
         return true
       end
-      
+      mail = ::Mail.new(message['source'])
       current_message = {
         :ts => Time.now.to_i,
-        :message_id => message['id'],
+        :message_id => mail.message_id,
         :message_size => message['size'],
-        :batch_id => message['id'],                     # WIP: Where do I get this?
-        :connection_id => message['id'],                # WIP: Where do I get this?
-        :recipient_localpart => parse_address(message["recipients"].first).local,
-        :recipient_domain => parse_address(message["recipients"].first).domain,
-        :sender_localpart => parse_address(message["sender"]).local,
-        :sender_domain => parse_address(message["sender"]).domain,
+        :batch_id => mail.message_id,
+        :connection_id => mail.message_id,
+        :recipient_localpart => parse_address(mail.to.first).local,
+        :recipient_domain => parse_address(mail.to.first).domain,
+        :sender_localpart => parse_address(mail.from.first).local,
+        :sender_domain => parse_address(mail.from.first).domain,
         :binding_group => "binding_group",              # WIP: Where do I get this?
         :binding => "binding",                          # WIP: Where do I get this?
         :bounce_ip => "#{ENV["HOSTNAME"]}",
