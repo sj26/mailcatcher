@@ -12,3 +12,7 @@ group :guard_mac do
   gem 'rb-fsevent'
   gem 'growl'
 end
+
+group :development, :test do
+  gem 'rspec'
+end

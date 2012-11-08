@@ -1,7 +1,6 @@
 require 'eventmachine'
 require 'mail'
 
-
 module MailCatcher
   module SimpleLogger extend self
     
@@ -11,6 +10,11 @@ module MailCatcher
 
     def bounce message_id
       message = MailCatcher::Mail.message message_id
+      unless message 
+        puts "Bounce Event: no email found."
+        return true
+      end
+      
       current_message = {
         :ts => Time.now.to_i,
         :message_id => message['id'],
@@ -27,7 +31,7 @@ module MailCatcher
         :bounce_message => "Bounce Event enforced by user"
       }
 
-      puts "Bounce Event:"      
+      puts "Bounce Event"      
       puts "#{current_message[:ts]}@#{current_message[:message_id]}@#{current_message[:batch_id]}@#{current_message[:connection_id]}@B@#{current_message[:recipient_localpart]}@#{current_message[:recipient_domain]}@#{current_message[:sender_localpart]}@#{current_message[:sender_domain]}@#{current_message[:binding_group]}@#{current_message[:binding]}@21@40@#{current_message[:message_size]}@#{current_message[:bounce_ip]}@#{current_message[:bounce_message]}"
       EventMachine.next_tick do
         MailCatcher::Events::BounceAdded.push message

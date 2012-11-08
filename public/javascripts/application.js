@@ -70,8 +70,10 @@
               url: '/messages/' + id + '.json',
               type: 'DELETE',
               success: function() {
-                alert('Message deleted.');
-                return $('#messages tr.selected').remove();
+                $('#messages tr.selected').remove();
+                $('#message .metadata dd').empty();
+                $('#message .metadata .attachments').hide();
+                return $('#message iframe').attr('src', 'about:blank');
               },
               error: function() {
                 return alert('Error while deleting message.');
@@ -86,23 +88,23 @@
         var id;
         e.preventDefault();
         id = $('#messages tr.selected').attr('data-message-id');
-        if (id && confirm("Are you sure you want to bounce the message?")) {
-          return $.ajax({
-            url: '/messages/bounce/' + id + '.json',
-            type: 'GET',
-            success: function() {
-              alert('Message Bounced.');
-              $('#messages tr.selected').remove();
-              $('#message .metadata dd').empty();
-              $('#message .metadata .attachments').hide();
-              return $('#message iframe').attr('src', 'about:blank');
-            },
-            error: function() {
-              return alert('Error while bouncing message.');
-            }
-          });
-        } else {
-          return alert('No email selected for bouncing');
+        if (id) {
+          if (confirm("Are you sure you want to bounce the message?")) {
+            return $.ajax({
+              url: '/messages/bounce/' + id + '.json',
+              type: 'GET',
+              success: function() {
+                alert('Message Bounced.');
+                $('#messages tr.selected').remove();
+                $('#message .metadata dd').empty();
+                $('#message .metadata .attachments').hide();
+                return $('#message iframe').attr('src', 'about:blank');
+              },
+              error: function() {
+                return alert('Error while bouncing message.');
+              }
+            });
+          }
         }
       });
       $('nav.app .clear a').live('click', function(e) {

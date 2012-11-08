@@ -46,8 +46,10 @@ class MailCatcher
             url: '/messages/' + id + '.json'
             type: 'DELETE'
             success: ->
-              alert 'Message deleted.'
               $('#messages tr.selected').remove()
+              $('#message .metadata dd').empty()
+              $('#message .metadata .attachments').hide()
+              $('#message iframe').attr 'src', 'about:blank'
             error: ->
               alert 'Error while deleting message.'
       else
