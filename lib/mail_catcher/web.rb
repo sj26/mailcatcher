@@ -41,6 +41,27 @@ class MailCatcher::Web < Sinatra::Base
     status 204
   end
 
+  # deleting one message at the time
+  delete '/messages/:id.json' do
+    id = params[:id].to_i
+    if message = MailCatcher::Mail.message(id)
+      MailCatcher::Mail.delete_message!(id)
+      status 204
+    else
+      not_found
+    end
+  end
+
+  get '/messages/bounce/:id' do
+    id = params[:id].to_i
+    if message = MailCatcher::Mail.message(id)
+      MailCatcher::Mail.bounce_message(id)
+      status 204
+    else
+      not_found
+    end
+  end
+
   get '/messages/:id.json' do
     id = params[:id].to_i
     if message = MailCatcher::Mail.message(id)

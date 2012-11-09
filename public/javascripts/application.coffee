@@ -35,6 +35,46 @@ class MailCatcher
             $('#messages').css
               height: e.clientY - $('#messages').offset().top
 
+
+    # Deleting one message at the time, by selecting it from the tray
+    $('#message .views .delete a').live 'click', (e) =>
+      e.preventDefault()
+      id = $('#messages tr.selected').attr 'data-message-id'
+      if id
+        if confirm "You will lose the selected received message.\n\nAre you sure you want to delete the message?"
+          $.ajax
+            url: '/messages/' + id + '.json'
+            type: 'DELETE'
+            success: ->
+              $('#messages tr.selected').remove()
+              $('#message .metadata dd').empty()
+              $('#message .metadata .attachments').hide()
+              $('#message iframe').attr 'src', 'about:blank'
+            error: ->
+              alert 'Error while deleting message.'
+      else
+        alert 'No email selected for deletion'
+
+
+    # Bounce Email by selecting it from the tray
+    $('#message .views .bound a').live 'click', (e) =>
+      e.preventDefault()
+      id = $('#messages tr.selected').attr 'data-message-id'    
+      if id  
+        if confirm "Are you sure you want to bounce the message?"
+          $.ajax
+            url: '/messages/bounce/' + id + '.json'
+            type: 'GET'
+            success: ->
+              alert 'Message Bounced.'
+              $('#messages tr.selected').remove()
+              $('#message .metadata dd').empty()
+              $('#message .metadata .attachments').hide()
+              $('#message iframe').attr 'src', 'about:blank'
+            error: ->
+              alert 'Error while bouncing message.'
+
+
     $('nav.app .clear a').live 'click', (e) =>
       e.preventDefault()
       if confirm "You will lose all your received messages.\n\nAre you sure you want to clear all messages?"
