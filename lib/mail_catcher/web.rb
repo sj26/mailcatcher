@@ -41,6 +41,17 @@ class MailCatcher::Web < Sinatra::Base
     status 204
   end
 
+  # deliver a selected message
+  get '/messages/deliver/:id' do
+    id = params[:id].to_i
+    if message = MailCatcher::Mail.message(id)
+      result = MailCatcher::Mail.deliver_message(id)
+      result.to_json
+    else
+      not_found
+    end
+  end
+
   # deleting one message at the time
   delete '/messages/:id.json' do
     id = params[:id].to_i
@@ -56,7 +67,7 @@ class MailCatcher::Web < Sinatra::Base
     id = params[:id].to_i
     if message = MailCatcher::Mail.message(id)
       MailCatcher::Mail.bounce_message(id)
-      status 204
+      message.to_json
     else
       not_found
     end

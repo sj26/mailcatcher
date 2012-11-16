@@ -69,7 +69,7 @@ module MailCatcher::Mail extend self
   end
 
   def messages
-    @messages_query ||= db.prepare "SELECT id, sender, recipients, subject, size, source, created_at FROM message ORDER BY created_at ASC"
+    @messages_query ||= db.prepare "SELECT * FROM message ORDER BY created_at ASC"
     @messages_query.execute.map do |row|
       Hash[row.fields.zip(row)].tap do |message|
         message["recipients"] &&= ActiveSupport::JSON.decode message["recipients"]
@@ -162,4 +162,26 @@ module MailCatcher::Mail extend self
     MailCatcher::SimpleLogger.bounce(message_id)
     delete_message!(message_id)
   end
+  
+  def deliver_message(id)
+    begin
+      raise 'No ID was specified.'  unless id
+      msg = message(id)
+      raise 'No message match the specified ID.'  unless msg
+      deliver(msg)
+    rescue  Exception => e
+      {:error=>{:message => e.message}}
+    end
+  end
+  
+  def deliver(msg)
+      raise "Mail's source is not specified" if msg['source'].empty?
+      mail = ::Mail.new(msg['source'])
+      mail.deliver!
+      delete_message!(msg['id'])
+      return {:from       => mail.from.join(';'),
+              :to         => mail.to.join(';'),
+              :message_id => mail.message_id}
+  end
+  
 end

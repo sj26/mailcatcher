@@ -60,28 +60,44 @@
           });
         }
       });
+      $('#message .views .deliver a').live('click', function(e) {
+        var id;
+        e.preventDefault();
+        id = $('#messages tr.selected').attr('data-message-id');
+        if (id) {
+          return $.ajax({
+            url: '/messages/deliver/' + id,
+            type: 'GET',
+            success: function(data, textStatus, jqXHR) {
+              $('#messages tr.selected').remove();
+              $('#message .metadata dd').empty();
+              $('#message .metadata .attachments').hide();
+              return $('#message iframe').attr('src', 'about:blank');
+            },
+            error: function() {
+              return alert('Error while delivering message.');
+            }
+          });
+        }
+      });
       $('#message .views .delete a').live('click', function(e) {
         var id;
         e.preventDefault();
         id = $('#messages tr.selected').attr('data-message-id');
         if (id) {
-          if (confirm("You will lose the selected received message.\n\nAre you sure you want to delete the message?")) {
-            return $.ajax({
-              url: '/messages/' + id + '.json',
-              type: 'DELETE',
-              success: function() {
-                $('#messages tr.selected').remove();
-                $('#message .metadata dd').empty();
-                $('#message .metadata .attachments').hide();
-                return $('#message iframe').attr('src', 'about:blank');
-              },
-              error: function() {
-                return alert('Error while deleting message.');
-              }
-            });
-          }
-        } else {
-          return alert('No email selected for deletion');
+          return $.ajax({
+            url: '/messages/' + id + '.json',
+            type: 'DELETE',
+            success: function() {
+              $('#messages tr.selected').remove();
+              $('#message .metadata dd').empty();
+              $('#message .metadata .attachments').hide();
+              return $('#message iframe').attr('src', 'about:blank');
+            },
+            error: function() {
+              return alert('Error while deleting message.');
+            }
+          });
         }
       });
       $('#message .views .bound a').live('click', function(e) {
@@ -89,22 +105,20 @@
         e.preventDefault();
         id = $('#messages tr.selected').attr('data-message-id');
         if (id) {
-          if (confirm("Are you sure you want to bounce the message?")) {
-            return $.ajax({
-              url: '/messages/bounce/' + id + '.json',
-              type: 'GET',
-              success: function() {
-                alert('Message Bounced.');
-                $('#messages tr.selected').remove();
-                $('#message .metadata dd').empty();
-                $('#message .metadata .attachments').hide();
-                return $('#message iframe').attr('src', 'about:blank');
-              },
-              error: function() {
-                return alert('Error while bouncing message.');
-              }
-            });
-          }
+          return $.ajax({
+            url: '/messages/bounce/' + id + '.json',
+            type: 'GET',
+            success: function(data) {
+              alert('Message Bounced.');
+              $('#messages tr.selected').remove();
+              $('#message .metadata dd').empty();
+              $('#message .metadata .attachments').hide();
+              return $('#message iframe').attr('src', 'about:blank');
+            },
+            error: function() {
+              return alert('Error while bouncing message.');
+            }
+          });
         }
       });
       $('nav.app .clear a').live('click', function(e) {
