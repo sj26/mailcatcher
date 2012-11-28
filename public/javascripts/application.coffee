@@ -36,24 +36,37 @@ class MailCatcher
               height: e.clientY - $('#messages').offset().top
 
 
+    # Delivering a message to the right recipient
+    $('#message .views .deliver a').live 'click', (e) =>
+      e.preventDefault()
+      id = $('#messages tr.selected').attr 'data-message-id'
+      if id
+       $.ajax
+         url: '/messages/deliver/' + id
+         type: 'GET'
+         success: (data, textStatus, jqXHR) ->
+           $('#messages tr.selected').remove()
+           $('#message .metadata dd').empty()
+           $('#message .metadata .attachments').hide()
+           $('#message iframe').attr 'src', 'about:blank'
+         error: ->
+           alert 'Error while delivering message.'
+        
     # Deleting one message at the time, by selecting it from the tray
     $('#message .views .delete a').live 'click', (e) =>
       e.preventDefault()
       id = $('#messages tr.selected').attr 'data-message-id'
       if id
-        if confirm "You will lose the selected received message.\n\nAre you sure you want to delete the message?"
-          $.ajax
-            url: '/messages/' + id + '.json'
-            type: 'DELETE'
-            success: ->
-              $('#messages tr.selected').remove()
-              $('#message .metadata dd').empty()
-              $('#message .metadata .attachments').hide()
-              $('#message iframe').attr 'src', 'about:blank'
-            error: ->
-              alert 'Error while deleting message.'
-      else
-        alert 'No email selected for deletion'
+        $.ajax
+          url: '/messages/' + id + '.json'
+          type: 'DELETE'
+          success: ->
+            $('#messages tr.selected').remove()
+            $('#message .metadata dd').empty()
+            $('#message .metadata .attachments').hide()
+            $('#message iframe').attr 'src', 'about:blank'
+          error: ->
+            alert 'Error while deleting message.'
 
 
     # Bounce Email by selecting it from the tray
@@ -61,18 +74,17 @@ class MailCatcher
       e.preventDefault()
       id = $('#messages tr.selected').attr 'data-message-id'    
       if id  
-        if confirm "Are you sure you want to bounce the message?"
-          $.ajax
-            url: '/messages/bounce/' + id + '.json'
-            type: 'GET'
-            success: ->
-              alert 'Message Bounced.'
-              $('#messages tr.selected').remove()
-              $('#message .metadata dd').empty()
-              $('#message .metadata .attachments').hide()
-              $('#message iframe').attr 'src', 'about:blank'
-            error: ->
-              alert 'Error while bouncing message.'
+        $.ajax
+          url: '/messages/bounce/' + id + '.json'
+          type: 'GET'
+          success: (data) ->
+            alert 'Message Bounced.'
+            $('#messages tr.selected').remove()
+            $('#message .metadata dd').empty()
+            $('#message .metadata .attachments').hide()
+            $('#message iframe').attr 'src', 'about:blank'
+          error: ->
+            alert 'Error while bouncing message.'
 
 
     $('nav.app .clear a').live 'click', (e) =>
