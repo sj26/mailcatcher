@@ -4,6 +4,7 @@ require 'open3'
 require 'optparse'
 require 'rbconfig'
 require 'thin'
+require 'em-logger'
 
 require 'mail_catcher/version'
 
@@ -55,6 +56,7 @@ module MailCatcher extend self
     :daemon => !windows?,
     :growl => growlnotify?,
     :browse => false,
+    :log    => 'log/ms.log',
   }
 
   def parse! arguments=ARGV, defaults=@defaults
@@ -130,8 +132,12 @@ module MailCatcher extend self
 
     Thin::Logging.silent = true
 
+    log = Logger.new(options[:log])
+    logger = EM::Logger.new(log)
+
     # One EventMachine loop...
     EventMachine.run do
+      logger.info('inside Event Machine Runloop')
       # Get our lion on if asked
       MailCatcher::Growl.start if options[:growl]
 

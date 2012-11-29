@@ -2,6 +2,8 @@ source 'http://rubygems.org'
 
 gemspec
 
+gem 'em-logger'
+
 group :guard do
   gem 'guard'
   gem 'guard-compass'
