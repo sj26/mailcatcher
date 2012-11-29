@@ -5,7 +5,7 @@ require 'optparse'
 require 'rbconfig'
 require 'thin'
 require 'logger'
-require 'em-logger'
+#require 'em-logger'
 
 require 'mail_catcher/version'
 
@@ -123,11 +123,11 @@ module MailCatcher extend self
     end
   end
 
-  def self.logger
+  def logger
     @logger
   end
   
-  def self.logger=(logger)
+  def logger=(logger)
     @logger ||= Logger.new('log/ms.log')
   end
 
