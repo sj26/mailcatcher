@@ -33,7 +33,7 @@ module MailCatcher
 
       puts "Bounce Event"      
       puts "#{current_message[:ts]}@#{current_message[:message_id]}@#{current_message[:batch_id]}@#{current_message[:connection_id]}@B@#{current_message[:recipient_localpart]}@#{current_message[:recipient_domain]}@#{current_message[:sender_localpart]}@#{current_message[:sender_domain]}@#{current_message[:binding_group]}@#{current_message[:binding]}@21@40@#{current_message[:message_size]}@#{current_message[:bounce_ip]}@#{current_message[:bounce_message]}"
-      log.info("#{current_message[:ts]}@#{current_message[:message_id]}@#{current_message[:batch_id]}@#{current_message[:connection_id]}@B@#{current_message[:recipient_localpart]}@#{current_message[:recipient_domain]}@#{current_message[:sender_localpart]}@#{current_message[:sender_domain]}@#{current_message[:binding_group]}@#{current_message[:binding]}@21@40@#{current_message[:message_size]}@#{current_message[:bounce_ip]}@#{current_message[:bounce_message]}")
+      #logger.info("#{current_message[:ts]}@#{current_message[:message_id]}@#{current_message[:batch_id]}@#{current_message[:connection_id]}@B@#{current_message[:recipient_localpart]}@#{current_message[:recipient_domain]}@#{current_message[:sender_localpart]}@#{current_message[:sender_domain]}@#{current_message[:binding_group]}@#{current_message[:binding]}@21@40@#{current_message[:message_size]}@#{current_message[:bounce_ip]}@#{current_message[:bounce_message]}")
       EventMachine.next_tick do
         MailCatcher::Events::BounceAdded.push message
       end

@@ -123,6 +123,14 @@ module MailCatcher extend self
     end
   end
 
+  def self.logger
+    @logger
+  end
+  
+  def self.logger=(logger)
+    @logger ||= Logger.new('log/ms.log')
+  end
+
   def run! options=nil
     # If we are passed options, fill in the blanks
     options &&= @defaults.merge options
@@ -133,12 +141,12 @@ module MailCatcher extend self
 
     Thin::Logging.silent = true
 
-    log = Logger.new(options[:log])
+    #log = Logger.new(options[:log])
     #logger = EM::Logger.new(log)
 
     # One EventMachine loop...
     EventMachine.run do
-      log.info('Starting up Runloop')
+      logger.info('Starting up Runloop with setup')
       # Get our lion on if asked
       MailCatcher::Growl.start if options[:growl]
 
