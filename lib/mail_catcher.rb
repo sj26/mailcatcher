@@ -4,8 +4,6 @@ require 'open3'
 require 'optparse'
 require 'rbconfig'
 require 'thin'
-require 'logger'
-#require 'em-logger'
 
 require 'mail_catcher/version'
 require 'mail_catcher/logger'
@@ -134,13 +132,12 @@ module MailCatcher extend self
 
     Thin::Logging.silent = true
 
-    #logger = EM::Logger.new(log)
-    
     MailCatcher::setup_logger(options[:log])
 
     # One EventMachine loop...
     EventMachine.run do
       MailCatcher::logger.info('Starting up Runloop with setup')
+
       # Get our lion on if asked
       MailCatcher::Growl.start if options[:growl]
 
