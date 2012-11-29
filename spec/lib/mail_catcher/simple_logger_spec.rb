@@ -12,6 +12,8 @@ describe MailCatcher::SimpleLogger do
   before(:all) do
     @mail_dummy = DummyClass.new
     @mail_dummy.extend MailCatcher::Mail
+    MailCatcher::setup_logger
+    MailCatcher.logger.level = Logger::ERROR
     
     @logger_dummy = DummyClass.new    
     @logger_dummy.extend MailCatcher::SimpleLogger

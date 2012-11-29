@@ -34,11 +34,11 @@ class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
 
     ts = Time.now.to_i
     puts "#{ts}@00/00-25004-31B987F3@00/00-03736-F4101B54@00/00-04532-A3456B54@R@#{recipient}@#{sender}@10.0.1.1@201@esmtp@default@default"
-    logger.info("#{ts}@00/00-25004-31B987F3@00/00-03736-F4101B54@00/00-04532-A3456B54@R@#{recipient}@#{sender}@10.0.1.1@201@esmtp@default@default")
+    MailCatcher::logger.info("#{ts}@00/00-25004-31B987F3@00/00-03736-F4101B54@00/00-04532-A3456B54@R@#{recipient}@#{sender}@10.0.1.1@201@esmtp@default@default")
 
     ts = Time.now.to_i
     puts "#{ts}@20/00-25593-945A87F3@00/00-03736-F4101B54@00/00-04532-A3456B54@D@mail.vresp.com@266@group-a@binding-a@0@0.393@10.0.0.1"
-    logger.info("#{ts}@20/00-25593-945A87F3@00/00-03736-F4101B54@00/00-04532-A3456B54@D@mail.vresp.com@266@group-a@binding-a@0@0.393@10.0.0.1")
+    MailCatcher::logger.info("#{ts}@20/00-25593-945A87F3@00/00-03736-F4101B54@00/00-04532-A3456B54@D@mail.vresp.com@266@group-a@binding-a@0@0.393@10.0.0.1")
     ts = Time.now.to_i
   end
 
