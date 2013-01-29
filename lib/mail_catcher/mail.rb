@@ -69,7 +69,7 @@ module MailCatcher::Mail extend self
   end
 
   def messages
-    @messages_query ||= db.prepare "SELECT id, sender, recipients, subject, size, created_at FROM message ORDER BY created_at ASC"
+    @messages_query ||= db.prepare "SELECT id, sender, recipients, subject, size, created_at FROM message ORDER BY created_at DESC"
     @messages_query.execute.map do |row|
       Hash[row.fields.zip(row)].tap do |message|
         message["recipients"] &&= ActiveSupport::JSON.decode message["recipients"]
