@@ -3,18 +3,23 @@
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   jQuery.expr[':'].icontains = function(a, i, m) {
-    var _ref, _ref2;
-    return ((_ref = (_ref2 = a.textContent) != null ? _ref2 : a.innerText) != null ? _ref : "").toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
+    var _ref, _ref1;
+    return ((_ref = (_ref1 = a.textContent) != null ? _ref1 : a.innerText) != null ? _ref : "").toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
   };
 
   MailCatcher = (function() {
 
     function MailCatcher() {
       this.nextTab = __bind(this.nextTab, this);
+
       this.previousTab = __bind(this.previousTab, this);
+
       this.openTab = __bind(this.openTab, this);
+
       this.selectedTab = __bind(this.selectedTab, this);
+
       this.getTab = __bind(this.getTab, this);
+
       var _this = this;
       $('#messages tr').live('click', function(e) {
         e.preventDefault();
@@ -162,7 +167,9 @@
     };
 
     MailCatcher.prototype.formatDate = function(date) {
-      if (typeof date === "string") date && (date = this.parseDate(date));
+      if (typeof date === "string") {
+        date && (date = this.parseDate(date));
+      }
       date && (date = this.offsetTimeZone(date));
       return date && (date = date.toString("dddd, d MMM yyyy h:mm:ss tt"));
     };
@@ -190,7 +197,9 @@
     MailCatcher.prototype.previousTab = function(tab) {
       var i;
       i = tab || tab === 0 ? tab : this.selectedTab() - 1;
-      if (i < 0) i = this.tabs().length - 1;
+      if (i < 0) {
+        i = this.tabs().length - 1;
+      }
       if (this.getTab(i).is(":visible")) {
         return i;
       } else {
@@ -201,7 +210,9 @@
     MailCatcher.prototype.nextTab = function(tab) {
       var i;
       i = tab ? tab : this.selectedTab() + 1;
-      if (i > this.tabs().length - 1) i = 0;
+      if (i > this.tabs().length - 1) {
+        i = 0;
+      }
       if (this.getTab(i).is(":visible")) {
         return i;
       } else {
@@ -210,7 +221,9 @@
     };
 
     MailCatcher.prototype.haveMessage = function(message) {
-      if (message.id != null) message = message.id;
+      if (message.id != null) {
+        message = message.id;
+      }
       return $("#messages tbody tr[data-message-id=\"" + message + "\"]").length > 0;
     };
 
@@ -240,7 +253,7 @@
     };
 
     MailCatcher.prototype.addMessage = function(message) {
-      return $('#messages tbody').append($('<tr />').attr('data-message-id', message.id.toString()).append($('<td/>').text(message.sender || "No sender").toggleClass("blank", !message.sender)).append($('<td/>').text((message.recipients || []).join(', ') || "No receipients").toggleClass("blank", !message.recipients.length)).append($('<td/>').text(message.subject || "No subject").toggleClass("blank", !message.subject)).append($('<td/>').text(this.formatDate(message.created_at))));
+      return $('#messages tbody').prepend($('<tr />').attr('data-message-id', message.id.toString()).append($('<td/>').text(message.sender || "No sender").toggleClass("blank", !message.sender)).append($('<td/>').text((message.recipients || []).join(', ') || "No receipients").toggleClass("blank", !message.recipients.length)).append($('<td/>').text(message.subject || "No subject").toggleClass("blank", !message.subject)).append($('<td/>').text(this.formatDate(message.created_at))));
     };
 
     MailCatcher.prototype.scrollToRow = function(row) {
@@ -266,7 +279,9 @@
     MailCatcher.prototype.loadMessage = function(id) {
       var messageRow,
         _this = this;
-      if ((id != null ? id.id : void 0) != null) id = id.id;
+      if ((id != null ? id.id : void 0) != null) {
+        id = id.id;
+      }
       id || (id = $('#messages tr.selected').attr('data-message-id'));
       if (id != null) {
         $("#messages tbody tr:not([data-message-id='" + id + "'])").removeClass('selected');
@@ -343,7 +358,9 @@
       var _this = this;
       return $.getJSON('/messages', function(messages) {
         return $.each(messages, function(i, message) {
-          if (!_this.haveMessage(message)) return _this.addMessage(message);
+          if (!_this.haveMessage(message)) {
+            return _this.addMessage(message);
+          }
         });
       });
     };
