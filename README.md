@@ -41,7 +41,7 @@ Instead, pop a note in your README stating you use mailcatcher. Simply run `gem 
 
 Under RVM your mailcatcher command may only be available under the ruby you install mailcatcher into. To prevent this, and to prevent gem conflicts, install mailcatcher into a dedicated gemset and create wrapper scripts:
 
-    rvm default@mailcatcher --create gem install mailcatcher
+    rvm default@mailcatcher --create do gem install mailcatcher
     rvm wrapper default@mailcatcher --no-prefix mailcatcher catchmail
 
 ### Rails
