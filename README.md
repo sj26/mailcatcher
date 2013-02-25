@@ -31,6 +31,12 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 
 The brave can get the source from [the GitHub repository][mailcatcher-github].
 
+### Bundler
+
+Please don't put mailcatcher into your Gemfile. It will conflict with your applications gems at some point.
+
+Instead, pop a note in your README stating you use mailcatcher. Simply run `gem install mailcatcher` then `mailcatcher` to get started.
+
 ### RVM
 
 Under RVM your mailcatcher command may only be available under the ruby you install mailcatcher into. To prevent this, and to prevent gem conflicts, install mailcatcher into a dedicated gemset and create wrapper scripts:
