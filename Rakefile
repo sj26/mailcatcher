@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'rubygems/package'
 require File.expand_path('../lib/mail_catcher/version', __FILE__)
 
 spec_file = File.expand_path __FILE__ + '/../mailcatcher.gemspec'
@@ -35,8 +36,7 @@ multitask "build" => ["build:sass", "build:coffee"]
 
 desc "Package as Gem"
 task "package:gem" do
-  builder = Gem::Builder.new spec
-  builder.build
+  Gem::Package.build spec
 end
 
 task "package" => ["build", "package:gem"]
