@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "activesupport", "~> 3.0"
   s.add_dependency "eventmachine", "~> 1.0.0"
-  s.add_dependency "haml", "~> 3.1"
+  s.add_dependency "haml", ">= 3.1", "< 5"
   s.add_dependency "mail", "~> 2.3"
   s.add_dependency "sinatra", "~> 1.2"
   s.add_dependency "sqlite3", "~> 1.3"
