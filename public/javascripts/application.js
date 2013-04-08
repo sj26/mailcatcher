@@ -72,7 +72,7 @@
             url: '/messages',
             type: 'DELETE',
             success: function() {
-              return this.unselectMessage();
+              return _this.unselectMessage();
             },
             error: function() {
               return alert('Error while quitting.');

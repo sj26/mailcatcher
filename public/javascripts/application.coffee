@@ -41,7 +41,7 @@ class MailCatcher
         $.ajax
           url: '/messages'
           type: 'DELETE'
-          success: ->
+          success: =>
             @unselectMessage()
           error: ->
             alert 'Error while quitting.'
