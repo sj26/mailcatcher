@@ -34,10 +34,7 @@ class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
 
   def receive_data_chunk(lines)
     current_message[:source] ||= ""
-    lines.each do |line|
-      # RFC821 4.5.2 says leading periods should be stripped from the body data.
-      current_message[:source] << line.sub(/\A\./, "") << "\n"
-    end
+    current_message[:source] << lines.join("\n")
     true
   end
 
