@@ -41,10 +41,10 @@ class MailCatcher
         $.ajax
           url: '/messages'
           type: 'DELETE'
-          success: ->
+          success: =>
             @unselectMessage()
           error: ->
-            alert 'Error while quitting.'
+            alert 'Error while clearing all messages.'
 
     $('nav.app .quit a').live 'click', (e) =>
       e.preventDefault()
