@@ -33,6 +33,10 @@ OptionParser.new do |parser|
     options[:from] = from
   end
 
+  parser.on('-x', '--no-exit', 'Can\'t exit from the application') do
+    options[:no_exit] = true
+  end
+
   parser.on('-h', '--help', 'Display this help information') do
     puts parser
     exit!
