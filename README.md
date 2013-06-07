@@ -55,23 +55,13 @@ To set up your rails app, I recommend adding this to your `environment/developme
 
 For projects using PHP, or PHP frameworks and application platforms like Drupal, you can set [PHP's mail configuration](http://www.php.net/manual/en/mail.configuration.php) in your [php.ini](http://www.php.net/manual/en/configuration.file.php) to send via MailCatcher with:
 
-    sendmail_path = /usr/bin/env catchmail
+    sendmail_path = /usr/bin/env catchmail -f some@from.address
 
 You can do this in an [Apache htaccess file](http://php.net/manual/en/configuration.changes.php) or general configuration like so:
 
-    php_value sendmail_path "/usr/bin/env catchmail"
+    php_value sendmail_path "/usr/bin/env catchmail -f some@from.address"
 
 If you've installed via RVM this probably won't work unless you've manually added your RVM bin paths to your system environment's PATH. In that case, run `which catchmail` and put that path into the `sendmail_path` directive above instead of `/usr/bin/env catchmail`.
-
-Don't forget to set 'From' header, either via the `sendmail_from` directive or explicitly:
-
-```php
-$to = 'to@domain.tld';
-$subject = 'Subject';
-$message = 'Message';
-$headers = 'From: from@domain.tld';
-mail($to, $subject, $message, $headers);
-```
 
 ### Django
 
