@@ -63,17 +63,15 @@ You can do this in an [Apache htaccess file](http://php.net/manual/en/configurat
 
 If you've installed via RVM this probably won't work unless you've manually added your RVM bin paths to your system environment's PATH. In that case, run `which catchmail` and put that path into the `sendmail_path` directive above instead of `/usr/bin/env catchmail`.
 
-Don't forget to set 'From' header.
+Don't forget to set 'From' header, either via the `sendmail_from` directive or explicitly:
 
-Code example:
-~~~
-<?php
+```php
 $to = 'to@domain.tld';
 $subject = 'Subject';
 $message = 'Message';
 $headers = 'From: from@domain.tld';
 mail($to, $subject, $message, $headers);
-~~~
+```
 
 ### Django
 
