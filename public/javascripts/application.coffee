@@ -252,6 +252,23 @@ class MailCatcher
     if id?
       $('#message iframe').attr "src", "/messages/#{id}.#{format}"
 
+      app = this
+      $('#message iframe').load ( -> app.decorateMessageBody format )
+
+  decorateMessageBody: (format) ->
+    if format == 'html'
+      setTimeout ( ->
+        body = $('#message iframe').contents().find('body')
+        $("a", body).attr("target", "_blank")
+      ), 10
+
+    else if format == 'plain'
+      message_iframe = $('#message iframe').contents()
+      text = message_iframe.text()
+      text = text.replace(/((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?)/g, '<a href="$1" target="_blank">$1</a>')
+      text = text.replace(/\n/g, '<br/>')
+      message_iframe.find('html').html('<html><body>' + text + '</html></body>')
+
   loadMessageAnalysis: (id) ->
     id ||= @selectedMessage()
 

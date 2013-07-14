@@ -48,8 +48,7 @@ class MailCatcher::Web < Sinatra::Base
         "formats" => [
           "source",
           ("html" if MailCatcher::Mail.message_has_html? id),
-          ("plain" if MailCatcher::Mail.message_has_plain? id),
-          ("lessplain" if MailCatcher::Mail.message_has_plain? id),
+          ("plain" if MailCatcher::Mail.message_has_plain? id)
         ].compact,
         "attachments" => MailCatcher::Mail.message_attachments(id).map do |attachment|
           attachment.merge({"href" => "/messages/#{escape(id)}/parts/#{escape(attachment['cid'])}"})
@@ -70,9 +69,6 @@ class MailCatcher::Web < Sinatra::Base
       # Rewrite body to link to embedded attachments served by cid
       body.gsub! /cid:([^'"> ]+)/, "#{id}/parts/\\1"
 
-      # Rewrite body to open links in a new window
-      body.gsub! /<a\s+/, '<a target="_blank" '
-
       body
     else
       not_found
@@ -84,19 +80,6 @@ class MailCatcher::Web < Sinatra::Base
     if part = MailCatcher::Mail.message_part_plain(id)
       content_type part["type"], :charset => (part["charset"] || "utf8")
       part["body"]
-    else
-      not_found
-    end
-  end
-
-  get "/messages/:id.lessplain" do
-    id = params[:id].to_i
-    if part = MailCatcher::Mail.message_part_plain(id)
-      content_type "text/html", :charset => (part["charset"] || "utf8")
-      body = part["body"]
-      body.gsub!(/((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?)/, '<a href="\\1">\\1</a>')
-      body.gsub!("\n", "<br/>\n")
-      "<html><body>" + body + "</body></html>"
     else
       not_found
     end
