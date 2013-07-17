@@ -62,8 +62,10 @@ body {
   color: black;
   font-size: 12px;
   font-family: Helvetica, sans-serif; }
+  body * html {
+    font-size: 75%; }
   body html {
-    font-size: 75%;
+    font-size: 12px;
     line-height: 2em; }
   body.iframe {
     background: white; }
@@ -89,7 +91,6 @@ body {
   background: -webkit-linear-gradient(#f4f4f4, #ececec), #ececec;
   background: -moz-linear-gradient(#f4f4f4, #ececec), #ececec;
   background: -o-linear-gradient(#f4f4f4, #ececec), #ececec;
-  background: -ms-linear-gradient(#f4f4f4, #ececec), #ececec;
   background: linear-gradient(#f4f4f4, #ececec), #ececec;
   color: #666666;
   text-shadow: 1px 1px 0 white;
@@ -101,7 +102,6 @@ body {
     background: -webkit-linear-gradient(#eeeeee, #dddddd), #dddddd;
     background: -moz-linear-gradient(#eeeeee, #dddddd), #dddddd;
     background: -o-linear-gradient(#eeeeee, #dddddd), #dddddd;
-    background: -ms-linear-gradient(#eeeeee, #dddddd), #dddddd;
     background: linear-gradient(#eeeeee, #dddddd), #dddddd;
     color: #333333;
     text-decoration: none; }
@@ -112,7 +112,6 @@ body {
     background: -webkit-linear-gradient(#dddddd, #eeeeee), #eeeeee;
     background: -moz-linear-gradient(#dddddd, #eeeeee), #eeeeee;
     background: -o-linear-gradient(#dddddd, #eeeeee), #eeeeee;
-    background: -ms-linear-gradient(#dddddd, #eeeeee), #eeeeee;
     background: linear-gradient(#dddddd, #eeeeee), #eeeeee;
     color: #333333;
     text-decoration: none;
@@ -136,7 +135,6 @@ body > header {
       text-shadow: 0 1px 0 white;
       -webkit-transition: 0.1s ease;
       -moz-transition: 0.1s ease;
-      -ms-transition: 0.1s ease;
       -o-transition: 0.1s ease;
       transition: 0.1s ease; }
       body > header h1 a:hover {
@@ -163,7 +161,6 @@ body > header {
         background: -webkit-linear-gradient(#f4f4f4, #ececec), #ececec;
         background: -moz-linear-gradient(#f4f4f4, #ececec), #ececec;
         background: -o-linear-gradient(#f4f4f4, #ececec), #ececec;
-        background: -ms-linear-gradient(#f4f4f4, #ececec), #ececec;
         background: linear-gradient(#f4f4f4, #ececec), #ececec;
         color: #666666;
         text-shadow: 1px 1px 0 white;
@@ -173,7 +170,6 @@ body > header {
           background: -webkit-linear-gradient(#eeeeee, #dddddd), #dddddd;
           background: -moz-linear-gradient(#eeeeee, #dddddd), #dddddd;
           background: -o-linear-gradient(#eeeeee, #dddddd), #dddddd;
-          background: -ms-linear-gradient(#eeeeee, #dddddd), #dddddd;
           background: linear-gradient(#eeeeee, #dddddd), #dddddd;
           color: #333333;
           text-decoration: none; }
@@ -182,7 +178,6 @@ body > header {
           background: -webkit-linear-gradient(#dddddd, #eeeeee), #eeeeee;
           background: -moz-linear-gradient(#dddddd, #eeeeee), #eeeeee;
           background: -o-linear-gradient(#dddddd, #eeeeee), #eeeeee;
-          background: -ms-linear-gradient(#dddddd, #eeeeee), #eeeeee;
           background: linear-gradient(#dddddd, #eeeeee), #eeeeee;
           color: #333333;
           text-decoration: none;
@@ -211,7 +206,6 @@ body > header {
       cursor: pointer;
       -webkit-transition: 0.1s ease;
       -moz-transition: 0.1s ease;
-      -ms-transition: 0.1s ease;
       -o-transition: 0.1s ease;
       transition: 0.1s ease;
       color: #333333; }
@@ -274,31 +268,30 @@ body > header {
         #message > header .metadata .attachments ul {
           display: inline; }
           #message > header .metadata .attachments ul li {
-            display: -moz-inline-box;
-            -moz-box-orient: vertical;
+            display: -moz-inline-stack;
             display: inline-block;
             vertical-align: middle;
             *vertical-align: auto;
+            zoom: 1;
+            *display: inline;
             margin-right: 0.5em; }
-            #message > header .metadata .attachments ul li {
-              *display: inline; }
     #message > header .views ul {
       padding: 0 0.5em;
       border-bottom: 1px solid #cccccc; }
     #message > header .views .tab {
-      display: -moz-inline-box;
-      -moz-box-orient: vertical;
+      display: -moz-inline-stack;
       display: inline-block;
       vertical-align: middle;
-      *vertical-align: auto; }
-      #message > header .views .tab {
-        *display: inline; }
+      *vertical-align: auto;
+      zoom: 1;
+      *display: inline; }
       #message > header .views .tab a {
-        display: -moz-inline-box;
-        -moz-box-orient: vertical;
+        display: -moz-inline-stack;
         display: inline-block;
         vertical-align: middle;
         *vertical-align: auto;
+        zoom: 1;
+        *display: inline;
         padding: 0.5em;
         border: 1px solid #cccccc;
         background: #dddddd;
@@ -307,8 +300,6 @@ body > header {
         cursor: pointer;
         text-shadow: 0 1px 0 #eeeeee;
         text-decoration: none; }
-        #message > header .views .tab a {
-          *display: inline; }
       #message > header .views .tab:not(.selected):hover a {
         background-color: #eeeeee; }
       #message > header .views .tab.selected a {
@@ -321,15 +312,14 @@ body > header {
         margin-bottom: -2px;
         cursor: default; }
     #message > header .views .action {
-      display: -moz-inline-box;
-      -moz-box-orient: vertical;
+      display: -moz-inline-stack;
       display: inline-block;
       vertical-align: middle;
       *vertical-align: auto;
+      zoom: 1;
+      *display: inline;
       float: right;
       margin: 0 0.25em; }
-      #message > header .views .action {
-        *display: inline; }
 
 .fractal-analysis {
   margin: 12px 0; }
