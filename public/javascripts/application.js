@@ -65,7 +65,7 @@
           });
         }
       });
-      $('nav.app .clear a').live('click', function(e) {
+      $('nav.app .clear a').live('click touchend', function(e) {
         e.preventDefault();
         if (confirm("You will lose all your received messages.\n\nAre you sure you want to clear all messages?")) {
           return $.ajax({
@@ -80,7 +80,7 @@
           });
         }
       });
-      $('nav.app .quit a').live('click', function(e) {
+      $('nav.app .quit a').live('click touchend', function(e) {
         e.preventDefault();
         if (confirm("You will lose all your received messages.\n\nAre you sure you want to quit?")) {
           return $.ajax({
