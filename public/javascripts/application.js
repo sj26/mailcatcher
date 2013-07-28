@@ -36,6 +36,9 @@
         e.preventDefault();
         return _this.loadMessageAnalysis(_this.selectedMessage());
       });
+      $('#message iframe').load(function() {
+        return _this.decorateMessageBody();
+      });
       $('#resizer').live({
         mousedown: function(e) {
           var events;
@@ -331,27 +334,23 @@
       $("#message .views .tab:not([data-message-format=\"" + format + "\"]).selected").removeClass('selected');
       if (id != null) {
         $('#message iframe').attr("src", "/messages/" + id + "." + format);
-        app = this;
-        return $('#message iframe').load((function() {
-          return app.decorateMessageBody(format);
-        }));
+        return app = this;
       }
     };
 
-    MailCatcher.prototype.decorateMessageBody = function(format) {
-      var message_iframe, text;
-      if (format === 'html') {
-        return setTimeout((function() {
-          var body;
+    MailCatcher.prototype.decorateMessageBody = function() {
+      var body, format, message_iframe, text;
+      format = $('#message .views .tab.format.selected').attr('data-message-format');
+      switch (format) {
+        case 'html':
           body = $('#message iframe').contents().find('body');
           return $("a", body).attr("target", "_blank");
-        }), 10);
-      } else if (format === 'plain') {
-        message_iframe = $('#message iframe').contents();
-        text = message_iframe.text();
-        text = text.replace(/((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?)/g, '<a href="$1" target="_blank">$1</a>');
-        text = text.replace(/\n/g, '<br/>');
-        return message_iframe.find('html').html('<html><body>' + text + '</html></body>');
+        case 'plain':
+          message_iframe = $('#message iframe').contents();
+          text = message_iframe.text();
+          text = text.replace(/((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?)/g, '<a href="$1" target="_blank">$1</a>');
+          text = text.replace(/\n/g, '<br/>');
+          return message_iframe.find('html').html('<html><body>' + text + '</html></body>');
       }
     };
 
