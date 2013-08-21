@@ -91,6 +91,7 @@ class MailCatcher
       if id?
         messageRow = $("#messages tbody tr[data-message-id='#{id}']")
         switchTo = messageRow.next().data('message-id') || messageRow.prev().data('message-id')
+        messageRow.remove()
         if switchTo
           @loadMessage switchTo
         else
@@ -98,10 +99,7 @@ class MailCatcher
         $.ajax
           url: '/messages/' + id
           type: 'DELETE'
-          success: =>
-            messageRow.remove()
           error: =>
-            @loadMessage id
             alert 'Error while removing message.'
       false
 
