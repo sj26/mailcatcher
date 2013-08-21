@@ -127,24 +127,24 @@
         return false;
       });
       key('backspace, delete', function() {
-        var id;
+        var id, messageRow, switchTo;
         id = _this.selectedMessage();
         if (id != null) {
+          messageRow = $("#messages tbody tr[data-message-id='" + id + "']");
+          switchTo = messageRow.next().data('message-id') || messageRow.prev().data('message-id');
+          if (switchTo) {
+            _this.loadMessage(switchTo);
+          } else {
+            _this.unselectMessage();
+          }
           $.ajax({
             url: '/messages/' + id,
             type: 'DELETE',
             success: function() {
-              var messageRow, switchTo;
-              messageRow = $("#messages tbody tr[data-message-id='" + id + "']");
-              switchTo = messageRow.next().data('message-id') || messageRow.prev().data('message-id');
-              messageRow.remove();
-              if (switchTo) {
-                return _this.loadMessage(switchTo);
-              } else {
-                return _this.unselectMessage();
-              }
+              return messageRow.remove();
             },
             error: function() {
+              _this.loadMessage(id);
               return alert('Error while removing message.');
             }
           });
