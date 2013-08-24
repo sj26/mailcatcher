@@ -4,9 +4,11 @@ require 'sqlite3'
 require 'eventmachine'
 
 module MailCatcher::Mail extend self
+  attr_accessor :db_path
+
   def db
     @__db ||= begin
-      SQLite3::Database.new(':memory:', :type_translation => true).tap do |db|
+      SQLite3::Database.new(db_path || ':memory:', :type_translation => true).tap do |db|
         db.execute(<<-SQL)
           CREATE TABLE message (
             id INTEGER PRIMARY KEY ASC,
