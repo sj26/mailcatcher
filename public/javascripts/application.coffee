@@ -24,16 +24,17 @@ class MailCatcher
       @loadMessageAnalysis @selectedMessage()
 
     $('#resizer').live
-      mousedown: (e) ->
+      mousedown: (e) =>
         e.preventDefault()
         $(window).bind events =
-          mouseup: (e) ->
+          mouseup: (e) =>
             e.preventDefault()
             $(window).unbind events
-          mousemove: (e) ->
+          mousemove: (e) =>
             e.preventDefault()
-            $('#messages').css
-              height: e.clientY - $('#messages').offset().top
+            @resizeTo e.clientY
+
+    @resizeToSaved()
 
     $('nav.app .clear a').live 'click', (e) =>
       e.preventDefault()
@@ -307,5 +308,16 @@ class MailCatcher
     unless @refreshInterval?
       @refreshInterval = setInterval (=> @refresh()), 1000
 
+  resizeToSavedKey: 'mailcatcherSeparatorHeight'
+
+  resizeTo: (height) ->
+    $('#messages').css
+      height: height - $('#messages').offset().top
+    window.localStorage?.setItem(@resizeToSavedKey, height)
+
+  resizeToSaved: ->
+    height = parseInt(window.localStorage?.getItem(@resizeToSavedKey))
+    unless isNaN height
+      @resizeTo height
 
 $ -> window.MailCatcher = new MailCatcher

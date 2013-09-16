@@ -58,13 +58,12 @@
             },
             mousemove: function(e) {
               e.preventDefault();
-              return $('#messages').css({
-                height: e.clientY - $('#messages').offset().top
-              });
+              return _this.resizeTo(e.clientY);
             }
           });
         }
       });
+      this.resizeToSaved();
       $('nav.app .clear a').live('click', function(e) {
         e.preventDefault();
         if (confirm("You will lose all your received messages.\n\nAre you sure you want to clear all messages?")) {
@@ -394,6 +393,24 @@
         return this.refreshInterval = setInterval((function() {
           return _this.refresh();
         }), 1000);
+      }
+    };
+
+    MailCatcher.prototype.resizeToSavedKey = 'mailcatcherSeparatorHeight';
+
+    MailCatcher.prototype.resizeTo = function(height) {
+      var _ref;
+      $('#messages').css({
+        height: height - $('#messages').offset().top
+      });
+      return (_ref = window.localStorage) != null ? _ref.setItem(this.resizeToSavedKey, height) : void 0;
+    };
+
+    MailCatcher.prototype.resizeToSaved = function() {
+      var height, _ref;
+      height = parseInt((_ref = window.localStorage) != null ? _ref.getItem(this.resizeToSavedKey) : void 0);
+      if (!isNaN(height)) {
+        return this.resizeTo(height);
       }
     };
 
