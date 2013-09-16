@@ -55,6 +55,7 @@ module MailCatcher extend self
     :daemon => !windows?,
     :growl => growlnotify?,
     :browse => false,
+    :no_exit => false,
   }
 
   def parse! arguments=ARGV, defaults=@defaults
@@ -81,6 +82,10 @@ module MailCatcher extend self
 
         parser.on("--http-port PORT", Integer, "Set the port address of the http server") do |port|
           options[:http_port] = port
+        end
+
+        parser.on("--no-exit", "Can't exit from the application'") do
+          options[:no_exit] = true
         end
 
         if mac?
@@ -127,6 +132,10 @@ module MailCatcher extend self
     options ||= parse!
 
     puts "Starting MailCatcher"
+
+    define_method :no_exit do
+      options[:no_exit]
+    end
 
     Thin::Logging.silent = true
 
