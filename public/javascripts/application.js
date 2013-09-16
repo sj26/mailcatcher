@@ -1,6 +1,6 @@
 (function() {
   var MailCatcher,
-    _this = this;
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   jQuery.expr[':'].icontains = function(a, i, m) {
     var _ref, _ref1;
@@ -8,24 +8,13 @@
   };
 
   MailCatcher = (function() {
-
     function MailCatcher() {
+      this.nextTab = __bind(this.nextTab, this);
+      this.previousTab = __bind(this.previousTab, this);
+      this.openTab = __bind(this.openTab, this);
+      this.selectedTab = __bind(this.selectedTab, this);
+      this.getTab = __bind(this.getTab, this);
       var _this = this;
-      this.nextTab = function(tab) {
-        return MailCatcher.prototype.nextTab.apply(_this, arguments);
-      };
-      this.previousTab = function(tab) {
-        return MailCatcher.prototype.previousTab.apply(_this, arguments);
-      };
-      this.openTab = function(i) {
-        return MailCatcher.prototype.openTab.apply(_this, arguments);
-      };
-      this.selectedTab = function() {
-        return MailCatcher.prototype.selectedTab.apply(_this, arguments);
-      };
-      this.getTab = function(i) {
-        return MailCatcher.prototype.getTab.apply(_this, arguments);
-      };
       $('#messages tr').live('click', function(e) {
         e.preventDefault();
         return _this.loadMessage($(e.currentTarget).attr('data-message-id'));
@@ -46,6 +35,9 @@
       $('#message .views .analysis.tab a').live('click', function(e) {
         e.preventDefault();
         return _this.loadMessageAnalysis(_this.selectedMessage());
+      });
+      $('#message iframe').load(function() {
+        return _this.decorateMessageBody();
       });
       $('#resizer').live({
         mousedown: function(e) {
@@ -333,13 +325,31 @@
     };
 
     MailCatcher.prototype.loadMessageBody = function(id, format) {
+      var app;
       id || (id = this.selectedMessage());
       format || (format = $('#message .views .tab.format.selected').attr('data-message-format'));
       format || (format = 'html');
       $("#message .views .tab[data-message-format=\"" + format + "\"]:not(.selected)").addClass('selected');
       $("#message .views .tab:not([data-message-format=\"" + format + "\"]).selected").removeClass('selected');
       if (id != null) {
-        return $('#message iframe').attr("src", "/messages/" + id + "." + format);
+        $('#message iframe').attr("src", "/messages/" + id + "." + format);
+        return app = this;
+      }
+    };
+
+    MailCatcher.prototype.decorateMessageBody = function() {
+      var body, format, message_iframe, text;
+      format = $('#message .views .tab.format.selected').attr('data-message-format');
+      switch (format) {
+        case 'html':
+          body = $('#message iframe').contents().find('body');
+          return $("a", body).attr("target", "_blank");
+        case 'plain':
+          message_iframe = $('#message iframe').contents();
+          text = message_iframe.text();
+          text = text.replace(/((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?)/g, '<a href="$1" target="_blank">$1</a>');
+          text = text.replace(/\n/g, '<br/>');
+          return message_iframe.find('html').html('<html><body>' + text + '</html></body>');
       }
     };
 

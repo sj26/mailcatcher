@@ -22,6 +22,9 @@ class MailCatcher
     $('#message .views .analysis.tab a').live 'click', (e) =>
       e.preventDefault()
       @loadMessageAnalysis @selectedMessage()
+      
+    $('#message iframe').load =>
+      @decorateMessageBody()
 
     $('#resizer').live
       mousedown: (e) =>
@@ -252,6 +255,22 @@ class MailCatcher
 
     if id?
       $('#message iframe').attr "src", "/messages/#{id}.#{format}"
+
+      app = this
+
+  decorateMessageBody: ->
+    format = $('#message .views .tab.format.selected').attr 'data-message-format'
+          
+    switch format 
+      when 'html'
+        body = $('#message iframe').contents().find('body')
+        $("a", body).attr("target", "_blank")
+      when 'plain'
+        message_iframe = $('#message iframe').contents()
+        text = message_iframe.text()
+        text = text.replace(/((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?)/g, '<a href="$1" target="_blank">$1</a>')
+        text = text.replace(/\n/g, '<br/>')
+        message_iframe.find('html').html('<html><body>' + text + '</html></body>')
 
   loadMessageAnalysis: (id) ->
     id ||= @selectedMessage()
