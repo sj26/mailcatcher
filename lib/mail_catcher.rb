@@ -46,7 +46,7 @@ module MailCatcher extend self
     end
   end
 
-  @defaults = {
+  @@defaults = {
     :smtp_ip => '127.0.0.1',
     :smtp_port => '1025',
     :http_ip => '127.0.0.1',
@@ -58,8 +58,12 @@ module MailCatcher extend self
     :no_exit => false,
   }
 
+  def options
+    @@options
+  end
+
   def parse! arguments=ARGV, defaults=@defaults
-    @defaults.dup.tap do |options|
+    @@defaults.dup.tap do |options|
       OptionParser.new do |parser|
         parser.banner = "Usage: mailcatcher [options]"
         parser.version = VERSION
@@ -127,15 +131,14 @@ module MailCatcher extend self
 
   def run! options=nil
     # If we are passed options, fill in the blanks
-    options &&= @defaults.merge options
+    options &&= options.reverse_merge @@defaults
     # Otherwise, parse them from ARGV
     options ||= parse!
 
-    puts "Starting MailCatcher"
+    # Stash them away for later
+    @@options = options
 
-    define_method :no_exit do
-      options[:no_exit]
-    end
+    puts "Starting MailCatcher"
 
     Thin::Logging.silent = true
 

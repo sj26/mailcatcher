@@ -18,7 +18,7 @@ class MailCatcher::Web < Sinatra::Base
   end
 
   delete '/' do
-    unless MailCatcher.no_exit
+    unless MailCatcher.options[:no_exit]
       MailCatcher.quit!
       status 204
     end

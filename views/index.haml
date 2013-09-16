@@ -21,7 +21,7 @@
             %input{:type => 'search', :name => 'search', :placeholder => 'Search messages...', :incremental => true}
           %li.clear
             %a{:href => '#', :title => 'Clear all messages'} Clear
-          - unless MailCatcher.no_exit
+          - unless MailCatcher.options[:no_exit]
             %li.quit
               %a{:href => '#', :title => 'Quit MailCatcher'} Quit
     %nav#messages
