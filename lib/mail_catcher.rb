@@ -98,7 +98,7 @@ module MailCatcher extend self
               puts "You'll need to install growlnotify from the Growl installer."
               puts
               puts "See: http://growl.info/extras.php#growlnotify"
-              exit!
+              exit -2
             end
 
             options[:growl] = growl
@@ -123,7 +123,7 @@ module MailCatcher extend self
 
         parser.on('-h', '--help', 'Display this help information') do
           puts parser
-          exit!
+          exit
         end
       end.parse!
     end
@@ -194,7 +194,7 @@ protected
     rescue RuntimeError
       if $!.to_s =~ /\bno acceptor\b/
         puts "~~> ERROR: Something's using port #{port}. Are you already running MailCatcher?"
-        exit(-1)
+        exit -1
       else
         raise
       end
