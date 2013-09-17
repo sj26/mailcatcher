@@ -15,11 +15,11 @@ class MailCatcher
       else
         @clearSearch()
 
-    $('#message .views .format.tab a').live 'click', (e) =>
+    $('#message .views .format.tab a').live 'click touchend', (e) =>
       e.preventDefault()
       @loadMessageBody @selectedMessage(), $($(e.currentTarget).parent('li')).data 'message-format'
 
-    $('#message .views .analysis.tab a').live 'click', (e) =>
+    $('#message .views .analysis.tab a').live 'click touchend', (e) =>
       e.preventDefault()
       @loadMessageAnalysis @selectedMessage()
 
