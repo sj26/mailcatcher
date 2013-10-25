@@ -190,6 +190,21 @@ class MailCatcher
         else
           $('#message .metadata .attachments').hide()
 
+        $('#message .views .deliver a').click (e)->
+          e.preventDefault()
+          $deliver = $(this).parent()
+          deliver_html = $(this).parent().html()
+          $deliver.text('Delivering...')
+          $.ajax
+            url: "/messages/#{id}/deliver"
+            type: 'POST'
+            success: =>
+              $deliver.html(deliver_html)
+              alert 'Message successfully delivered' 
+            error: =>
+              $deliver.html(deliver_html)
+              alert 'An error occurred while attempting to deliver this message'
+
         $('#message .views .download a').attr 'href', "/messages/#{id}.eml"
 
         if $('#message .views .tab.analysis.selected').length

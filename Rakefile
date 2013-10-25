@@ -1,17 +1,16 @@
 require 'rubygems'
-
-version_file = File.expand_path __FILE__ + '/../VERSION'
-version = File.read(version_file).strip
+require 'rubygems/package'
+require File.expand_path('../lib/mail_catcher/version', __FILE__)
 
 spec_file = File.expand_path __FILE__ + '/../mailcatcher.gemspec'
 spec = Gem::Specification.load spec_file
 
 require 'rdoc/task'
-RDoc::Task.new :rdoc => "rdoc",
-    :clobber_rdoc => "rdoc:clean",
-    :rerdoc => "rdoc:force" do |rdoc|
-  rdoc.title = "MailCatcher #{version}"
-  rdoc.rdoc_dir = 'rdoc'
+RDoc::Task.new :rdoc => "doc",
+    :clobber_rdoc => "doc:clean",
+    :rerdoc => "doc:force" do |rdoc|
+  rdoc.title = "MailCatcher #{MailCatcher::VERSION}"
+  rdoc.rdoc_dir = 'doc'
   rdoc.main = 'README.md'
   rdoc.rdoc_files.include 'lib/**/*.rb'
 end
@@ -37,15 +36,14 @@ multitask "build" => ["build:sass", "build:coffee"]
 
 desc "Package as Gem"
 task "package:gem" do
-  builder = Gem::Builder.new spec
-  builder.build
+  Gem::Package.build spec
 end
 
 task "package" => ["build", "package:gem"]
 
 desc "Release Gem to RubyGems"
 task "release:gem" do
-  %x[gem push mailcatcher-#{version}.gem]
+  %x[gem push mailcatcher-#{MailCatcher::VERSION}.gem]
 end
 
 task "release" => ["package", "release:gem"]

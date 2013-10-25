@@ -1,12 +1,11 @@
+require 'active_support/json'
 require 'mail'
 require 'sqlite3'
 require 'eventmachine'
 
-module MailCatcher::Mail
-module_function
-
+module MailCatcher::Mail extend self
   def db
-    @@__db ||= begin
+    @__db ||= begin
       SQLite3::Database.new(':memory:', :type_translation => true).tap do |db|
         db.execute(<<-SQL)
           CREATE TABLE message (
@@ -39,10 +38,10 @@ module_function
   end
 
   def add_message(message)
-    @@add_message_query ||= db.prepare("INSERT INTO message (sender, recipients, subject, source, type, size, created_at) VALUES (?, ?, ?, ?, ?, ?, datetime('now'))")
+    @add_message_query ||= db.prepare("INSERT INTO message (sender, recipients, subject, source, type, size, created_at) VALUES (?, ?, ?, ?, ?, ?, datetime('now'))")
 
     mail = Mail.new(message[:source])
-    result = @@add_message_query.execute(message[:sender], message[:recipients].to_json, mail.subject, message[:source], mail.mime_type || 'text/plain', message[:source].length)
+    @add_message_query.execute(message[:sender], message[:recipients].to_json, mail.subject, message[:source], mail.mime_type || 'text/plain', message[:source].length)
     message_id = db.last_insert_row_id
     parts = mail.all_parts
     parts = [mail] if parts.empty?
@@ -60,18 +59,18 @@ module_function
   end
 
   def add_message_part(*args)
-    @@add_message_part_query ||= db.prepare "INSERT INTO message_part (message_id, cid, type, is_attachment, filename, charset, body, size, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))"
-    @@add_message_part_query.execute(*args)
+    @add_message_part_query ||= db.prepare "INSERT INTO message_part (message_id, cid, type, is_attachment, filename, charset, body, size, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))"
+    @add_message_part_query.execute(*args)
   end
 
   def latest_created_at
-    @@latest_created_at_query ||= db.prepare "SELECT created_at FROM message ORDER BY created_at DESC LIMIT 1"
-    @@latest_created_at_query.execute.next
+    @latest_created_at_query ||= db.prepare "SELECT created_at FROM message ORDER BY created_at DESC LIMIT 1"
+    @latest_created_at_query.execute.next
   end
 
   def messages
-    @@messages_query ||= db.prepare "SELECT id, sender, recipients, subject, size, created_at FROM message ORDER BY created_at ASC"
-    @@messages_query.execute.map do |row|
+    @messages_query ||= db.prepare "SELECT id, sender, recipients, subject, size, created_at FROM message ORDER BY created_at ASC"
+    @messages_query.execute.map do |row|
       Hash[row.fields.zip(row)].tap do |message|
         message["recipients"] &&= ActiveSupport::JSON.decode message["recipients"]
       end
@@ -79,46 +78,46 @@ module_function
   end
 
   def message(id)
-    @@message_query ||= db.prepare "SELECT * FROM message WHERE id = ? LIMIT 1"
-    row = @@message_query.execute(id).next
+    @message_query ||= db.prepare "SELECT * FROM message WHERE id = ? LIMIT 1"
+    row = @message_query.execute(id).next
     row && Hash[row.fields.zip(row)].tap do |message|
       message["recipients"] &&= ActiveSupport::JSON.decode message["recipients"]
     end
   end
 
   def message_has_html?(id)
-    @@message_has_html_query ||= db.prepare "SELECT 1 FROM message_part WHERE message_id = ? AND is_attachment = 0 AND type IN ('application/xhtml+xml', 'text/html') LIMIT 1"
-    (!!@@message_has_html_query.execute(id).next) || ['text/html', 'application/xhtml+xml'].include?(message(id)["type"])
+    @message_has_html_query ||= db.prepare "SELECT 1 FROM message_part WHERE message_id = ? AND is_attachment = 0 AND type IN ('application/xhtml+xml', 'text/html') LIMIT 1"
+    (!!@message_has_html_query.execute(id).next) || ['text/html', 'application/xhtml+xml'].include?(message(id)["type"])
   end
 
   def message_has_plain?(id)
-    @@message_has_plain_query ||= db.prepare "SELECT 1 FROM message_part WHERE message_id = ? AND is_attachment = 0 AND type = 'text/plain' LIMIT 1"
-    (!!@@message_has_plain_query.execute(id).next) || message(id)["type"] == "text/plain"
+    @message_has_plain_query ||= db.prepare "SELECT 1 FROM message_part WHERE message_id = ? AND is_attachment = 0 AND type = 'text/plain' LIMIT 1"
+    (!!@message_has_plain_query.execute(id).next) || message(id)["type"] == "text/plain"
   end
 
   def message_parts(id)
-    @@message_parts_query ||= db.prepare "SELECT cid, type, filename, size FROM message_part WHERE message_id = ? ORDER BY filename ASC"
-    @@message_parts_query.execute(id).map do |row|
+    @message_parts_query ||= db.prepare "SELECT cid, type, filename, size FROM message_part WHERE message_id = ? ORDER BY filename ASC"
+    @message_parts_query.execute(id).map do |row|
       Hash[row.fields.zip(row)]
     end
   end
 
   def message_attachments(id)
-    @@message_parts_query ||= db.prepare "SELECT cid, type, filename, size FROM message_part WHERE message_id = ? AND is_attachment = 1 ORDER BY filename ASC"
-    @@message_parts_query.execute(id).map do |row|
+    @message_parts_query ||= db.prepare "SELECT cid, type, filename, size FROM message_part WHERE message_id = ? AND is_attachment = 1 ORDER BY filename ASC"
+    @message_parts_query.execute(id).map do |row|
       Hash[row.fields.zip(row)]
     end
   end
 
   def message_part(message_id, part_id)
-    @@message_part_query ||= db.prepare "SELECT * FROM message_part WHERE message_id = ? AND id = ? LIMIT 1"
-    row = @@message_part_query.execute(message_id, part_id).next
+    @message_part_query ||= db.prepare "SELECT * FROM message_part WHERE message_id = ? AND id = ? LIMIT 1"
+    row = @message_part_query.execute(message_id, part_id).next
     row && Hash[row.fields.zip(row)]
   end
 
   def message_part_type(message_id, part_type)
-    @@message_part_type_query ||= db.prepare "SELECT * FROM message_part WHERE message_id = ? AND type = ? AND is_attachment = 0 LIMIT 1"
-    row = @@message_part_type_query.execute(message_id, part_type).next
+    @message_part_type_query ||= db.prepare "SELECT * FROM message_part WHERE message_id = ? AND type = ? AND is_attachment = 0 LIMIT 1"
+    row = @message_part_type_query.execute(message_id, part_type).next
     row && Hash[row.fields.zip(row)]
   end
 
@@ -136,19 +135,26 @@ module_function
   end
 
   def message_part_cid(message_id, cid)
-    @@message_part_cid_query ||= db.prepare 'SELECT * FROM message_part WHERE message_id = ?'
-    @@message_part_cid_query.execute(message_id).map do |row|
-      part = Hash[row.fields.zip(row)]
+    @message_part_cid_query ||= db.prepare 'SELECT * FROM message_part WHERE message_id = ?'
+    @message_part_cid_query.execute(message_id).map do |row|
+      Hash[row.fields.zip(row)]
     end.find do |part|
       part["cid"] == cid
     end
   end
 
   def delete!
-    @@delete_messages_query ||= db.prepare 'DELETE FROM message'
-    @@delete_message_parts_query ||= db.prepare 'DELETE FROM message_part'
+    @delete_messages_query ||= db.prepare 'DELETE FROM message'
+    @delete_message_parts_query ||= db.prepare 'DELETE FROM message_part'
 
-    @@delete_messages_query.execute and
-    @@delete_message_parts_query.execute
+    @delete_messages_query.execute and
+    @delete_message_parts_query.execute
+  end
+
+  def delete_message!(message_id)
+    @delete_messages_query ||= db.prepare 'DELETE FROM message WHERE id = ?'
+    @delete_message_parts_query ||= db.prepare 'DELETE FROM message_part WHERE message_id = ?'
+    @delete_messages_query.execute(message_id) and
+    @delete_message_parts_query.execute(message_id)
   end
 end
