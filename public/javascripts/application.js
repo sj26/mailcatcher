@@ -92,7 +92,7 @@
         }
       });
       $('#message .views .deliver a').live("click", function(e) {
-        var recipient = prompt("Please enter recipient email address", "jxie@globalpersonals.co.uk");
+        var recipient = prompt("Please enter recipient email address");
         if (recipient != null) {
           var $deliver, deliver_html,
             id = _this.selectedMessage() || 1;
