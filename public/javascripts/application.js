@@ -8,18 +8,12 @@
   };
 
   MailCatcher = (function() {
-
     function MailCatcher() {
       this.nextTab = __bind(this.nextTab, this);
-
       this.previousTab = __bind(this.previousTab, this);
-
       this.openTab = __bind(this.openTab, this);
-
       this.selectedTab = __bind(this.selectedTab, this);
-
       this.getTab = __bind(this.getTab, this);
-
       var _this = this;
       $('#messages tr').live('click', function(e) {
         e.preventDefault();
@@ -91,14 +85,14 @@
           });
         }
       });
-      $('#message .views .deliver a').live("click", function(e) {
-        var recipient = prompt("Please enter recipient email address");
-        if (recipient != null) {
-          var $deliver, deliver_html,
-            id = _this.selectedMessage() || 1;
+      $('#message .views .deliver a').live('click', function(e) {
+        var $deliver, deliver_html, id, recipient;
+        recipient = prompt("Please enter recipient email address", "jxie@globalpersonals.co.uk");
+        if (recipient) {
           e.preventDefault();
+          id = _this.selectedMessage() || 1;
           $deliver = $(this).parent();
-          deliver_html = $(this).parent().html();
+          deliver_html = $deliver.html();
           $deliver.text('Delivering...');
           return $.ajax({
             url: "/messages/" + id + "/" + recipient + "/deliver",

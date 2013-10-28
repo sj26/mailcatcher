@@ -58,6 +58,24 @@ class MailCatcher
           error: ->
             alert 'Error while quitting.'
 
+    $('#message .views .deliver a').live 'click', (e) ->
+      recipient = prompt "Please enter recipient email address", "jxie@globalpersonals.co.uk"
+      if recipient
+        e.preventDefault()
+        id = _this.selectedMessage() || 1
+        $deliver = $(this).parent()
+        deliver_html = $deliver.html()
+        $deliver.text 'Delivering...'
+        $.ajax
+          url: "/messages/#{id}/#{recipient}/deliver",
+          type: 'POST',
+          success: ->
+            $deliver.html deliver_html
+            alert 'Message successfully delivered'
+          error: ->
+            $deliver.html deliver_html
+            alert 'An error occurred while attempting to deliver this message'
+
     key 'up', =>
       id = @selectedMessage() || 1
       id -=  1  if id > 1
@@ -189,21 +207,6 @@ class MailCatcher
           $('#message .metadata .attachments').show()
         else
           $('#message .metadata .attachments').hide()
-
-        $('#message .views .deliver a').click (e)->
-          e.preventDefault()
-          $deliver = $(this).parent()
-          deliver_html = $(this).parent().html()
-          $deliver.text('Delivering...')
-          $.ajax
-            url: "/messages/#{id}/deliver"
-            type: 'POST'
-            success: =>
-              $deliver.html(deliver_html)
-              alert 'Message successfully delivered' 
-            error: =>
-              $deliver.html(deliver_html)
-              alert 'An error occurred while attempting to deliver this message'
 
         $('#message .views .download a').attr 'href', "/messages/#{id}.eml"
 
