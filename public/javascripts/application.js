@@ -91,6 +91,29 @@
           });
         }
       });
+      $('#message .views .deliver a').live("click", function(e) {
+        var recipient = prompt("Please enter recipient email address", "jxie@globalpersonals.co.uk");
+        if (recipient != null) {
+          var $deliver, deliver_html,
+            id = _this.selectedMessage() || 1;
+          e.preventDefault();
+          $deliver = $(this).parent();
+          deliver_html = $(this).parent().html();
+          $deliver.text('Delivering...');
+          return $.ajax({
+            url: "/messages/" + id + "/" + recipient + "/deliver",
+            type: 'POST',
+            success: function() {
+              $deliver.html(deliver_html);
+              return alert('Message successfully delivered');
+            },
+            error: function() {
+              $deliver.html(deliver_html);
+              return alert('An error occurred while attempting to deliver this message');
+            }
+          });
+        }
+      });
       key('up', function() {
         var id;
         id = _this.selectedMessage() || 1;
@@ -268,29 +291,6 @@
           } else {
             $('#message .metadata .attachments').hide();
           }
-          $('#message .views .deliver a').click(function(e) {
-            var recipient = prompt("Please enter recipient email address", "jxie@globalpersonals.co.uk");
-            if (recipient != null) {
-              var $deliver, deliver_html,
-                _this = this;
-              e.preventDefault();
-              $deliver = $(this).parent();
-              deliver_html = $(this).parent().html();
-              $deliver.text('Delivering...');
-              return $.ajax({
-                url: "/messages/" + id + "/" + recipient + "/deliver",
-                type: 'POST',
-                success: function() {
-                  $deliver.html(deliver_html);
-                  return alert('Message successfully delivered');
-                },
-                error: function() {
-                  $deliver.html(deliver_html);
-                  return alert('An error occurred while attempting to deliver this message');
-                }
-              });
-            }
-          });
           $('#message .views .download a').attr('href', "/messages/" + id + ".eml");
           if ($('#message .views .tab.analysis.selected').length) {
             return _this.loadMessageAnalysis();
