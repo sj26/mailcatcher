@@ -59,7 +59,7 @@ class MailCatcher
             alert 'Error while quitting.'
 
     $('#message .views .deliver a').live 'click', (e) ->
-      recipient = prompt "Please enter recipient email address", "jxie@globalpersonals.co.uk"
+      recipient = prompt "Please enter recipient email address"
       if recipient
         e.preventDefault()
         id = _this.selectedMessage() || 1
