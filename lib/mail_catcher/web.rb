@@ -132,6 +132,22 @@ class MailCatcher::Web < Sinatra::Base
     end
   end
 
+  post "/messages/:id/:recipient/deliver" do
+    id = params[:id].to_i
+    recipient = params[:recipient]
+    if message = MailCatcher::Mail.message(id)
+      delivery_service = MailCatcher::DeliveryService.new(message)
+      begin
+        delivery_service.deliver!(recipient)
+      rescue => e
+        halt 500, e.inspect
+      end
+      "" # Return 200 with an empty body
+    else
+      not_found
+    end
+  end
+
   not_found do
     "<html><body><h1>No Dice</h1><p>The message you were looking for does not exist, or doesn't have content of this type.</p></body></html>"
   end

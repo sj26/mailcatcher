@@ -1,6 +1,9 @@
+require File.expand_path('../lib/mail_catcher/version', __FILE__)
+
 Gem::Specification.new do |s|
   s.name = "mailcatcher"
-  s.version = File.read(File.expand_path("../VERSION", __FILE__)).strip
+  s.version = MailCatcher::VERSION
+  s.license = "MIT"
   s.summary = "Runs an SMTP server, catches and displays email in a web interface."
   s.description = <<-END
     MailCatcher runs a super simple SMTP server which catches any
@@ -18,10 +21,10 @@ Gem::Specification.new do |s|
     "README.md", "LICENSE", "VERSION",
     "bin/*",
     "lib/**/*.rb",
+    "public/favicon.ico",
     "public/images/**/*",
     "public/javascripts/**/*.js",
-    "public/stylesheets/**/*.css",
-    "public/stylesheets/**/*.xsl",
+    "public/stylesheets/**/*.{css,xsl}",
     "views/**/*"
   ]
   s.require_paths = ["lib"]
@@ -31,7 +34,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 1.8.7'
 
   s.add_dependency "activesupport", "~> 3.0"
-  s.add_dependency "eventmachine", "~> 0.12"
+  s.add_dependency "eventmachine", "~> 1.0.0"
   s.add_dependency "haml", "~> 3.1"
   s.add_dependency "mail", "~> 2.3"
   s.add_dependency "sinatra", "~> 1.2"

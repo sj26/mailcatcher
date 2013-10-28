@@ -1,26 +1,15 @@
-require 'open3'
-
-require 'active_support/all'
+require 'active_support/core_ext'
 require 'eventmachine'
+require 'open3'
 require 'optparse'
 require 'rbconfig'
 require 'thin'
 
-require 'ext/em'
+require 'mail_catcher/version'
 
-module MailCatcher
-  extend ActiveSupport::Autoload
-
-  autoload :Events
-  autoload :Growl
-  autoload :Mail
-  autoload :Smtp
-  autoload :Web
-
-module_function
-
+module MailCatcher extend self
   def which command
-    Open3.popen3 'which', 'command' do |stdin, stdout, stderr|
+    not windows? and Open3.popen3 'which', 'command' do |stdin, stdout, stderr|
       return stdout.read.chomp.presence
     end
   end
@@ -57,7 +46,7 @@ module_function
     end
   end
 
-  @@defaults = {
+  @defaults = {
     :smtp_ip => '127.0.0.1',
     :smtp_port => '1025',
     :http_ip => '127.0.0.1',
@@ -66,13 +55,19 @@ module_function
     :daemon => !windows?,
     :growl => growlnotify?,
     :browse => false,
+    :delivery_address => 'smtp.gmail.com',
+    :delivery_port => '587',
+    :delivery_domain => 'gmail.com',
+    :delivery_user_name => '***REMOVED***',
+    :delivery_password => '***REMOVED***',
+    :delivery_recipient => '',
   }
 
-  def parse! arguments=ARGV, defaults=@@defaults
-    @@defaults.dup.tap do |options|
+  def parse! arguments=ARGV, defaults=@defaults
+    @defaults.dup.tap do |options|
       OptionParser.new do |parser|
         parser.banner = "Usage: mailcatcher [options]"
-        parser.version = File.read(File.expand_path("../../VERSION", __FILE__))
+        parser.version = VERSION
 
         parser.on("--ip IP", "Set the ip address of both servers") do |ip|
           options[:smtp_ip] = options[:http_ip] = ip
@@ -92,6 +87,30 @@ module_function
 
         parser.on("--http-port PORT", Integer, "Set the port address of the http server") do |port|
           options[:http_port] = port
+        end
+
+        parser.on("--delivery-address ADDRESS", "Set the SMTP address value for message delivery") do |delivery_address|
+          options[:delivery_address] = delivery_address
+        end
+
+        parser.on("--delivery-port PORT", Integer, "Set the SMTP port for message delivery") do |delivery_port|
+          options[:delivery_port] = delivery_port
+        end
+
+        parser.on("--delivery-domain DOMAIN", "Set the SMTP domain for message delivery") do |delivery_domain|
+          options[:delivery_domain] = delivery_domain
+        end
+
+        parser.on("--delivery-user-name USERNAME", "Set the SMTP user name for message delivery") do |delivery_user_name|
+          options[:delivery_user_name] = delivery_user_name
+        end
+
+        parser.on("--delivery-password USERNAME", "Set the SMTP password for message delivery") do |delivery_password|
+          options[:delivery_password] = delivery_password
+        end
+
+        parser.on("--delivery-recipient EMAIL", "(Optional) overwrite the to field for message delivery with the provided value") do |delivery_recipient|
+          options[:delivery_recipient] = delivery_recipient
         end
 
         if mac?
@@ -133,9 +152,11 @@ module_function
 
   def run! options=nil
     # If we are passed options, fill in the blanks
-    options &&= @@defaults.merge options
+    options &&= @defaults.merge options
     # Otherwise, parse them from ARGV
     options ||= parse!
+
+    DeliveryService.configure(options)
 
     puts "Starting MailCatcher"
 
@@ -184,7 +205,6 @@ module_function
   end
 
 protected
-module_function
 
   def rescue_port port
     begin
@@ -194,10 +214,17 @@ module_function
     rescue RuntimeError
       if $!.to_s =~ /\bno acceptor\b/
         puts "~~> ERROR: Something's using port #{port}. Are you already running MailCatcher?"
-        exit -1
+        exit(-1)
       else
         raise
       end
     end
   end
 end
+
+require 'mail_catcher/delivery_service'
+require 'mail_catcher/events'
+require 'mail_catcher/growl'
+require 'mail_catcher/mail'
+require 'mail_catcher/smtp'
+require 'mail_catcher/web'

@@ -31,11 +31,17 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 
 The brave can get the source from [the GitHub repository][mailcatcher-github].
 
+### Bundler
+
+Please don't put mailcatcher into your Gemfile. It will conflict with your applications gems at some point.
+
+Instead, pop a note in your README stating you use mailcatcher. Simply run `gem install mailcatcher` then `mailcatcher` to get started.
+
 ### RVM
 
 Under RVM your mailcatcher command may only be available under the ruby you install mailcatcher into. To prevent this, and to prevent gem conflicts, install mailcatcher into a dedicated gemset and create wrapper scripts:
 
-    rvm default@mailcatcher --create gem install mailcatcher
+    rvm default@mailcatcher --create do gem install mailcatcher
     rvm wrapper default@mailcatcher --no-prefix mailcatcher catchmail
 
 ### Rails
@@ -49,13 +55,26 @@ To set up your rails app, I recommend adding this to your `environment/developme
 
 For projects using PHP, or PHP frameworks and application platforms like Drupal, you can set [PHP's mail configuration](http://www.php.net/manual/en/mail.configuration.php) in your [php.ini](http://www.php.net/manual/en/configuration.file.php) to send via MailCatcher with:
 
-    sendmail_path = /usr/bin/env catchmail
+    sendmail_path = /usr/bin/env catchmail -f some@from.address
 
 You can do this in an [Apache htaccess file](http://php.net/manual/en/configuration.changes.php) or general configuration like so:
 
-    php_value sendmail_path "/usr/bin/env catchmail"
+    php_value sendmail_path "/usr/bin/env catchmail -f some@from.address"
 
 If you've installed via RVM this probably won't work unless you've manually added your RVM bin paths to your system environment's PATH. In that case, run `which catchmail` and put that path into the `sendmail_path` directive above instead of `/usr/bin/env catchmail`.
+
+### Django
+
+For use in Django, simply add the following configuration to your projects' settings.py
+
+```python
+if DEBUG:
+    EMAIL_HOST = '127.0.0.1'
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    EMAIL_PORT = 1025
+    EMAIL_USE_TLS = False
+```
 
 ### API
 
