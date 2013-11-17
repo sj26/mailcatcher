@@ -40,6 +40,10 @@ OptionParser.new do |parser|
   parser.on('-q', 'Ignored option -q') do |ignored|
   end
 
+  parser.on('-x', '--no-exit', 'Can\'t exit from the application') do
+    options[:no_exit] = true
+  end
+
   parser.on('-h', '--help', 'Display this help information') do
     puts parser
     exit!

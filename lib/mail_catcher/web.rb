@@ -18,8 +18,12 @@ class MailCatcher::Web < Sinatra::Base
   end
 
   delete '/' do
-    MailCatcher.quit!
-    status 204
+    if MailCatcher.quittable?
+      MailCatcher.quit!
+      status 204
+    else
+      status 403
+    end
   end
 
   get '/messages' do

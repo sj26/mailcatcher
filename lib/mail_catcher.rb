@@ -46,7 +46,7 @@ module MailCatcher extend self
     end
   end
 
-  @defaults = {
+  @@defaults = {
     :smtp_ip => '127.0.0.1',
     :smtp_port => '1025',
     :http_ip => '127.0.0.1',
@@ -55,10 +55,19 @@ module MailCatcher extend self
     :daemon => !windows?,
     :growl => growlnotify?,
     :browse => false,
+    :quit => true,
   }
 
+  def options
+    @@options
+  end
+
+  def quittable?
+    options[:quit]
+  end
+
   def parse! arguments=ARGV, defaults=@defaults
-    @defaults.dup.tap do |options|
+    @@defaults.dup.tap do |options|
       OptionParser.new do |parser|
         parser.banner = "Usage: mailcatcher [options]"
         parser.version = VERSION
@@ -83,13 +92,17 @@ module MailCatcher extend self
           options[:http_port] = port
         end
 
+        parser.on("--no-quit", "Don't allow quitting the process") do
+          options[:quit] = false
+        end
+
         if mac?
           parser.on("--[no-]growl", "Growl to the local machine when a message arrives") do |growl|
             if growl and not growlnotify?
               puts "You'll need to install growlnotify from the Growl installer."
               puts
               puts "See: http://growl.info/extras.php#growlnotify"
-              exit!
+              exit -2
             end
 
             options[:growl] = growl
@@ -114,7 +127,7 @@ module MailCatcher extend self
 
         parser.on('-h', '--help', 'Display this help information') do
           puts parser
-          exit!
+          exit
         end
       end.parse!
     end
@@ -122,9 +135,12 @@ module MailCatcher extend self
 
   def run! options=nil
     # If we are passed options, fill in the blanks
-    options &&= @defaults.merge options
+    options &&= options.reverse_merge @@defaults
     # Otherwise, parse them from ARGV
     options ||= parse!
+
+    # Stash them away for later
+    @@options = options
 
     puts "Starting MailCatcher"
 
@@ -161,7 +177,11 @@ module MailCatcher extend self
       # Daemonize, if we should, but only after the servers have started.
       if options[:daemon]
         EventMachine.next_tick do
-          puts "*** MailCatcher runs as a daemon by default. Go to the web interface to quit."
+          if quittable?
+            puts "*** MailCatcher runs as a daemon by default. Go to the web interface to quit."
+          else
+            puts "*** MailCatcher is now running as a daemon that cannot be quit."
+          end
           Process.daemon
         end
       end
@@ -182,7 +202,7 @@ protected
     rescue RuntimeError
       if $!.to_s =~ /\bno acceptor\b/
         puts "~~> ERROR: Something's using port #{port}. Are you already running MailCatcher?"
-        exit(-1)
+        exit -1
       else
         raise
       end
