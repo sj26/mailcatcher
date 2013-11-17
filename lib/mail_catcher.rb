@@ -55,11 +55,15 @@ module MailCatcher extend self
     :daemon => !windows?,
     :growl => growlnotify?,
     :browse => false,
-    :no_exit => false,
+    :quit => true,
   }
 
   def options
     @@options
+  end
+
+  def quittable?
+    options[:quit]
   end
 
   def parse! arguments=ARGV, defaults=@defaults
@@ -88,8 +92,8 @@ module MailCatcher extend self
           options[:http_port] = port
         end
 
-        parser.on("--no-exit", "Can't exit from the application'") do
-          options[:no_exit] = true
+        parser.on("--no-quit", "Don't allow quitting the process") do
+          options[:quit] = false
         end
 
         if mac?
@@ -173,7 +177,11 @@ module MailCatcher extend self
       # Daemonize, if we should, but only after the servers have started.
       if options[:daemon]
         EventMachine.next_tick do
-          puts "*** MailCatcher runs as a daemon by default. Go to the web interface to quit."
+          if quittable?
+            puts "*** MailCatcher runs as a daemon by default. Go to the web interface to quit."
+          else
+            puts "*** MailCatcher is now running as a daemon that cannot be quit."
+          end
           Process.daemon
         end
       end
