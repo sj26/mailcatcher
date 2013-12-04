@@ -63,6 +63,10 @@ You can do this in an [Apache htaccess file](http://php.net/manual/en/configurat
 
 If you've installed via RVM this probably won't work unless you've manually added your RVM bin paths to your system environment's PATH. In that case, run `which catchmail` and put that path into the `sendmail_path` directive above instead of `/usr/bin/env catchmail`.
 
+If you have defined mailcatcher listening SMTP on a different IP or port (e.g. `192.168.0.1:1025`), set the `sendmail_path` with the same parameter you used to start `mailcatcher`, here is an example:
+
+    sendmail_path = /usr/bin/env catchmail -f some@from.address --smtp-ip 192.160.0.1 --smtp-port 1025
+    
 ### Django
 
 For use in Django, simply add the following configuration to your projects' settings.py
