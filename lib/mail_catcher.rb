@@ -142,6 +142,11 @@ module MailCatcher extend self
     # Stash them away for later
     @@options = options
 
+    # If we're running in the foreground sync the output.
+    unless options[:daemon]
+      $stdout.sync = $stderr.sync = true
+    end
+
     puts "Starting MailCatcher"
 
     Thin::Logging.silent = true
