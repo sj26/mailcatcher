@@ -121,6 +121,10 @@ module MailCatcher extend self
           end
         end
 
+        parser.on('-p', '--persist [PATH]', 'Persist messages in database at path (messages.sqlite by default)') do |path|
+          options[:persist] = path || 'messages.sqlite'
+        end
+
         parser.on('-v', '--verbose', 'Be more verbose') do
           options[:verbose] = true
         end
@@ -150,6 +154,8 @@ module MailCatcher extend self
     puts "Starting MailCatcher"
 
     Thin::Logging.silent = true
+
+    MailCatcher::Mail.db_path = options[:persist]
 
     # One EventMachine loop...
     EventMachine.run do
