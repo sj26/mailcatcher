@@ -1,0 +1,18 @@
+To: Blah <blah@blah.com>
+From: Me <me@sj26.com>
+Subject: Test quoted-printable HTML mail
+Mime-Version: 1.0
+Content-Type: text/html;
+ charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<html class=3D"slim"></html>
+<p>
+Thank you for allowing Grand Rounds to provide a test case that ma=
+y demonstrate a limitation in MailCatcher. Open source makes dev good=
+
+</p>
+<p>
+You can access an error at <a href=3D"http://localhost:9876/big/long/d50=
+243b933ddd425">here</a>
+</p>=
