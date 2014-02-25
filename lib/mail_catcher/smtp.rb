@@ -34,14 +34,13 @@ class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
 
   def receive_data_chunk(lines)
     current_message[:source] ||= ""
-    current_message[:source] << lines.join("\n")
+    lines.each do |line|
+      current_message[:source] << line << "\r\n"
+    end
     true
   end
 
   def receive_message
-    # See https://github.com/mikel/mail/issues/612 for why the newline is
-    # added. OTOH: I wonder if it'll screw up multipart.
-    current_message[:source] += "\n"
     MailCatcher::Mail.add_message current_message
     puts "==> SMTP: Received message from '#{current_message[:sender]}' (#{current_message[:source].length} bytes)"
     true
