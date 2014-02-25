@@ -93,19 +93,17 @@ class MailCatcher
     key 'backspace, delete', =>
       id = @selectedMessage()
       if id?
+        messageRow = $("#messages tbody tr[data-message-id='#{id}']")
+        switchTo = messageRow.next().data('message-id') || messageRow.prev().data('message-id')
+        messageRow.remove()
+        if switchTo
+          @loadMessage switchTo
+        else
+          @unselectMessage()
         $.ajax
           url: '/messages/' + id
           type: 'DELETE'
-          success: =>
-            messageRow = $("#messages tbody tr[data-message-id='#{id}']")
-            switchTo = messageRow.next().data('message-id') || messageRow.prev().data('message-id')
-            messageRow.remove()
-            if switchTo
-              @loadMessage switchTo
-            else
-              @unselectMessage()
-
-          error: ->
+          error: =>
             alert 'Error while removing message.'
       false
 
