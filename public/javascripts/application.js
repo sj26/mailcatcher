@@ -1,6 +1,6 @@
 (function() {
   var MailCatcher,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+    _this = this;
 
   jQuery.expr[':'].icontains = function(a, i, m) {
     var _ref, _ref1;
@@ -8,13 +8,24 @@
   };
 
   MailCatcher = (function() {
+
     function MailCatcher() {
-      this.nextTab = __bind(this.nextTab, this);
-      this.previousTab = __bind(this.previousTab, this);
-      this.openTab = __bind(this.openTab, this);
-      this.selectedTab = __bind(this.selectedTab, this);
-      this.getTab = __bind(this.getTab, this);
       var _this = this;
+      this.nextTab = function(tab) {
+        return MailCatcher.prototype.nextTab.apply(_this, arguments);
+      };
+      this.previousTab = function(tab) {
+        return MailCatcher.prototype.previousTab.apply(_this, arguments);
+      };
+      this.openTab = function(i) {
+        return MailCatcher.prototype.openTab.apply(_this, arguments);
+      };
+      this.selectedTab = function() {
+        return MailCatcher.prototype.selectedTab.apply(_this, arguments);
+      };
+      this.getTab = function(i) {
+        return MailCatcher.prototype.getTab.apply(_this, arguments);
+      };
       $('#messages tr').live('click', function(e) {
         e.preventDefault();
         return _this.loadMessage($(e.currentTarget).attr('data-message-id'));
@@ -249,7 +260,10 @@
     };
 
     MailCatcher.prototype.addMessage = function(message) {
-      return $('#messages tbody').prepend($('<tr />').attr('data-message-id', message.id.toString()).append($('<td/>').text(message.sender || "No sender").toggleClass("blank", !message.sender)).append($('<td/>').text((message.recipients || []).join(', ') || "No receipients").toggleClass("blank", !message.recipients.length)).append($('<td/>').text(message.subject || "No subject").toggleClass("blank", !message.subject)).append($('<td/>').text(this.formatDate(message.created_at))));
+      var title;
+      $('#messages tbody').prepend($('<tr />').attr('data-message-id', message.id.toString()).append($('<td/>').text(message.sender || "No sender").toggleClass("blank", !message.sender)).append($('<td/>').text((message.recipients || []).join(', ') || "No receipients").toggleClass("blank", !message.recipients.length)).append($('<td/>').text(message.subject || "No subject").toggleClass("blank", !message.subject)).append($('<td/>').text(this.formatDate(message.created_at))));
+      title = $('head title');
+      return title.text(title.text().replace(/^\(\d*\)/, "(" + (this.messagesCount()) + ")"));
     };
 
     MailCatcher.prototype.scrollToRow = function(row) {

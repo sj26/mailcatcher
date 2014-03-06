@@ -22,7 +22,7 @@ class MailCatcher
     $('#message .views .analysis.tab a').live 'click', (e) =>
       e.preventDefault()
       @loadMessageAnalysis @selectedMessage()
-      
+
     $('#message iframe').load =>
       @decorateMessageBody()
 
@@ -183,6 +183,8 @@ class MailCatcher
         .append($('<td/>').text((message.recipients || []).join(', ') or "No receipients").toggleClass("blank", !message.recipients.length))
         .append($('<td/>').text(message.subject or "No subject").toggleClass("blank", !message.subject))
         .append($('<td/>').text @formatDate message.created_at)
+    title = $('head title')
+    title.text(title.text().replace(/^\(\d*\)/, "(#{@messagesCount()})"))
 
   scrollToRow: (row) ->
     relativePosition = row.offset().top - $('#messages').offset().top
@@ -260,8 +262,8 @@ class MailCatcher
 
   decorateMessageBody: ->
     format = $('#message .views .tab.format.selected').attr 'data-message-format'
-          
-    switch format 
+
+    switch format
       when 'html'
         body = $('#message iframe').contents().find('body')
         $("a", body).attr("target", "_blank")
