@@ -190,6 +190,8 @@ class MailCatcher
       .append($("<td/>").text(message.subject or "No subject").toggleClass("blank", !message.subject))
       .append($("<td/>").text(@formatDate(message.created_at)))
       .prependTo($("#messages tbody"))
+    title = $('head title')
+    title.text(title.text().replace(/^\(\d*\)/, "(#{@messagesCount()})"))
 
   scrollToRow: (row) ->
     relativePosition = row.offset().top - $("#messages").offset().top
