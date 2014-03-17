@@ -155,7 +155,7 @@ module MailCatcher extend self
 
     puts "Starting MailCatcher"
 
-    Thin::Logging.silent = true
+    Thin::Logging.silent = (ENV["MAILCATCHER_ENV"] != "development")
 
     # One EventMachine loop...
     EventMachine.run do
@@ -174,7 +174,7 @@ module MailCatcher extend self
       # Let Thin set itself up inside our EventMachine loop
       # (Skinny/WebSockets just works on the inside)
       rescue_port options[:http_port] do
-        Thin::Server.start options[:http_ip], options[:http_port], Web
+        Thin::Server.start(options[:http_ip], options[:http_port], Web)
         puts "==> #{http_url}"
       end
 

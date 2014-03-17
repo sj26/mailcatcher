@@ -21,12 +21,9 @@ Gem::Specification.new do |s|
     "README.md", "LICENSE", "VERSION",
     "bin/*",
     "lib/**/*.rb",
-    "public/favicon.ico",
-    "public/images/**/*",
-    "public/javascripts/**/*.js",
-    "public/stylesheets/**/*.{css,xsl}",
-    "views/**/*"
-  ]
+    "public/**/*",
+    "views/**/*",
+  ] - Dir["lib/mail_catcher/web/assets.rb"]
   s.require_paths = ["lib"]
   s.executables = ["mailcatcher", "catchmail"]
   s.extra_rdoc_files = ["README.md", "LICENSE"]
@@ -47,4 +44,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rake"
   s.add_development_dependency "rdoc"
   s.add_development_dependency "sass"
+  s.add_development_dependency "sprockets"
+  s.add_development_dependency "sprockets-sass"
 end

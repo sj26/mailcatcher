@@ -1,5 +1,10 @@
-rdoc
-*.gem
-
+# Caches
 .bundle
 .sass-cache
+
+# Generated documentation and assets
+/doc
+/public/assets
+
+# Build gems
+*.gem
