@@ -1,4 +1,5 @@
 rdoc
 *.gem
 
+.bundle
 .sass-cache
