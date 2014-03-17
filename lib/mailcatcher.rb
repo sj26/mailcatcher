@@ -1,0 +1,1 @@
+require "mail_catcher"
