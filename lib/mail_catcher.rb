@@ -1,14 +1,20 @@
-require 'active_support/core_ext'
-require 'eventmachine'
-require 'open3'
-require 'optparse'
-require 'rbconfig'
-require 'thin'
+require "open3"
+require "optparse"
+require "rbconfig"
 
-require 'mail_catcher/version'
+require "active_support/core_ext"
+require "eventmachine"
+require "thin"
+
+require "mail_catcher/events"
+require "mail_catcher/growl"
+require "mail_catcher/mail"
+require "mail_catcher/smtp"
+require "mail_catcher/web"
+require "mail_catcher/version"
 
 module MailCatcher extend self
-  def which command
+  def which(command)
     not windows? and Open3.popen3 'which', 'command' do |stdin, stdout, stderr|
       return stdout.read.chomp.presence
     end
@@ -214,9 +220,3 @@ protected
     end
   end
 end
-
-require 'mail_catcher/events'
-require 'mail_catcher/growl'
-require 'mail_catcher/mail'
-require 'mail_catcher/smtp'
-require 'mail_catcher/web'

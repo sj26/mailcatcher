@@ -1,9 +1,12 @@
-require 'sinatra'
-require 'pathname'
-require 'net/http'
-require 'uri'
+require "pathname"
+require "net/http"
+require "uri"
 
-require 'skinny'
+require "sinatra"
+require "skinny"
+
+require "mail_catcher/events"
+require "mail_catcher/mail"
 
 class Sinatra::Request
   include Skinny::Helpers
@@ -13,11 +16,11 @@ class MailCatcher::Web < Sinatra::Base
   set :root, File.expand_path("#{__FILE__}/../../..")
   set :haml, :format => :html5
 
-  get '/' do
+  get "/" do
     haml :index
   end
 
-  delete '/' do
+  delete "/" do
     if MailCatcher.quittable?
       MailCatcher.quit!
       status 204
@@ -26,7 +29,7 @@ class MailCatcher::Web < Sinatra::Base
     end
   end
 
-  get '/messages' do
+  get "/messages" do
     if request.websocket?
       request.websocket!(
         :on_start => proc do |websocket|
@@ -40,12 +43,12 @@ class MailCatcher::Web < Sinatra::Base
     end
   end
 
-  delete '/messages' do
+  delete "/messages" do
     MailCatcher::Mail.delete!
     status 204
   end
 
-  get '/messages/:id.json' do
+  get "/messages/:id.json" do
     id = params[:id].to_i
     if message = MailCatcher::Mail.message(id)
       message.merge({
@@ -55,7 +58,7 @@ class MailCatcher::Web < Sinatra::Base
           ("plain" if MailCatcher::Mail.message_has_plain? id)
         ].compact,
         "attachments" => MailCatcher::Mail.message_attachments(id).map do |attachment|
-          attachment.merge({"href" => "/messages/#{escape(id)}/parts/#{escape(attachment['cid'])}"})
+          attachment.merge({"href" => "/messages/#{escape(id)}/parts/#{escape(attachment["cid"])}"})
         end,
       }).to_json
     else
@@ -63,7 +66,7 @@ class MailCatcher::Web < Sinatra::Base
     end
   end
 
-  get '/messages/:id.html' do
+  get "/messages/:id.html" do
     id = params[:id].to_i
     if part = MailCatcher::Mail.message_part_html(id)
       content_type part["type"], :charset => (part["charset"] || "utf8")
@@ -133,7 +136,7 @@ class MailCatcher::Web < Sinatra::Base
     end
   end
 
-  delete '/messages/:id' do
+  delete "/messages/:id" do
     id = params[:id].to_i
     if message = MailCatcher::Mail.message(id)
       MailCatcher::Mail.delete_message!(id)

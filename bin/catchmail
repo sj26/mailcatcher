@@ -32,7 +32,7 @@ OptionParser.new do |parser|
   parser.on('-f FROM', 'Set the sending address') do |from|
     options[:from] = from
   end
-  
+
   parser.on('-oi', 'Ignored option -oi') do |ignored|
   end
   parser.on('-t', 'Ignored option -t') do |ignored|

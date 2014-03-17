@@ -1,12 +1,12 @@
-require 'active_support/json'
-require 'mail'
-require 'sqlite3'
-require 'eventmachine'
+require "active_support/json"
+require "eventmachine"
+require "mail"
+require "sqlite3"
 
 module MailCatcher::Mail extend self
   def db
     @__db ||= begin
-      SQLite3::Database.new(':memory:', :type_translation => true).tap do |db|
+      SQLite3::Database.new(":memory:", :type_translation => true).tap do |db|
         db.execute(<<-SQL)
           CREATE TABLE message (
             id INTEGER PRIMARY KEY ASC,
@@ -41,7 +41,7 @@ module MailCatcher::Mail extend self
     @add_message_query ||= db.prepare("INSERT INTO message (sender, recipients, subject, source, type, size, created_at) VALUES (?, ?, ?, ?, ?, ?, datetime('now'))")
 
     mail = Mail.new(message[:source])
-    @add_message_query.execute(message[:sender], message[:recipients].to_json, mail.subject, message[:source], mail.mime_type || 'text/plain', message[:source].length)
+    @add_message_query.execute(message[:sender], message[:recipients].to_json, mail.subject, message[:source], mail.mime_type || "text/plain", message[:source].length)
     message_id = db.last_insert_row_id
     parts = mail.all_parts
     parts = [mail] if parts.empty?
@@ -49,7 +49,7 @@ module MailCatcher::Mail extend self
       body = part.body.to_s
       # Only parts have CIDs, not mail
       cid = part.cid if part.respond_to? :cid
-      add_message_part(message_id, cid, part.mime_type || 'text/plain', part.attachment? ? 1 : 0, part.filename, part.charset, body, body.length)
+      add_message_part(message_id, cid, part.mime_type || "text/plain", part.attachment? ? 1 : 0, part.filename, part.charset, body, body.length)
     end
 
     EventMachine.next_tick do
@@ -87,7 +87,7 @@ module MailCatcher::Mail extend self
 
   def message_has_html?(id)
     @message_has_html_query ||= db.prepare "SELECT 1 FROM message_part WHERE message_id = ? AND is_attachment = 0 AND type IN ('application/xhtml+xml', 'text/html') LIMIT 1"
-    (!!@message_has_html_query.execute(id).next) || ['text/html', 'application/xhtml+xml'].include?(message(id)["type"])
+    (!!@message_has_html_query.execute(id).next) || ["text/html", "application/xhtml+xml"].include?(message(id)["type"])
   end
 
   def message_has_plain?(id)
@@ -126,7 +126,7 @@ module MailCatcher::Mail extend self
     part ||= message_part_type(message_id, "application/xhtml+xml")
     part ||= begin
       message = message(message_id)
-      message if message.present? and ['text/html', 'application/xhtml+xml'].include? message["type"]
+      message if message.present? and ["text/html", "application/xhtml+xml"].include? message["type"]
     end
   end
 
@@ -135,7 +135,7 @@ module MailCatcher::Mail extend self
   end
 
   def message_part_cid(message_id, cid)
-    @message_part_cid_query ||= db.prepare 'SELECT * FROM message_part WHERE message_id = ?'
+    @message_part_cid_query ||= db.prepare "SELECT * FROM message_part WHERE message_id = ?"
     @message_part_cid_query.execute(message_id).map do |row|
       Hash[row.fields.zip(row)]
     end.find do |part|
@@ -144,16 +144,16 @@ module MailCatcher::Mail extend self
   end
 
   def delete!
-    @delete_messages_query ||= db.prepare 'DELETE FROM message'
-    @delete_message_parts_query ||= db.prepare 'DELETE FROM message_part'
+    @delete_messages_query ||= db.prepare "DELETE FROM message"
+    @delete_message_parts_query ||= db.prepare "DELETE FROM message_part"
 
     @delete_messages_query.execute and
     @delete_message_parts_query.execute
   end
 
   def delete_message!(message_id)
-    @delete_messages_query ||= db.prepare 'DELETE FROM message WHERE id = ?'
-    @delete_message_parts_query ||= db.prepare 'DELETE FROM message_part WHERE message_id = ?'
+    @delete_messages_query ||= db.prepare "DELETE FROM message WHERE id = ?"
+    @delete_message_parts_query ||= db.prepare "DELETE FROM message_part WHERE message_id = ?"
     @delete_messages_query.execute(message_id) and
     @delete_message_parts_query.execute(message_id)
   end

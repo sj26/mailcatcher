@@ -1,5 +1,7 @@
-require 'eventmachine'
+require "eventmachine"
 
-module MailCatcher::Events
-  MessageAdded = EventMachine::Channel.new
+module MailCatcher
+  module Events
+    MessageAdded = EventMachine::Channel.new
+  end
 end

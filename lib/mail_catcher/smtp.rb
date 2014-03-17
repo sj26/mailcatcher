@@ -1,4 +1,6 @@
-require 'eventmachine'
+require "eventmachine"
+
+require "mail_catcher/mail"
 
 class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
   # We override EM's mail from processing to allow multiple mail-from commands
