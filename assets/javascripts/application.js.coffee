@@ -1,3 +1,10 @@
+#= require modernizr
+#= require jquery
+#= require date
+#= require flexie
+#= require keymaster
+#= require xslt
+
 # Add a new jQuery selector expression which does a case-insensitive :contains
 jQuery.expr[':'].icontains = (a, i, m) ->
   (a.textContent ? a.innerText ? "").toUpperCase().indexOf(m[3].toUpperCase()) >= 0

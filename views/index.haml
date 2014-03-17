@@ -2,28 +2,22 @@
 %html.mailcatcher
   %head
     %title MailCatcher
-    %link{:rel => "stylesheet", :href => "/assets/application.css"}
-    %link{:href => "/favicon.ico", :rel => "shortcut icon" }
-    %script{:src => "/assets/modernizr.js"}
-    %script{:src => "/assets/jquery.js"}
-    %script{:src => "/assets/xslt-3.2.js"}
-    %script{:src => "/assets/date.js"}
-    %script{:src => "/assets/flexie.min.js"}
-    %script{:src => "/assets/keymaster.min.js"}
+    %link{:href => "/favicon.ico", :rel => "shortcut icon"}
+    %link{:href => "/assets/application.css", :rel => "stylesheet"}
     %script{:src => "/assets/application.js"}
   %body
     %header
       %h1
-        %a{:href => "http://mailcatcher.me", :target => '_blank'} MailCatcher
+        %a{:href => "http://mailcatcher.me", :target => "_blank"} MailCatcher
       %nav.app
         %ul
           %li.search
-            %input{:type => 'search', :name => 'search', :placeholder => 'Search messages...', :incremental => true}
+            %input{:type => "search", :name => "search", :placeholder => "Search messages...", :incremental => true}
           %li.clear
-            %a{:href => '#', :title => 'Clear all messages'} Clear
+            %a{:href => "#", :title => "Clear all messages"} Clear
           - unless MailCatcher.options[:no_exit]
             %li.quit
-              %a{:href => '#', :title => 'Quit MailCatcher'} Quit
+              %a{:href => "#", :title => "Quit MailCatcher"} Quit
     %nav#messages
       %table
         %thead
@@ -50,15 +44,15 @@
           %dd.attachments
         %nav.views
           %ul
-            %li.format.tab.html.selected{'data-message-format' => 'html'}
-              %a{:href => '#'} HTML
-            %li.format.tab.plain{'data-message-format' => 'plain'}
-              %a{:href => '#'}Plain Text
-            %li.format.tab.source{'data-message-format' => 'source'}
-              %a{:href => '#'}Source
+            %li.format.tab.html.selected{"data-message-format" => "html"}
+              %a{:href => "#"} HTML
+            %li.format.tab.plain{"data-message-format" => "plain"}
+              %a{:href => "#"} Plain Text
+            %li.format.tab.source{"data-message-format" => "source"}
+              %a{:href => "#"} Source
             %li.tab.analysis
-              %a{:href => '#'}Analysis
+              %a{:href => "#"} Analysis
             %li.action.download
-              %a.button{:href => '#'}
+              %a.button{:href => "#"}
                 %span Download
       %iframe.body
