@@ -27,6 +27,8 @@ task "assets" do
 
   require "mail_catcher/web/assets"
   sprockets = MailCatcher::Web::Assets
+  sprockets.css_compressor = :sass
+  sprockets.js_compressor = :uglifier
   sprockets.each_logical_path(/(\Amailcatcher\.(js|css)|\.(xsl|png)\Z)/) do |logical_path|
     if asset = sprockets.find_asset(logical_path)
       target = File.join(compiled_path, logical_path)
