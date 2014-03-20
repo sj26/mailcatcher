@@ -27,7 +27,7 @@ task "assets" do
 
   require "mail_catcher/web/assets"
   sprockets = MailCatcher::Web::Assets
-  sprockets.each_logical_path(/(\Aapplication\.(js|css)|\.(xsl|png)\Z)/) do |logical_path|
+  sprockets.each_logical_path(/(\Amailcatcher\.(js|css)|\.(xsl|png)\Z)/) do |logical_path|
     if asset = sprockets.find_asset(logical_path)
       target = File.join(compiled_path, logical_path)
       asset.write_to target
