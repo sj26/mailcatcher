@@ -45,6 +45,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rake"
   s.add_development_dependency "rdoc"
   s.add_development_dependency "sass"
+  s.add_development_dependency "selenium-webdriver"
   s.add_development_dependency "sprockets"
   s.add_development_dependency "sprockets-sass"
   s.add_development_dependency "uglifier"
