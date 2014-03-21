@@ -18,6 +18,7 @@ end
 # Wait for it to boot
 begin
   TCPSocket.new("127.0.0.1", SMTP_PORT).close
+  TCPSocket.new("127.0.0.1", HTTP_PORT).close
 rescue Errno::ECONNREFUSED
   retry
 end
