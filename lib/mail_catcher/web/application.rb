@@ -16,8 +16,38 @@ end
 module MailCatcher
   module Web
     class Application < Sinatra::Base
+      set :development, ENV["MAILCATCHER_ENV"] == "development"
       set :root, File.expand_path("#{__FILE__}/../../../..")
       set :haml, :format => :html5
+
+      if development?
+        require "sprockets-helpers"
+
+        configure do
+          require "mail_catcher/web/assets"
+          Sprockets::Helpers.configure do |config|
+            config.environment = MailCatcher::Web::Assets
+            config.prefix      = "/assets"
+            config.digest      = false
+            config.public_path = public_folder
+            config.debug       = true
+          end
+        end
+
+        helpers do
+          include Sprockets::Helpers
+        end
+      else
+        helpers do
+          def javascript_tag(name)
+            %{<script src="/assets/#{name}.js"></script>}
+          end
+
+          def stylesheet_tag(name)
+            %{<link rel="stylesheet" href="/assets/#{name}.css">}
+          end
+        end
+      end
 
       get "/" do
         haml :index
