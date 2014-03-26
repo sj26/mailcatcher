@@ -4,7 +4,6 @@
 #= require favcount
 #= require flexie
 #= require keymaster
-#= require xslt
 
 # Add a new jQuery selector expression which does a case-insensitive :contains
 jQuery.expr[":"].icontains = (a, i, m) ->
@@ -26,10 +25,6 @@ class MailCatcher
     $("#message .views .format.tab a").live "click", (e) =>
       e.preventDefault()
       @loadMessageBody @selectedMessage(), $($(e.currentTarget).parent("li")).data("message-format")
-
-    $("#message .views .analysis.tab a").live "click", (e) =>
-      e.preventDefault()
-      @loadMessageAnalysis @selectedMessage()
 
     $("#message iframe").load =>
       @decorateMessageBody()
@@ -254,10 +249,7 @@ class MailCatcher
 
         $("#message .views .download a").attr("href", "/messages/#{id}.eml")
 
-        if $("#message .views .tab.analysis.selected").length
-          @loadMessageAnalysis()
-        else
-          @loadMessageBody()
+        @loadMessageBody()
 
   # XXX: These should probably cache their iframes for the current message now we're using a remote service:
 
