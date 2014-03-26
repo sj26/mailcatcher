@@ -123,7 +123,6 @@ class MailCatcher
 
     @refresh()
     @subscribe()
-    @updateMessagesCount()
 
   # Only here because Safari's Date parsing *sucks*
   # We throw away the timezone, but you could use it for something...
@@ -287,44 +286,12 @@ class MailCatcher
         text = text.replace(/\n/g, "<br/>")
         message_iframe.find("html").html("<html><body>#{text}</html></body>")
 
-  loadMessageAnalysis: (id) ->
-    id ||= @selectedMessage()
-
-    $("#message .views .analysis.tab:not(.selected)").addClass("selected")
-    $("#message .views :not(.analysis).tab.selected").removeClass("selected")
-
-    if id?
-      # Makes a new iframe and populate it with a quick intro and a button
-      $iframe = $("#message iframe").contents().children()
-        .html("""
-          <html>
-          <head>
-          <title>Analysis</title>
-          #{$('link[rel="stylesheet"]')[0].outerHTML}
-          </head>
-          <body class="iframe">
-          <h1>Analyse your email with Fractal</h1>
-          <p><a href="http://getfractal.com/" target="_blank">Fractal</a> is a really neat service that applies common email design and development knowledge from <a href="http://www.email-standards.org/" target="_blank">Email Standards Project</a> to your HTML email and tells you what you've done wrong or what you should do instead.</p>
-          <p>Please note that this <strong>sends your email to the Fractal service</strong> for analysis. Read their <a href="https://www.getfractal.com/page/terms" target="_blank">terms of service</a> if you're paranoid.</p>
-          <form>
-          <input type="submit" value="Analyse" /><span class="loading" style="color: #999; display: none">Analysing&hellip;</span>
-          </form>
-          </body>
-          </html>
-        """)
-      $form = $iframe.find("form")
-        .submit (e) ->
-          e.preventDefault()
-          $(this)
-            .find("""input[type="submit"]""").attr("disabled", "disabled").end()
-            .find(".loading").show()
-          $("#message iframe").contents().find("body").xslt("/messages/#{id}/analysis.xml", "/stylesheets/analysis.xsl")
-
   refresh: ->
     $.getJSON "/messages", (messages) =>
       $.each messages, (i, message) =>
         unless @haveMessage message
           @addMessage message
+      @updateMessagesCount()
 
   subscribe: ->
     if WebSocket?
