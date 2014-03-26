@@ -150,7 +150,7 @@ module MailCatcher
       end
 
       not_found do
-        "<html><body><h1>No Dice</h1><p>The message you were looking for does not exist, or doesn't have content of this type.</p></body></html>"
+        haml :"404"
       end
     end
   end
