@@ -54,6 +54,7 @@ class MailCatcher
           type: "DELETE"
           success: =>
             @unselectMessage()
+            @updateMessagesCount()
           error: ->
             alert "Error while clearing all messages."
 
@@ -111,6 +112,7 @@ class MailCatcher
               @loadMessage switchTo
             else
               @unselectMessage()
+            @updateMessagesCount()
 
           error: ->
             alert "Error while removing message."
@@ -118,6 +120,7 @@ class MailCatcher
 
     @refresh()
     @subscribe()
+    @updateMessagesCount()
 
   # Only here because Safari's Date parsing *sucks*
   # We throw away the timezone, but you could use it for something...
@@ -138,6 +141,10 @@ class MailCatcher
 
   messagesCount: ->
     $("#messages tr").length - 1
+
+  updateMessagesCount: ->
+    title = $("head title")
+    title.text(title.text().replace(/^\(\d*\)/, "(#{@messagesCount()})"))
 
   tabs: ->
     $("#message ul").children(".tab")
@@ -190,8 +197,7 @@ class MailCatcher
       .append($("<td/>").text(message.subject or "No subject").toggleClass("blank", !message.subject))
       .append($("<td/>").text(@formatDate(message.created_at)))
       .prependTo($("#messages tbody"))
-    title = $('head title')
-    title.text(title.text().replace(/^\(\d*\)/, "(#{@messagesCount()})"))
+    @updateMessagesCount()
 
   scrollToRow: (row) ->
     relativePosition = row.offset().top - $("#messages").offset().top
