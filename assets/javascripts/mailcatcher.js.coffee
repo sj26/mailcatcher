@@ -1,6 +1,7 @@
 #= require modernizr
 #= require jquery
 #= require date
+#= require favcount
 #= require flexie
 #= require keymaster
 #= require xslt
@@ -67,6 +68,8 @@ class MailCatcher
             location.replace $("body > header h1 a").attr("href")
           error: ->
             alert "Error while quitting."
+
+    @favcount = new Favcount($("""link[rel="icon"]""").attr("href"))
 
     key "up", =>
       if @selectedMessage()
@@ -143,8 +146,7 @@ class MailCatcher
     $("#messages tr").length - 1
 
   updateMessagesCount: ->
-    title = $("head title")
-    title.text(title.text().replace(/^\(\d*\)/, "(#{@messagesCount()})"))
+    @favcount.set(@messagesCount())
 
   tabs: ->
     $("#message ul").children(".tab")
