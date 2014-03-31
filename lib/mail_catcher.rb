@@ -7,7 +7,6 @@ require "eventmachine"
 require "thin"
 
 require "mail_catcher/events"
-require "mail_catcher/growl"
 require "mail_catcher/mail"
 require "mail_catcher/smtp"
 require "mail_catcher/web"
@@ -32,14 +31,6 @@ module MailCatcher extend self
     mac? and const_defined? :MACRUBY_VERSION
   end
 
-  def growlnotify?
-    which "growlnotify"
-  end
-
-  def growl?
-    growlnotify?
-  end
-
   def browse?
     windows? or which "open"
   end
@@ -59,7 +50,6 @@ module MailCatcher extend self
     :http_port => '1080',
     :verbose => false,
     :daemon => !windows?,
-    :growl => growlnotify?,
     :browse => false,
     :quit => true,
   }
@@ -103,15 +93,9 @@ module MailCatcher extend self
         end
 
         if mac?
-          parser.on("--[no-]growl", "Growl to the local machine when a message arrives") do |growl|
-            if growl and not growlnotify?
-              puts "You'll need to install growlnotify from the Growl installer."
-              puts
-              puts "See: http://growl.info/extras.php#growlnotify"
-              exit -2
-            end
-
-            options[:growl] = growl
+          parser.on("--[no-]growl") do |growl|
+            puts "Growl is no longer supported"
+            exit -2
           end
         end
 
@@ -159,9 +143,6 @@ module MailCatcher extend self
 
     # One EventMachine loop...
     EventMachine.run do
-      # Get our lion on if asked
-      MailCatcher::Growl.start if options[:growl]
-
       smtp_url = "smtp://#{options[:smtp_ip]}:#{options[:smtp_port]}"
       http_url = "http://#{options[:http_ip]}:#{options[:http_port]}"
 
