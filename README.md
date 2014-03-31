@@ -11,7 +11,6 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 * Catches all mail and stores it for display.
 * Shows HTML, Plain Text and Source version of messages, as applicable.
 * Rewrites HTML enabling display of embedded, inline images/etc and open links in a new window. (currently very basic)
-* Can send HTML for analysis by [Fractal][fractal].
 * Lists attachments and allows separate downloading of parts.
 * Download original email to view in your native mail client(s).
 * Command line options to override the default SMTP/HTTP IP and port settings.
