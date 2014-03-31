@@ -117,7 +117,6 @@ Copyright © 2010-2011 Samuel Cochran (sj26@sj26.com). Released under the MIT Li
 For dream catching, try [this](http://goo.gl/kgbh). OR [THIS](http://www.nyanicorn.com), OMG.
 
   [donate]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=522WUPLRWUSKE
-  [fractal]: http://getfractal.com
   [license]: https://github.com/sj26/mailcatcher/blob/master/LICENSE
   [mailcatcher-github]: https://github.com/sj26/mailcatcher
   [mailcatcher-issues]: https://github.com/sj26/mailcatcher/issues
