@@ -44,14 +44,14 @@ module MailCatcher extend self
   end
 
   @@defaults = {
-    :smtp_ip => '127.0.0.1',
-    :smtp_port => '1025',
-    :http_ip => '127.0.0.1',
-    :http_port => '1080',
-    :verbose => false,
-    :daemon => !windows?,
-    :browse => false,
-    :quit => true,
+    smtp_ip: '127.0.0.1',
+    smtp_port: '1025',
+    http_ip: '127.0.0.1',
+    http_port: '1080',
+    verbose: false,
+    daemon: !windows?,
+    browse: false,
+    quit: true,
   }
 
   def options

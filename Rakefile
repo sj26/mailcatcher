@@ -43,7 +43,7 @@ end
 
 require "rdoc/task"
 
-RDoc::Task.new(:rdoc => "doc",:clobber_rdoc => "doc:clean", :rerdoc => "doc:force") do |rdoc|
+RDoc::Task.new(rdoc: "doc",clobber_rdoc: "doc:clean", rerdoc: "doc:force") do |rdoc|
   rdoc.title = "MailCatcher #{MailCatcher::VERSION}"
   rdoc.rdoc_dir = "doc"
   rdoc.main = "README.md"
@@ -56,4 +56,4 @@ Rake::TestTask.new do |task|
   task.pattern = "spec/*_spec.rb"
 end
 
-task :default => :test
+task default: :test
