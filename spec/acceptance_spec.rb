@@ -28,7 +28,7 @@ describe MailCatcher do
   DEFAULT_TO = "to@example.com"
 
   def deliver(message, options={})
-    options = {:from => DEFAULT_FROM, :to => DEFAULT_TO}.merge(options)
+    options = {from: DEFAULT_FROM, to: DEFAULT_TO}.merge(options)
     Net::SMTP.start('127.0.0.1', SMTP_PORT) do |smtp|
       smtp.send_message message, options[:from], options[:to]
     end

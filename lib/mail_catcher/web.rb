@@ -16,6 +16,6 @@ module MailCatcher
       end
     end
 
-    delegate :call, :to => :app
+    delegate :call, to: :app
   end
 end

@@ -18,7 +18,7 @@ module MailCatcher
     class Application < Sinatra::Base
       set :development, ENV["MAILCATCHER_ENV"] == "development"
       set :root, File.expand_path("#{__FILE__}/../../../..")
-      set :haml, :format => :html5
+      set :haml, format: :html5
 
       if development?
         require "sprockets-helpers"
@@ -65,7 +65,7 @@ module MailCatcher
       get "/messages" do
         if request.websocket?
           request.websocket!(
-            :on_start => proc do |websocket|
+            on_start: proc do |websocket|
               subscription = Events::MessageAdded.subscribe { |message| websocket.send_message message.to_json }
               websocket.on_close do |websocket|
                 Events::MessageAdded.unsubscribe subscription
@@ -102,7 +102,7 @@ module MailCatcher
       get "/messages/:id.html" do
         id = params[:id].to_i
         if part = Mail.message_part_html(id)
-          content_type part["type"], :charset => (part["charset"] || "utf8")
+          content_type part["type"], charset: (part["charset"] || "utf8")
 
           body = part["body"]
 
@@ -118,7 +118,7 @@ module MailCatcher
       get "/messages/:id.plain" do
         id = params[:id].to_i
         if part = Mail.message_part_plain(id)
-          content_type part["type"], :charset => (part["charset"] || "utf8")
+          content_type part["type"], charset: (part["charset"] || "utf8")
           part["body"]
         else
           not_found
@@ -148,7 +148,7 @@ module MailCatcher
       get "/messages/:id/parts/:cid" do
         id = params[:id].to_i
         if part = Mail.message_part_cid(id, params[:cid])
-          content_type part["type"], :charset => (part["charset"] || "utf8")
+          content_type part["type"], charset: (part["charset"] || "utf8")
           attachment part["filename"] if part["is_attachment"] == 1
           body part["body"].to_s
         else
@@ -161,7 +161,7 @@ module MailCatcher
         if part = Mail.message_part_html(id)
           # TODO: Server-side cache? Make the browser cache based on message create time? Hmm.
           uri = URI.parse("http://api.getfractal.com/api/v2/validate#{"/format/#{params[:format]}" if params[:format].present?}")
-          response = Net::HTTP.post_form(uri, :api_key => "5c463877265251386f516f7428", :html => part["body"])
+          response = Net::HTTP.post_form(uri, api_key: "5c463877265251386f516f7428", html: part["body"])
           content_type ".#{params[:format]}" if params[:format].present?
           body response.body
         else
