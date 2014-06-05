@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     mailcatcher (0.6.0)
-      activesupport (>= 3.0.0, < 5)
+      activesupport (>= 4.0.0, < 5)
       eventmachine (~> 1.0.0)
       haml (>= 3.1, < 4.1)
       mail (~> 2.3)
@@ -41,13 +41,11 @@ GEM
     hike (1.2.3)
     i18n (0.6.9)
     json (1.8.1)
-    mail (2.5.4)
-      mime-types (~> 1.16)
-      treetop (~> 1.4.8)
-    mime-types (1.25.1)
+    mail (2.6.0)
+      mime-types (>= 1.16, < 3)
+    mime-types (2.3)
     minitest (5.3.1)
     multi_json (1.9.2)
-    polyglot (0.3.5)
     rack (1.5.2)
     rack-protection (1.5.3)
       rack
@@ -85,9 +83,6 @@ GEM
       rack (>= 1.0.0)
     thread_safe (0.3.4)
     tilt (1.4.1)
-    treetop (1.4.15)
-      polyglot
-      polyglot (>= 0.3.1)
     tzinfo (1.2.1)
       thread_safe (~> 0.1)
     uglifier (2.5.0)

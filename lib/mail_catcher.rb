@@ -2,7 +2,7 @@ require "open3"
 require "optparse"
 require "rbconfig"
 
-require "active_support/core_ext"
+require "active_support"
 require "eventmachine"
 require "thin"
 
