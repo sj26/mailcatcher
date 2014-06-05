@@ -7,7 +7,6 @@ require "skinny"
 
 require "mail_catcher/events"
 require "mail_catcher/mail"
-require "mail_catcher/web"
 
 class Sinatra::Request
   include Skinny::Helpers

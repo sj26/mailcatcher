@@ -2,12 +2,10 @@ require "sprockets"
 require "sprockets-sass"
 require "compass"
 
-require "mail_catcher/web/application"
-
 module MailCatcher
   module Web
-    Assets = Sprockets::Environment.new(Application.root).tap do |sprockets|
-      Dir["#{Application.root}/{,vendor}/assets/*"].each do |path|
+    Assets = Sprockets::Environment.new(File.expand_path("#{__FILE__}/../../../..")).tap do |sprockets|
+      Dir["#{sprockets.root}/{,vendor}/assets/*"].each do |path|
         sprockets.append_path(path)
       end
     end

@@ -1,3 +1,5 @@
+ENV["MAILCATCHER_ENV"] = "test"
+
 require "minitest/autorun"
 require "mail_catcher"
 require "socket"
