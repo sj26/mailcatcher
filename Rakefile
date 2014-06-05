@@ -56,4 +56,6 @@ Rake::TestTask.new do |task|
   task.pattern = "spec/*_spec.rb"
 end
 
+task :test => :assets
+
 task :default => :test
