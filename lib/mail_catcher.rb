@@ -6,6 +6,8 @@ require 'rbconfig'
 require 'thin'
 
 require 'mail_catcher/version'
+require 'dotenv'
+Dotenv.load
 
 module MailCatcher extend self
   def which command
@@ -55,11 +57,11 @@ module MailCatcher extend self
     :daemon => !windows?,
     :growl => growlnotify?,
     :browse => false,
-    :delivery_address => 'smtp.gmail.com',
-    :delivery_port => '587',
-    :delivery_domain => 'gmail.com',
-    :delivery_user_name => '***REMOVED***',
-    :delivery_password => '***REMOVED***',
+    :delivery_address => ENV['SMTP_ADDRESS'],
+    :delivery_port => ENV['PORT'],
+    :delivery_domain => ENV['DOMAIN'],
+    :delivery_user_name => ENV['EMAIL'],
+    :delivery_password => ENV['PASSWORD'],
     :delivery_recipient => '',
   }
 
