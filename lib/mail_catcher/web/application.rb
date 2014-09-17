@@ -3,6 +3,7 @@ require "net/http"
 require "uri"
 
 require "sinatra"
+require "sinatra/json"
 require "skinny"
 
 require "mail_catcher/events"
@@ -71,7 +72,7 @@ module MailCatcher
               end
             end)
         else
-          Mail.messages.to_json
+          json(Mail.messages)
         end
       end
 
@@ -92,7 +93,8 @@ module MailCatcher
             "attachments" => Mail.message_attachments(id).map do |attachment|
               attachment.merge({"href" => "/messages/#{escape(id)}/parts/#{escape(attachment["cid"])}"})
             end,
-          }).to_json
+          })
+          json(message)
         else
           not_found
         end
