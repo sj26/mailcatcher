@@ -38,6 +38,7 @@ Gem::Specification.new do |s|
   s.add_dependency "sqlite3", "~> 1.3"
   s.add_dependency "thin", "~> 1.5.0"
   s.add_dependency "skinny", "~> 0.2.3"
+  s.add_dependency "i18n", "~> 0.6.11"
 
   s.add_development_dependency "coffee-script"
   s.add_development_dependency "compass"
