@@ -58,4 +58,13 @@ class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
   ensure
     @current_message = nil
   end
+
+  def post_init
+    puts "==> SMTP: Connected established"
+  end
+
+  def unbind
+    puts "==> SMTP: Connected closed"
+  end
+
 end
