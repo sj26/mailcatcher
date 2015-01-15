@@ -1,12 +1,17 @@
 FROM ubuntu:trusty
 MAINTAINER Paul Bowsher <paul.bowsher@gmail.com>
 
-RUN apt-get update && \
-    apt-get install -y sqlite3 libsqlite3-dev git build-essential && \
-    apt-get install -y ruby-dev libssl-dev && \
-    apt-get install -y nodejs && \
-    apt-get clean && \
-    gem install bundler --no-ri --no-rdoc
+RUN apt-get update && apt-get install -y -q \
+    build-essential \
+    git \
+    libssl-dev \
+    libsqlite3-dev \
+    nodejs \
+    ruby-dev \
+    sqlite3 \
+ && apt-get clean \
+ && rm -r /var/lib/apt/lists/* \
+ && gem install bundler --no-ri --no-rdoc
 
 ADD . /app
 WORKDIR /app
