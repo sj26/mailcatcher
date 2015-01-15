@@ -17,4 +17,5 @@ RUN bundle exec rake assets
 EXPOSE 1025
 EXPOSE 1080
 
-ENTRYPOINT ["bundle", "exec", "mailcatcher", "--ip", "0.0.0.0", "-f"]
+ENTRYPOINT ["bundle", "exec", "mailcatcher", "-f"]
+CMD ["--ip", "0.0.0.0"]
