@@ -70,6 +70,7 @@ module MailCatcher
               end
             end)
         else
+          content_type :json
           Mail.messages.to_json
         end
       end
@@ -82,6 +83,7 @@ module MailCatcher
       get "/messages/:id.json" do
         id = params[:id].to_i
         if message = Mail.message(id)
+          content_type :json
           message.merge({
             "formats" => [
               "source",
@@ -107,6 +109,7 @@ module MailCatcher
           # Rewrite body to link to embedded attachments served by cid
           body.gsub! /cid:([^'"> ]+)/, "#{id}/parts/\\1"
 
+          content_type :html
           body
         else
           not_found
