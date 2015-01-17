@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html class="mailcatcher">
+<head>
+  <title>MailCatcher</title>
+  <link href="/favicon.ico" rel="icon" />
+  <%= stylesheet_tag "mailcatcher" %>
+  <%= javascript_tag "mailcatcher" %>
+</head>
+<body>
+  <header>
+    <h1><a href="http://mailcatcher.me" target="_blank">MailCatcher</a></h1>
+    <nav class="app">
+      <ul>
+        <li class="search"><input type="search" name="search" placeholder="Search messages..." incremental="true" /></li>
+        <li class="clear"><a href="#" title="Clear all messages">Clear</a></li>
+        <% unless MailCatcher.options[:no_exit] %>
+          <li class="quit"><a href="#" title="Quit MailCatcher">Quit</a></li>
+        <% end %>
+      </ul>
+    </nav>
+  </header>
+  <nav id="messages">
+    <table>
+      <thead>
+        <tr>
+          <th>From</th>
+          <th>To</th>
+          <th>Subject</th>
+          <th>Received</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </nav>
+  <div id="resizer"><div class="ruler"></div></div>
+  <article id="message">
+    <header>
+      <dl class="metadata">
+        <dt class="created_at">Received</dt>
+        <dd class="created_at"></dd>
+        <dt class="from">From</dt>
+        <dd class="from"></dd>
+        <dt class="to">To</dt>
+        <dd class="to"></dd>
+        <dt class="subject">Subject</dt>
+        <dd class="subject"></dd>
+        <dt class="attachments">Attachments</dt>
+        <dd class="attachments"></dd>
+      </dl>
+      <nav class="views">
+        <ul>
+          <li class="format tab html selected" data-message-format="html"><a href="#">HTML</a></li>
+          <li class="format tab plain" data-message-format="plain"><a href="#">Plain Text</a></li>
+          <li class="format tab source" data-message-format="source"><a href="#">Source</a></li>
+          <li class="action download" data-message-format="html"><a href="#" class="button"><span>Download</span></a></li>
+        </ul>
+      </nav>
+    </header>
+    <iframe class="body"></iframe>
+  </article>
+</body>
+</html>

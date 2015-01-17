@@ -17,7 +17,6 @@ module MailCatcher
     class Application < Sinatra::Base
       set :development, ENV["MAILCATCHER_ENV"] == "development"
       set :root, File.expand_path("#{__FILE__}/../../../..")
-      set :haml, :format => :html5
 
       if development?
         require "sprockets-helpers"
@@ -49,7 +48,7 @@ module MailCatcher
       end
 
       get "/" do
-        haml :index
+        erb :index
       end
 
       delete "/" do
@@ -179,7 +178,7 @@ module MailCatcher
       end
 
       not_found do
-        haml :"404"
+        erb :"404"
       end
     end
   end

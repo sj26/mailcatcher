@@ -4,7 +4,6 @@ PATH
     mailcatcher (0.6.0)
       activesupport (>= 4.0.0, < 5)
       eventmachine (~> 1.0.0)
-      haml (>= 3.1, < 4.1)
       mail (~> 2.3)
       sinatra (~> 1.2)
       skinny (~> 0.2.3)
@@ -36,8 +35,6 @@ GEM
     execjs (2.1.0)
     ffi (1.9.3)
     fssm (0.2.10)
-    haml (4.0.5)
-      tilt
     hike (1.2.3)
     i18n (0.6.9)
     json (1.8.1)
