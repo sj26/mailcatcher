@@ -13,7 +13,7 @@ options = {:smtp_ip => '127.0.0.1', :smtp_port => 1025}
 
 OptionParser.new do |parser|
   parser.banner = <<-BANNER.gsub /^ +/, ""
-    Usage: catchmail [options]
+    Usage: catchmail [options] [recipient ...]
     sendmail-like interface to forward mail to MailCatcher.
   BANNER
 
@@ -56,6 +56,16 @@ Mail.defaults do
     :port => options[:smtp_port]
 end
 
-message = Mail.new ARGF.read
+message = Mail.new($stdin.read)
+
 message.return_path = options[:from] if options[:from]
+
+ARGV.each do |recipient|
+  if message.to.nil?
+    message.to = recipient
+  else
+    message.to << recipient
+  end
+end
+
 message.deliver
