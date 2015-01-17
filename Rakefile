@@ -1,6 +1,7 @@
 require "fileutils"
 require "rubygems"
 
+$:.unshift File.expand_path("./lib")
 require "mail_catcher/version"
 
 # XXX: Would prefer to use Rake::SprocketsTask but can't populate
