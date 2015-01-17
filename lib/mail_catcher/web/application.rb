@@ -24,7 +24,7 @@ module MailCatcher
         configure do
           require "mail_catcher/web/assets"
           Sprockets::Helpers.configure do |config|
-            config.environment = MailCatcher::Web::Assets
+            config.environment = Assets
             config.prefix      = "/assets"
             config.digest      = false
             config.public_path = public_folder
@@ -170,7 +170,7 @@ module MailCatcher
       delete "/messages/:id" do
         id = params[:id].to_i
         if message = Mail.message(id)
-          MailCatcher::Mail.delete_message!(id)
+          Mail.delete_message!(id)
           status 204
         else
           not_found
