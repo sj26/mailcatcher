@@ -3,7 +3,7 @@ PATH
   specs:
     mailcatcher (0.6.0)
       activesupport (>= 4.0.0, < 5)
-      eventmachine (~> 1.0.0)
+      eventmachine (~> 1.0.0, != 1.0.4)
       mail (~> 2.3)
       sinatra (~> 1.2)
       skinny (~> 0.2.3)
@@ -31,7 +31,7 @@ GEM
       fssm (>= 0.2.7)
       sass (~> 3.2.19)
     daemons (1.1.9)
-    eventmachine (1.0.4)
+    eventmachine (1.0.3)
     execjs (2.1.0)
     ffi (1.9.3)
     fssm (0.2.10)

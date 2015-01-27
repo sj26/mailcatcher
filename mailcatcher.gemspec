@@ -31,7 +31,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 1.8.7'
 
   s.add_dependency "activesupport", ">= 4.0.0", "< 5"
-  s.add_dependency "eventmachine", "~> 1.0.0"
+  s.add_dependency "eventmachine", "~> 1.0.0", "!= 1.0.4"
   s.add_dependency "mail", "~> 2.3"
   s.add_dependency "sinatra", "~> 1.2"
   s.add_dependency "sqlite3", "~> 1.3"
