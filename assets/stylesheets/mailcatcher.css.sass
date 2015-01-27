@@ -7,8 +7,12 @@ html, body
 
 body
   +establish-baseline(12px)
-  +display-box
-  +box-orient(vertical)
+  display: -moz-box
+  display: -webkit-box
+  display: box
+  -moz-box-orient: vertical
+  -webkit-box-orient: vertical
+  box-orient: vertical
   background: #eee
   color: #000
   font-size: 12px
@@ -142,9 +146,15 @@ body > header
     border-bottom: 1px solid #fff
 
 #message
-  +display-box
-  +box-orient(vertical)
-  +box-flex(1)
+  display: -moz-box
+  display: -webkit-box
+  display: box
+  -moz-box-orient: vertical
+  -webkit-box-orient: vertical
+  box-orient: vertical
+  -moz-box-flex: 1
+  -webkit-box-flex: 1
+  box-flex: 1
   > header
     +clearfix
     .metadata
@@ -238,6 +248,10 @@ body > header
           display: list-item
 
 iframe
-  +display-box
-  +box-flex(1)
+  display: -moz-box
+  display: -webkit-box
+  display: box
+  -moz-box-flex: 1
+  -webkit-box-flex: 1
+  box-flex: 1
   background: #fff
