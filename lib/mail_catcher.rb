@@ -6,6 +6,16 @@ require "active_support/all"
 require "eventmachine"
 require "thin"
 
+if EventMachine::VERSION == "1.0.4"
+  module EventMachine
+    # Monkey patch fix for 10deb4
+    # See https://github.com/eventmachine/eventmachine/issues/569
+    def self.reactor_running?
+      (@reactor_running || false)
+    end
+  end
+end
+
 require "mail_catcher/events"
 require "mail_catcher/mail"
 require "mail_catcher/smtp"
