@@ -29,12 +29,6 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 
 Use `mailcatcher --help` to see the command line options. The brave can get the source from [the GitHub repository][mailcatcher-github].
 
-### Ruby 2.2 / SMTP not working
-
-MailCatcher does not currently support Ruby 2.2. EventMachine added support in 1.0.4, but regressed other things so is unuseable, even on earlier rubies.
-
-Please use Ruby < 2.2 and EventMachine < 1.0.4. You can `gem install mailcatcher --pre` for a version which restricts to eventmachine < 1.0.4.
-
 ### Bundler
 
 Please don't put mailcatcher into your Gemfile. It will conflict with your applications gems at some point.
