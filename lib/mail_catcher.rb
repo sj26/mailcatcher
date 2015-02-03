@@ -6,7 +6,7 @@ require "active_support/all"
 require "eventmachine"
 require "thin"
 
-if EventMachine::VERSION == "1.0.4"
+if EventMachine::VERSION.in? ["1.0.4", "1.0.5"]
   module EventMachine
     # Monkey patch fix for 10deb4
     # See https://github.com/eventmachine/eventmachine/issues/569
