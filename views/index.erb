@@ -13,7 +13,7 @@
       <ul>
         <li class="search"><input type="search" name="search" placeholder="Search messages..." incremental="true" /></li>
         <li class="clear"><a href="#" title="Clear all messages">Clear</a></li>
-        <% unless MailCatcher.options[:no_exit] %>
+        <% if MailCatcher.quittable? %>
           <li class="quit"><a href="#" title="Quit MailCatcher">Quit</a></li>
         <% end %>
       </ul>

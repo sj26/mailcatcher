@@ -41,7 +41,7 @@ OptionParser.new do |parser|
   end
 
   parser.on('-x', '--no-exit', 'Can\'t exit from the application') do
-    options[:no_exit] = true
+    options[:quit] = false
   end
 
   parser.on('-h', '--help', 'Display this help information') do
