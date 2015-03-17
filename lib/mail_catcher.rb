@@ -111,7 +111,7 @@ module MailCatcher extend self
 
         if mac?
           parser.on("--[no-]growl") do |growl|
-            puts "Growl is no longer supported"
+            warn "Growl is no longer supported"
             exit(-2)
           end
         end
@@ -210,7 +210,7 @@ protected
     # XXX: EventMachine only spits out RuntimeError with a string description
     rescue RuntimeError
       if $!.to_s =~ /\bno acceptor\b/
-        puts "~~> ERROR: Something's using port #{port}. Are you already running MailCatcher?"
+        warn "~~> ERROR: Something's using port #{port}. Are you already running MailCatcher?"
         exit(-1)
       else
         raise
