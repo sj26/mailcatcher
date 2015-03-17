@@ -24,8 +24,15 @@ require "mail_catcher/version"
 
 module MailCatcher extend self
   def which(command)
-    not windows? and Open3.popen3 'which', command do |stdin, stdout, stderr|
-      return stdout.read.chomp.presence
+    return if windows?
+
+    begin
+      Open3.popen3 'which', command do |stdin, stdout, stderr|
+        return stdout.read.chomp.presence
+      end
+    rescue Errno::ENOENT
+      warn "The `which` builtin shell command was not found. Are you running a minimal shell?"
+      exit(-3)
     end
   end
 
