@@ -24,7 +24,7 @@ require "mail_catcher/version"
 
 module MailCatcher extend self
   def which(command)
-    not windows? and Open3.popen3 'which', 'command' do |stdin, stdout, stderr|
+    not windows? and Open3.popen3 'which', command do |stdin, stdout, stderr|
       return stdout.read.chomp.presence
     end
   end
