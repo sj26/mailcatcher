@@ -112,7 +112,7 @@ module MailCatcher extend self
         if mac?
           parser.on("--[no-]growl") do |growl|
             puts "Growl is no longer supported"
-            exit -2
+            exit(-2)
           end
         end
 
@@ -211,7 +211,7 @@ protected
     rescue RuntimeError
       if $!.to_s =~ /\bno acceptor\b/
         puts "~~> ERROR: Something's using port #{port}. Are you already running MailCatcher?"
-        exit -1
+        exit(-1)
       else
         raise
       end
