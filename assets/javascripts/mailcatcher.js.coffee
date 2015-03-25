@@ -141,6 +141,7 @@ class MailCatcher
 
   updateMessagesCount: ->
     @favcount.set(@messagesCount())
+    document.title = 'MailCatcher (' + @messagesCount() + ')'
 
   tabs: ->
     $("#message ul").children(".tab")
