@@ -34,13 +34,16 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 1.8.7'
 
   s.add_dependency "activesupport", "~> 3.0"
-  s.add_dependency "eventmachine", "~> 1.0.0"
+  s.add_dependency "eventmachine", "~> 1.0.0", "<= 1.0.3"
   s.add_dependency "haml", ">= 3.1", "< 5"
   s.add_dependency "mail", "~> 2.3"
   s.add_dependency "sinatra", "~> 1.2"
   s.add_dependency "sqlite3", "~> 1.3"
   s.add_dependency "thin", "~> 1.5.0"
   s.add_dependency "skinny", "~> 0.2.3"
+  s.add_dependency "i18n", "<= 0.6.11"
+  s.add_dependency "tilt", "<= 1.4.1"
+  s.add_dependency "mime-types", "< 2"
 
   s.add_development_dependency "coffee-script"
   s.add_development_dependency "compass"
