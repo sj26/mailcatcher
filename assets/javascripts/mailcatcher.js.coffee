@@ -273,10 +273,10 @@ class MailCatcher
         $("a", body).attr("target", "_blank")
       when "plain"
         message_iframe = $("#message iframe").contents()
-        text = message_iframe.text()
+        html_element = message_iframe.find("html")
+        text = html_element.html()
         text = text.replace(/((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?)/g, """<a href="$1" target="_blank">$1</a>""")
-        text = text.replace(/\n/g, "<br/>")
-        message_iframe.find("html").html("<html><body>#{text}</html></body>")
+        html_element.html(text)
 
   refresh: ->
     $.getJSON "/messages", (messages) =>
