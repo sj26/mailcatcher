@@ -6,13 +6,11 @@ require "active_support/all"
 require "eventmachine"
 require "thin"
 
-if EventMachine::VERSION.in? ["1.0.4", "1.0.5"]
-  module EventMachine
-    # Monkey patch fix for 10deb4
-    # See https://github.com/eventmachine/eventmachine/issues/569
-    def self.reactor_running?
-      (@reactor_running || false)
-    end
+module EventMachine
+  # Monkey patch fix for 10deb4
+  # See https://github.com/eventmachine/eventmachine/issues/569
+  def self.reactor_running?
+    (@reactor_running || false)
   end
 end
 
