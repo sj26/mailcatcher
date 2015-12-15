@@ -57,7 +57,7 @@ For projects using PHP, or PHP frameworks and application platforms like Drupal,
 
 You can do this in your [Apache configuration](http://php.net/manual/en/configuration.changes.php) like so:
 
-    php_admin_value sendmail_path "/usr/bin/env catchmail -f some@from.address"
+    php_admin_value sendmail_path "/usr/local/bin/env catchmail -f some@from.address"
 
 If you've installed via RVM this probably won't work unless you've manually added your RVM bin paths to your system environment's PATH. In that case, run `which catchmail` and put that path into the `sendmail_path` directive above instead of `/usr/bin/env catchmail`.
 
