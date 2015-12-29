@@ -96,6 +96,12 @@ module MailCatcher extend self
           options[:http_port] = port
         end
 
+        unless windows?
+          parser.on("--pidfile PATH", "Set path to pidfile") do |path|
+            options[:pidfile] = File.expand_path(path)
+          end
+        end
+
         parser.on("--no-quit", "Don't allow quitting the process") do
           options[:quit] = false
         end
@@ -185,6 +191,12 @@ module MailCatcher extend self
           Process.daemon
         end
       end
+
+      if options[:pidfile]
+        EventMachine.next_tick do
+          handle_pidfile(options[:pidfile])
+        end
+      end
     end
   end
 
@@ -194,6 +206,42 @@ module MailCatcher extend self
 
 protected
 
+  def handle_pidfile(path)
+    if File.exists?(path)
+      if File.readable?(path)
+        pid = File.read(path).to_i
+
+        begin
+          if Process.getpgid(pid)
+            fatal "MailCatcher seems to be running at pid #{pid}. Please check: #{path}"
+          end
+        rescue Errno::ESRCH
+          File.unlink(path)
+        end
+      else
+        fatal "MailCatcher's pidfile is not readable. Please check: #{path}"
+      end
+    end
+
+    create_pidfile(path)
+  end
+
+  def create_pidfile(path)
+    require "fileutils"
+
+    FileUtils.mkdir_p(File.dirname(path))
+
+    File.open(path, 'w') do |file|
+      file.write(Process.pid)
+
+      at_exit do
+        File.unlink(path)
+      end
+    end
+  rescue Errno::EACCES
+    fatal "MailCatcher was not able to create pidfile (EACCES): #{path}"
+  end
+
   def rescue_port port
     begin
       yield
@@ -201,11 +249,15 @@ protected
     # XXX: EventMachine only spits out RuntimeError with a string description
     rescue RuntimeError
       if $!.to_s =~ /\bno acceptor\b/
-        puts "~~> ERROR: Something's using port #{port}. Are you already running MailCatcher?"
-        exit -1
+        fatal "Something's using port #{port}. Are you already running MailCatcher?"
       else
         raise
       end
     end
+  end
+
+  def fatal(message, code = -1)
+    $stderr.puts("~~> ERROR: #{message}")
+    exit code
   end
 end
