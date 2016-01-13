@@ -3,7 +3,7 @@ PATH
   specs:
     mailcatcher (0.6.2)
       activesupport (>= 4.0.0, < 5)
-      eventmachine (= 1.0.8)
+      eventmachine (= 1.0.9)
       mail (~> 2.3)
       sinatra (~> 1.2)
       skinny (~> 0.2.3)
@@ -39,7 +39,7 @@ GEM
     compass-import-once (1.0.5)
       sass (>= 3.2, < 3.5)
     daemons (1.2.3)
-    eventmachine (1.0.8)
+    eventmachine (1.0.9)
     execjs (2.2.2)
     ffi (1.9.6)
     hike (1.2.3)
