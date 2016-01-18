@@ -90,11 +90,8 @@ A fairly RESTful URL schema means you can download a list of messages in JSON fr
 ## TODO
 
 * Add mail delivery on request, optionally multiple times.
-* An API-compatible nodejs version, for fun and profit (and non-ruby npm users).
-* Test suite.
 * Compatibility testing against CampaignMonitor's [design guidelines](http://www.campaignmonitor.com/design-guidelines/) and [CSS support matrix](http://www.campaignmonitor.com/css/).
 * Forward mail to rendering service, maybe CampaignMonitor?
-* Package as an app? Native interfaces? HotCocoa?
 
 ## Thanks
 
