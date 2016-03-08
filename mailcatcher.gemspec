@@ -31,6 +31,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ">= 1.9.3"
 
   s.add_dependency "activesupport", "~> 4.0"
+  s.add_dependency "activesupport-json_encoder", "~> 1.1.0"
   s.add_dependency "eventmachine", "1.0.9.1"
   s.add_dependency "mail", "~> 2.3"
   s.add_dependency "rack", "~> 1.5"

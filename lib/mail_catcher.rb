@@ -14,6 +14,7 @@ require "optparse"
 require "rbconfig"
 
 require "active_support/all"
+require "activesupport/json_encoder"
 require "eventmachine"
 require "thin"
 
