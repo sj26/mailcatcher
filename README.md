@@ -1,4 +1,4 @@
-# MailCatcher
+# MailCatcher [![codebeat](https://codebeat.co/badges/a240e251-5417-4dbb-b231-ae2158a40138)](https://codebeat.co/projects/github-com-sj26-mailcatcher)
 
 Catches mail and serves it through a dream.
 
