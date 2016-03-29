@@ -37,12 +37,16 @@ module MailCatcher
         end
       else
         helpers do
+          def http_prefix
+            Web.http_prefix
+          end
+
           def javascript_tag(name)
-            %{<script src="/assets/#{name}.js"></script>}
+            %{<script src="#{Web.http_prefix}assets/#{name}.js"></script><script>var http_prefix='#{Web.http_prefix}';</script>}
           end
 
           def stylesheet_tag(name)
-            %{<link rel="stylesheet" href="/assets/#{name}.css">}
+            %{<link rel="stylesheet" href="#{Web.http_prefix}assets/#{name}.css">}
           end
         end
       end

@@ -67,6 +67,7 @@ module MailCatcher extend self
     :smtp_port => '1025',
     :http_ip => '127.0.0.1',
     :http_port => '1080',
+    :http_prefix => '/',
     :verbose => false,
     :daemon => !windows?,
     :browse => false,
@@ -105,6 +106,10 @@ module MailCatcher extend self
 
         parser.on("--http-port PORT", Integer, "Set the port address of the http server") do |port|
           options[:http_port] = port
+        end
+
+        parser.on("--http-prefix PATH", "Set the http path prefix") do |prefix|
+          options[:http_prefix] = prefix
         end
 
         parser.on("--no-quit", "Don't allow quitting the process") do
@@ -164,6 +169,7 @@ module MailCatcher extend self
     EventMachine.run do
       smtp_url = "smtp://#{options[:smtp_ip]}:#{options[:smtp_port]}"
       http_url = "http://#{options[:http_ip]}:#{options[:http_port]}"
+      http_url = http_url + options[:http_prefix] if options[:http_prefix]
 
       # Set up an SMTP server to run within EventMachine
       rescue_port options[:smtp_port] do
@@ -174,7 +180,8 @@ module MailCatcher extend self
       # Let Thin set itself up inside our EventMachine loop
       # (Skinny/WebSockets just works on the inside)
       rescue_port options[:http_port] do
-        Thin::Server.start(options[:http_ip], options[:http_port], Web)
+        Web.http_prefix = options[:http_prefix]
+        Thin::Server.start(options[:http_ip], options[:http_port], Rack::URLMap.new(options[:http_prefix] => Web))
         puts "==> #{http_url}"
       end
 

@@ -5,6 +5,16 @@ require "mail_catcher/web/application"
 
 module MailCatcher
   module Web extend self
+
+    def http_prefix=(prefix)
+      prefix += "/" if not prefix.end_with?("/")
+      @http_prefix = prefix
+    end
+
+    def http_prefix
+      @http_prefix.nil? ? "/" : @http_prefix
+    end
+
     def app
       @@app ||= Rack::Builder.new do
         if ENV["MAILCATCHER_ENV"] == "development"
