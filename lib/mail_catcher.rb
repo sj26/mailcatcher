@@ -162,9 +162,6 @@ module MailCatcher extend self
 
     # One EventMachine loop...
     EventMachine.run do
-      smtp_url = "smtp://#{options[:smtp_ip]}:#{options[:smtp_port]}"
-      http_url = "http://#{options[:http_ip]}:#{options[:http_port]}"
-
       # Set up an SMTP server to run within EventMachine
       rescue_port options[:smtp_port] do
         EventMachine.start_server options[:smtp_ip], options[:smtp_port], Smtp
@@ -205,6 +202,14 @@ module MailCatcher extend self
 
 protected
 
+  def smtp_url
+    "smtp://#{@@options[:smtp_ip]}:#{@@options[:smtp_port]}"
+  end
+
+  def http_url
+    "http://#{@@options[:http_ip]}:#{@@options[:http_port]}"
+  end
+
   def rescue_port port
     begin
       yield
@@ -213,6 +218,8 @@ protected
     rescue RuntimeError
       if $!.to_s =~ /\bno acceptor\b/
         puts "~~> ERROR: Something's using port #{port}. Are you already running MailCatcher?"
+        puts "==> #{smtp_url}"
+        puts "==> #{http_url}"
         exit -1
       else
         raise
