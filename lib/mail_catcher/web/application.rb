@@ -102,14 +102,13 @@ module MailCatcher
       get "/messages/:id.html" do
         id = params[:id].to_i
         if part = Mail.message_part_html(id)
-          content_type part["type"], :charset => (part["charset"] || "utf8")
+          content_type :html, :charset => (part["charset"] || "utf8")
 
           body = part["body"]
 
           # Rewrite body to link to embedded attachments served by cid
           body.gsub! /cid:([^'"> ]+)/, "#{id}/parts/\\1"
 
-          content_type :html
           body
         else
           not_found
