@@ -64,14 +64,14 @@ module MailCatcher
         if request.websocket?
           request.websocket!(
             :on_start => proc do |websocket|
-              subscription = Events::MessageAdded.subscribe { |message| websocket.send_message message.to_json }
+              subscription = Events::MessageAdded.subscribe { |message| websocket.send_message(JSON.generate(message)) }
               websocket.on_close do |websocket|
                 Events::MessageAdded.unsubscribe subscription
               end
             end)
         else
           content_type :json
-          Mail.messages.to_json
+          JSON.generate(Mail.messages)
         end
       end
 
@@ -84,7 +84,7 @@ module MailCatcher
         id = params[:id].to_i
         if message = Mail.message(id)
           content_type :json
-          message.merge({
+          JSON.generate(message.merge({
             "formats" => [
               "source",
               ("html" if Mail.message_has_html? id),
@@ -93,7 +93,7 @@ module MailCatcher
             "attachments" => Mail.message_attachments(id).map do |attachment|
               attachment.merge({"href" => "/messages/#{escape(id)}/parts/#{escape(attachment["cid"])}"})
             end,
-          }).to_json
+          }))
         else
           not_found
         end
