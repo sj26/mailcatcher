@@ -1,6 +1,5 @@
 # Apparently rubygems won't activate these on its own, so here we go. Let's
 # repeat the invention of Bundler all over again.
-gem "activesupport", "~> 4.0"
 gem "eventmachine", "1.0.9.1"
 gem "mail", "~> 2.3"
 gem "rack", "~> 1.5"
@@ -13,7 +12,6 @@ require "open3"
 require "optparse"
 require "rbconfig"
 
-require "active_support/all"
 require "eventmachine"
 require "thin"
 
