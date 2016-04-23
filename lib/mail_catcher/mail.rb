@@ -126,7 +126,7 @@ module MailCatcher::Mail extend self
     part ||= message_part_type(message_id, "application/xhtml+xml")
     part ||= begin
       message = message(message_id)
-      message if message.present? and ["text/html", "application/xhtml+xml"].include? message["type"]
+      message if message and ["text/html", "application/xhtml+xml"].include? message["type"]
     end
   end
 
