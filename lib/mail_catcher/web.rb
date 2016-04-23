@@ -1,4 +1,3 @@
-require "active_support/core_ext/module/delegation"
 require "rack/builder"
 
 require "mail_catcher/web/application"
@@ -16,6 +15,8 @@ module MailCatcher
       end
     end
 
-    delegate :call, :to => :app
+    def call(env)
+      app.call(env)
+    end
   end
 end
