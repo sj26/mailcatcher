@@ -32,9 +32,9 @@ require "mail_catcher/web"
 require "mail_catcher/version"
 
 module MailCatcher extend self
-  def which(command)
-    not windows? and Open3.popen3 'which', 'command' do |stdin, stdout, stderr|
-      return stdout.read.chomp.presence
+  def which?(command)
+    ENV["PATH"].split(File::PATH_SEPARATOR).any? do |directory|
+      File.executable?(File.join(directory, command.to_s))
     end
   end
 
@@ -50,14 +50,14 @@ module MailCatcher extend self
     mac? and const_defined? :MACRUBY_VERSION
   end
 
-  def browse?
-    windows? or which "open"
+  def browseable?
+    windows? or which? "open"
   end
 
   def browse url
     if windows?
       system "start", "/b", url
-    elsif which "open"
+    elsif which? "open"
       system "open", url
     end
   end
@@ -124,7 +124,7 @@ module MailCatcher extend self
           end
         end
 
-        if browse?
+        if browseable?
           parser.on('-b', '--browse', 'Open web browser') do
             options[:browse] = true
           end
