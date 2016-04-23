@@ -158,7 +158,7 @@ module MailCatcher
 
       delete "/messages/:id" do
         id = params[:id].to_i
-        if message = Mail.message(id)
+        if Mail.message(id)
           Mail.delete_message!(id)
           status 204
         else
