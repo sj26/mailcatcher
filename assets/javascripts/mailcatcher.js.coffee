@@ -211,6 +211,16 @@ class MailCatcher
     $("#message iframe").attr("src", "about:blank")
     null
 
+  setRecipients: (recipients, kind) ->
+    class_selector = '.' + kind
+    recipients_dose = recipients[kind]
+    if recipients_dose && recipients_dose.length > 0
+      $("#message .metadata").find(class_selector).show()
+      $("#message .metadata dd").filter(class_selector).text(recipients_dose.join(", "))
+    else
+      $("#message .metadata").find(class_selector).hide()
+      $("#message .metadata dd").filter(class_selector).empty()
+
   loadMessage: (id) ->
     id = id.id if id?.id?
     id ||= $("#messages tr.selected").attr "data-message-id"
@@ -224,7 +234,9 @@ class MailCatcher
       $.getJSON "/messages/#{id}.json", (message) =>
         $("#message .metadata dd.created_at").text(@formatDate message.created_at)
         $("#message .metadata dd.from").text(message.sender)
-        $("#message .metadata dd.to").text((message.recipients || []).join(", "))
+        @setRecipients(message.splitted_recipients, "to")
+        @setRecipients(message.splitted_recipients, "cc")
+        @setRecipients(message.splitted_recipients, "bcc")
         $("#message .metadata dd.subject").text(message.subject)
         $("#message .views .tab.format").each (i, el) ->
           $el = $(el)

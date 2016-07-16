@@ -82,6 +82,32 @@ module MailCatcher::Mail extend self
     row = @message_query.execute(id).next
     row && Hash[row.fields.zip(row)].tap do |message|
       message["recipients"] &&= JSON.parse(message["recipients"])
+      message["splitted_recipients"] = splitted_recipients(message)
+    end
+  end
+
+  def splitted_recipients(message)
+    mail = Mail.new(message['source'])
+    {
+      :to => mail.to,
+      :cc => mail.cc,
+      :bcc => bcc_recipients(mail, recipients_list_without_brackets(message))
+    }
+  end
+
+  def bcc_recipients(mail, all_recipients)
+    not_listed_recipients(mail, all_recipients) + mail.bcc.to_a
+  end
+
+  def not_listed_recipients(mail, all_recipients)
+    all_recipients.reject do |recipient|
+      (mail.to.to_a + mail.cc.to_a + mail.bcc.to_a).include? recipient
+    end
+  end
+
+  def recipients_list_without_brackets(message)
+    message["recipients"].map do |recipient|
+      recipient.gsub(/\A<(.*)>\z/,'\1')
     end
   end
 
