@@ -1,0 +1,15 @@
+To: Blah <blah@blah.com>
+Cc: cc@blah.com
+From: from@example.com
+Subject: Test Cc and BCC
+Content-Type: text/plain
+
+Plain text mail
+
+With some dot lines:
+
+.
+
+...
+
+Done.
