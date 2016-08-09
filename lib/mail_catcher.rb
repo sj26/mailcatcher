@@ -60,6 +60,17 @@ module MailCatcher extend self
     end
   end
 
+  def log_exception(message, context, exception)
+    gems_paths = (Gem.path | [Gem.default_dir]).map { |path| Regexp.escape(path) }
+    gems_regexp = %r{(?:#{gems_paths.join('|')})/gems/([^/]+)-([\w.]+)/(.*)}
+    gems_replace = '\1 (\2) \3'
+
+    puts "*** #{message}: #{context.inspect}"
+    puts "    Exception: #{exception}"
+    puts "    Backtrace:", *exception.backtrace.map { |line| "       #{line.sub(gems_regexp, gems_replace)}" }
+    puts "    Please submit this as an issue at http://github.com/sj26/mailcatcher/issues"
+  end
+
   @@defaults = {
     :smtp_ip => '127.0.0.1',
     :smtp_port => '1025',

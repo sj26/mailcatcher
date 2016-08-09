@@ -46,14 +46,8 @@ class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
     MailCatcher::Mail.add_message current_message
     puts "==> SMTP: Received message from '#{current_message[:sender]}' (#{current_message[:source].length} bytes)"
     true
-  rescue
-    puts "*** Error receiving message: #{current_message.inspect}"
-    puts "    Exception: #{$!}"
-    puts "    Backtrace:"
-    $!.backtrace.each do |line|
-      puts "       #{line}"
-    end
-    puts "    Please submit this as an issue at http://github.com/sj26/mailcatcher/issues"
+  rescue => exception
+    MailCatcher.log_exception("Error receiving message", @current_message, exception)
     false
   ensure
     @current_message = nil
