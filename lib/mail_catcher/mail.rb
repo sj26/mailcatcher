@@ -57,6 +57,9 @@ module MailCatcher::Mail extend self
     EventMachine.next_tick do
       message = MailCatcher::Mail.message message_id
       MailCatcher::Events::MessageAdded.push message
+      if MailCatcher.options[:delete_older_than]
+        MailCatcher::Mail.delete_messages_older_than!(MailCatcher.options[:delete_older_than])
+      end
     end
   end
 
@@ -158,5 +161,12 @@ module MailCatcher::Mail extend self
     @delete_message_parts_query ||= db.prepare "DELETE FROM message_part WHERE message_id = ?"
     @delete_messages_query.execute(message_id) and
     @delete_message_parts_query.execute(message_id)
+  end
+
+  def delete_messages_older_than!(modifier)
+    @delete_messages_older_than_query ||= db.prepare "DELETE FROM message WHERE created_at < datetime('now', ?)"
+    @delete_message_parts_older_than_query ||= db.prepare "DELETE FROM message_part WHERE created_at < datetime('now', ?)"
+    @delete_messages_older_than_query.execute(modifier) and
+    @delete_message_parts_older_than_query.execute(modifier)
   end
 end

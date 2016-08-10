@@ -81,6 +81,7 @@ module MailCatcher extend self
     :browse => false,
     :quit => true,
     :sqlite_db => ':memory:',
+    :delete_older_than => nil,
   }
 
   def options
@@ -123,6 +124,10 @@ module MailCatcher extend self
 
         parser.on("--sqlite-db PATH", "Set the path to the sqlite database, default in-memory only") do |db|
           options[:sqlite_db] = db
+        end
+
+        parser.on("--delete-older-than TIME_MODIFIER", "On mail receipt, delete all mail older than this, examples: '-5 minutes', '-2 days'") do |db|
+          options[:delete_older_than] = db
         end
 
         if mac?
