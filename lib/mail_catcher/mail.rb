@@ -41,7 +41,9 @@ module MailCatcher::Mail extend self
     @add_message_query ||= db.prepare("INSERT INTO message (sender, recipients, subject, source, type, size, created_at) VALUES (?, ?, ?, ?, ?, ?, datetime('now'))")
 
     mail = Mail.new(message[:source])
-    @add_message_query.execute(message[:sender], JSON.generate(message[:recipients]), mail.subject, message[:source], mail.mime_type || "text/plain", message[:source].length)
+    sender = (mail.from && !mail.from.empty?) ? mail.from : message[:sender]
+    recipients = (mail.to && !mail.to.empty?) ? mail.to : message[:recipients]
+    @add_message_query.execute(sender, JSON.generate(recipients), mail.subject, message[:source], mail.mime_type || "text/plain", message[:source].length)
     message_id = db.last_insert_row_id
     parts = mail.all_parts
     parts = [mail] if parts.empty?
