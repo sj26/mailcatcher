@@ -80,6 +80,7 @@ module MailCatcher extend self
     :daemon => !windows?,
     :browse => false,
     :quit => true,
+    :sqlite_db => ':memory:',
   }
 
   def options
@@ -118,6 +119,10 @@ module MailCatcher extend self
 
         parser.on("--no-quit", "Don't allow quitting the process") do
           options[:quit] = false
+        end
+
+        parser.on("--sqlite-db PATH", "Set the path to the sqlite database, default in-memory only") do |db|
+          options[:sqlite_db] = db
         end
 
         if mac?
