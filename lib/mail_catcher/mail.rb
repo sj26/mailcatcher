@@ -60,6 +60,9 @@ module MailCatcher::Mail extend self
       if MailCatcher.options[:delete_older_than]
         MailCatcher::Mail.delete_messages_older_than!(MailCatcher.options[:delete_older_than])
       end
+      if MailCatcher.options[:keep_num_emails]
+        MailCatcher::Mail.delete_messages_keep!(MailCatcher.options[:keep_num_emails])
+      end
     end
   end
 
@@ -168,5 +171,12 @@ module MailCatcher::Mail extend self
     @delete_message_parts_older_than_query ||= db.prepare "DELETE FROM message_part WHERE created_at < datetime('now', ?)"
     @delete_messages_older_than_query.execute(modifier) and
     @delete_message_parts_older_than_query.execute(modifier)
+  end
+
+  def delete_messages_keep!(keep_num_emails)
+    @delete_messages_query ||= db.prepare "DELETE FROM message WHERE id IN (SELECT id FROM message ORDER BY id DESC LIMIT -1 OFFSET ?);"
+    @delete_message_parts_query ||= db.prepare "DELETE FROM message_part WHERE id NOT IN (SELECT id FROM message)"
+    @delete_messages_query.execute(keep_num_emails) and
+    @delete_message_parts_query.execute()
   end
 end

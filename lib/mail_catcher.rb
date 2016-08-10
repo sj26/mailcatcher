@@ -82,6 +82,7 @@ module MailCatcher extend self
     :quit => true,
     :sqlite_db => ':memory:',
     :delete_older_than => nil,
+    :keep_num_emails => nil,
   }
 
   def options
@@ -128,6 +129,10 @@ module MailCatcher extend self
 
         parser.on("--delete-older-than TIME_MODIFIER", "On mail receipt, delete all mail older than this, examples: '-5 minutes', '-2 days'") do |db|
           options[:delete_older_than] = db
+        end
+
+        parser.on("--keep-num-emails MAX_EMAILS", "Only keep this many emails, deletes oldest") do |db|
+          options[:keep_num_emails] = db
         end
 
         if mac?
