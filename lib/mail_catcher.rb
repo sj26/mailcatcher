@@ -83,6 +83,7 @@ module MailCatcher extend self
     :sqlite_db => ':memory:',
     :delete_older_than => nil,
     :keep_num_emails => nil,
+    :show_from_server => false,
   }
 
   def options
@@ -91,6 +92,10 @@ module MailCatcher extend self
 
   def quittable?
     options[:quit]
+  end
+
+  def show_from_server?
+    options[:show_from_server]
   end
 
   def parse! arguments=ARGV, defaults=@defaults
@@ -121,6 +126,10 @@ module MailCatcher extend self
 
         parser.on("--no-quit", "Don't allow quitting the process") do
           options[:quit] = false
+        end
+
+        parser.on("--show-from-server", "Show From Server column") do
+          options[:show_from_server] = true
         end
 
         parser.on("--sqlite-db PATH", "Set the path to the sqlite database, default in-memory only") do |db|

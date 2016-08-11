@@ -27,6 +27,9 @@
           <th>To</th>
           <th>Subject</th>
           <th>Received</th>
+          <% if MailCatcher.show_from_server? %>
+            <th>From Server</th>
+          <% end %>
         </tr>
       </thead>
       <tbody></tbody>

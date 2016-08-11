@@ -13,6 +13,7 @@ module MailCatcher::Mail extend self
             sender TEXT,
             recipients TEXT,
             subject TEXT,
+            from_server TEXT,
             source BLOB,
             size TEXT,
             type TEXT,
@@ -38,12 +39,13 @@ module MailCatcher::Mail extend self
   end
 
   def add_message(message)
-    @add_message_query ||= db.prepare("INSERT INTO message (sender, recipients, subject, source, type, size, created_at) VALUES (?, ?, ?, ?, ?, ?, datetime('now'))")
+    @add_message_query ||= db.prepare("INSERT INTO message (sender, recipients, subject, from_server, source, type, size, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))")
 
     mail = Mail.new(message[:source])
+    from_server = mail.received ? mail.received.value.sub(/^from\s+/, '').sub(/\s+.*$/, '') : nil
     sender = (mail.from && !mail.from.empty?) ? mail.from : message[:sender]
     recipients = (mail.to && !mail.to.empty?) ? mail.to : message[:recipients]
-    @add_message_query.execute(sender, JSON.generate(recipients), mail.subject, message[:source], mail.mime_type || "text/plain", message[:source].length)
+    @add_message_query.execute(sender, JSON.generate(recipients), mail.subject, from_server, message[:source], mail.mime_type || "text/plain", message[:source].length)
     message_id = db.last_insert_row_id
     parts = mail.all_parts
     parts = [mail] if parts.empty?
@@ -77,7 +79,9 @@ module MailCatcher::Mail extend self
   end
 
   def messages
-    @messages_query ||= db.prepare "SELECT id, sender, recipients, subject, size, created_at FROM message ORDER BY created_at, id ASC"
+    @messages_query ||= db.prepare MailCatcher.show_from_server? ?
+                        "SELECT id, sender, recipients, subject, from_server, size, created_at FROM message ORDER BY created_at, id ASC" :
+                        "SELECT id, sender, recipients, subject, size, created_at FROM message ORDER BY created_at, id ASC"
     @messages_query.execute.map do |row|
       Hash[row.fields.zip(row)].tap do |message|
         message["recipients"] &&= JSON.parse(message["recipients"])
@@ -89,6 +93,9 @@ module MailCatcher::Mail extend self
     @message_query ||= db.prepare "SELECT * FROM message WHERE id = ? LIMIT 1"
     row = @message_query.execute(id).next
     row && Hash[row.fields.zip(row)].tap do |message|
+      unless MailCatcher.show_from_server?
+        message.delete('from_server')
+      end
       message["recipients"] &&= JSON.parse(message["recipients"])
     end
   end

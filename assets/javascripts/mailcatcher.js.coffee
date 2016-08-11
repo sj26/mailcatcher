@@ -188,12 +188,14 @@ class MailCatcher
     $("#messages tbody tr").show()
 
   addMessage: (message) ->
-    $("<tr />").attr("data-message-id", message.id.toString())
+    row = $("<tr />").attr("data-message-id", message.id.toString())
       .append($("<td/>").text(message.sender or "No sender").toggleClass("blank", !message.sender))
       .append($("<td/>").text((message.recipients || []).join(", ") or "No receipients").toggleClass("blank", !message.recipients.length))
       .append($("<td/>").text(message.subject or "No subject").toggleClass("blank", !message.subject))
       .append($("<td/>").text(@formatDate(message.created_at)))
-      .prependTo($("#messages tbody"))
+    if 'from_server' of message
+      row = row.append($("<td/>").text(message.from_server or "Unknown").toggleClass("blank", !message.from_server))
+    row.prependTo($("#messages tbody"))
     @updateMessagesCount()
 
   scrollToRow: (row) ->
