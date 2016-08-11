@@ -103,14 +103,8 @@ class MailCatcher
           url: "/messages/" + id
           type: "DELETE"
           success: =>
-            messageRow = $("""#messages tbody tr[data-message-id="#{id}"]""")
-            switchTo = messageRow.next().data("message-id") || messageRow.prev().data("message-id")
-            messageRow.remove()
-            if switchTo
-              @loadMessage switchTo
-            else
-              @unselectMessage()
-            @updateMessagesCount()
+            # callback will delete, this gets us into race conditions...
+            #@deleteMessage [id]
 
           error: ->
             alert "Error while removing message."
@@ -171,9 +165,8 @@ class MailCatcher
     else
       @nextTab(i + 1)
 
-  haveMessage: (message) ->
-    message = message.id if message.id?
-    $("""#messages tbody tr[data-message-id="#{message}"]""").length > 0
+  haveMessage: (id) ->
+    $("""#messages tbody tr[data-message-id="#{id}"]""").length > 0
 
   selectedMessage: ->
     $("#messages tr.selected").data "message-id"
@@ -198,6 +191,21 @@ class MailCatcher
     row.prependTo($("#messages tbody"))
     @updateMessagesCount()
 
+  deleteMessage: (ids) ->
+    selectedId = @selectedMessage()
+    for id in ids
+      if @haveMessage id
+        messageRow = $("""#messages tbody tr[data-message-id="#{id}"]""")
+        if messageRow
+          if id == selectedId
+            switchTo = messageRow.next().data("message-id") || messageRow.prev().data("message-id")
+          messageRow.remove()
+    if switchTo && @haveMessage switchTo
+      @loadMessage switchTo
+    #else if selectedId
+    #  @unselectMessage()
+    @updateMessagesCount()
+
   scrollToRow: (row) ->
     relativePosition = row.offset().top - $("#messages").offset().top
     if relativePosition < 0
@@ -211,7 +219,7 @@ class MailCatcher
     $("#messages tbody, #message .metadata dd").empty()
     $("#message .metadata .attachments").hide()
     $("#message iframe").attr("src", "about:blank")
-    null
+    true
 
   loadMessage: (id) ->
     id = id.id if id?.id?
@@ -283,10 +291,18 @@ class MailCatcher
 
   refresh: ->
     $.getJSON "/messages", (messages) =>
+      all_msg_ids = []
       $.each messages, (i, message) =>
-        unless @haveMessage message
+        id = message.id if message.id?
+        all_msg_ids.push(id)
+        unless @haveMessage id
           @addMessage message
-      @updateMessagesCount()
+      ids_to_remove = []
+      $.each $("#messages tbody tr[data-message-id]"), (i, row) =>
+        existing_id = $(row).data("message-id")
+        unless existing_id in all_msg_ids
+          ids_to_remove.push(existing_id)
+      @deleteMessage ids_to_remove
 
   subscribe: ->
     if WebSocket?
@@ -299,7 +315,11 @@ class MailCatcher
     protocol = if secure then "wss" else "ws"
     @websocket = new WebSocket("#{protocol}://#{window.location.host}/messages")
     @websocket.onmessage = (event) =>
-      @addMessage $.parseJSON event.data
+      message = $.parseJSON event.data
+      if 'id' of message
+        @addMessage message
+      else
+        @deleteMessage message
 
   subscribePoll: ->
     unless @refreshInterval?

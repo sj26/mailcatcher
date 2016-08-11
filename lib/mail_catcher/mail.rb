@@ -158,32 +158,43 @@ module MailCatcher::Mail extend self
     end
   end
 
-  def delete!
-    @delete_all_messages_query ||= db.prepare "DELETE FROM message"
-    @delete_all_message_parts_query ||= db.prepare "DELETE FROM message_part"
+  def delete_ids_query!(query, *bind_vars)
+    ids ||= []
+    query.execute(bind_vars).map do |row|
+      ids << row[0]
+    end
+    delete_ids!(ids)
+  end
 
-    @delete_all_messages_query.execute and
-    @delete_all_message_parts_query.execute
+  def delete_ids!(ids)
+    unless ids.empty?
+      id_query = ids.join(',')
+
+      db.execute("DELETE FROM message WHERE id IN (#{id_query})")
+      db.execute("DELETE FROM message_part WHERE id IN (#{id_query})")
+
+      EventMachine.next_tick do
+        MailCatcher::Events::MessageAdded.push ids
+      end
+    end
+  end
+
+  def delete!
+    @delete_all_messages_query ||= db.prepare "SELECT id FROM message"
+    delete_ids_query!(@delete_all_messages_query)
   end
 
   def delete_message!(message_id)
-    @delete_messages_query ||= db.prepare "DELETE FROM message WHERE id = ?"
-    @delete_message_parts_query ||= db.prepare "DELETE FROM message_part WHERE message_id = ?"
-    @delete_messages_query.execute(message_id) and
-    @delete_message_parts_query.execute(message_id)
+    delete_ids!([message_id.to_i])
   end
 
   def delete_messages_older_than!(modifier)
-    @delete_messages_older_than_query ||= db.prepare "DELETE FROM message WHERE created_at < datetime('now', ?)"
-    @delete_message_parts_older_than_query ||= db.prepare "DELETE FROM message_part WHERE created_at < datetime('now', ?)"
-    @delete_messages_older_than_query.execute(modifier) and
-    @delete_message_parts_older_than_query.execute(modifier)
+    @delete_messages_older_than_query ||= db.prepare "SELECT id FROM message WHERE created_at < datetime('now', ?)"
+    delete_ids_query!(@delete_messages_older_than_query, modifier)
   end
 
   def delete_messages_keep!(keep_num_emails)
-    @delete_messages_query ||= db.prepare "DELETE FROM message WHERE id IN (SELECT id FROM message ORDER BY id DESC LIMIT -1 OFFSET ?);"
-    @delete_message_parts_query ||= db.prepare "DELETE FROM message_part WHERE id NOT IN (SELECT id FROM message)"
-    @delete_messages_query.execute(keep_num_emails) and
-    @delete_message_parts_query.execute()
+    @delete_messages_older_than_query ||= db.prepare "SELECT id FROM message ORDER BY id DESC LIMIT -1 OFFSET ?"
+    delete_ids_query!(@delete_messages_older_than_query, keep_num_emails)
   end
 end
