@@ -24,8 +24,8 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 
 1. `gem install mailcatcher`
 2. `mailcatcher`
-3. Go to http://localhost:1080/
-4. Send mail through smtp://localhost:1025
+3. Go to http://127.0.0.1:1080/
+4. Send mail through smtp://127.0.0.1:1025
 
 Use `mailcatcher --help` to see the command line options. The brave can get the source from [the GitHub repository][mailcatcher-github].
 
@@ -47,7 +47,7 @@ Under RVM your mailcatcher command may only be available under the ruby you inst
 To set up your rails app, I recommend adding this to your `environments/development.rb`:
 
     config.action_mailer.delivery_method = :smtp
-    config.action_mailer.smtp_settings = { :address => "localhost", :port => 1025 }
+    config.action_mailer.smtp_settings = { :address => '127.0.0.1', :port => 1025 }
     config.action_mailer.raise_delivery_errors = false
 
 ### PHP
