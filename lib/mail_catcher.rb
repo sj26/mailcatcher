@@ -153,7 +153,7 @@ module MailCatcher extend self
 
   def run! options=nil
     # If we are passed options, fill in the blanks
-    options &&= options.reverse_merge @@defaults
+    options &&= @@defaults.merge options
     # Otherwise, parse them from ARGV
     options ||= parse!
 
