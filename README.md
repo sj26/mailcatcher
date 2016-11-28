@@ -22,7 +22,7 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 
 ## How
 
-1. `gem install mailcatcher`
+1. `gem install mailcatcher --pre`
 2. `mailcatcher`
 3. Go to http://127.0.0.1:1080/
 4. Send mail through smtp://127.0.0.1:1025
@@ -33,13 +33,13 @@ Use `mailcatcher --help` to see the command line options. The brave can get the 
 
 Please don't put mailcatcher into your Gemfile. It will conflict with your applications gems at some point.
 
-Instead, pop a note in your README stating you use mailcatcher. Simply run `gem install mailcatcher` then `mailcatcher` to get started.
+Instead, pop a note in your README stating you use mailcatcher. Simply run `gem install mailcatcher --pre` then `mailcatcher` to get started.
 
 ### RVM
 
 Under RVM your mailcatcher command may only be available under the ruby you install mailcatcher into. To prevent this, and to prevent gem conflicts, install mailcatcher into a dedicated gemset and create wrapper scripts:
 
-    rvm default@mailcatcher --create do gem install mailcatcher
+    rvm default@mailcatcher --create do gem install mailcatcher --pre
     rvm wrapper default@mailcatcher --no-prefix mailcatcher catchmail
 
 ### Rails
