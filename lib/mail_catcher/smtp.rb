@@ -43,6 +43,9 @@ class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
   end
 
   def receive_message
+    if /\A[0x00-0x7F]*\z/ !~ current_message[:source]
+      raise "invalid message"
+    end
     MailCatcher::Mail.add_message current_message
     puts "==> SMTP: Received message from '#{current_message[:sender]}' (#{current_message[:source].length} bytes)"
     true
