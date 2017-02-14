@@ -66,6 +66,7 @@ module MailCatcher
             :on_start => proc do |websocket|
               subscription = Events::MessageAdded.subscribe do |message|
                 begin
+                  message["source"].encode!("UTF-8",{undef: :replace})    
                   websocket.send_message(JSON.generate(message))
                 rescue => exception
                   MailCatcher.log_exception("Error sending message through websocket", message, exception)
@@ -91,6 +92,7 @@ module MailCatcher
         id = params[:id].to_i
         if message = Mail.message(id)
           content_type :json
+          message["source"].encode!("UTF-8",{undef: :replace})    
           JSON.generate(message.merge({
             "formats" => [
               "source",
