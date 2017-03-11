@@ -179,8 +179,6 @@ class MailCatcher
     $("#messages tr.selected").data "message-id"
 
   autoselectLatestMessage: ->
-    console.log("autoselectLatestMessage()")
-    console.log($("input[name='autoselect']").attr('checked') == true)
     $("input[name='autoselect']").attr('checked') == true
 
   searchMessages: (query) ->
