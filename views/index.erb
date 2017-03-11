@@ -11,6 +11,7 @@
     <h1><a href="http://mailcatcher.me" target="_blank">MailCatcher</a></h1>
     <nav class="app">
       <ul>
+        <li class="autoselect"><a href="#" title="Select incoming email"><label><input type="checkbox" name="autoselect" class="autoselect-checkbox">Autoselect</label></a></li>
         <li class="search"><input type="search" name="search" placeholder="Search messages..." incremental="true" /></li>
         <li class="clear"><a href="#" title="Clear all messages">Clear</a></li>
         <% if MailCatcher.quittable? %>
