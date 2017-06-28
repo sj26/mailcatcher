@@ -1,0 +1,2 @@
+# We don't use this repo's files to build the Docker image, we just gem install
+*
