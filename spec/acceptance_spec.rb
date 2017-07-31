@@ -1,4 +1,4 @@
-ENV["MAILCATCHER_ENV"] = "test"
+ENV["MAILCATCHER_ENV"] ||= "test"
 
 require "minitest/autorun"
 require "mail_catcher"

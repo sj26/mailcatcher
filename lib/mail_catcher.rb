@@ -23,13 +23,22 @@ module EventMachine
   end
 end
 
-require "mail_catcher/events"
-require "mail_catcher/mail"
-require "mail_catcher/smtp"
-require "mail_catcher/web"
 require "mail_catcher/version"
 
 module MailCatcher extend self
+  autoload :Events, "mail_catcher/events"
+  autoload :Mail, "mail_catcher/mail"
+  autoload :Smtp, "mail_catcher/smtp"
+  autoload :Web, "mail_catcher/web"
+
+  def env
+    ENV.fetch("MAILCATCHER_ENV", "production")
+  end
+
+  def development?
+    env == "development"
+  end
+
   def which?(command)
     ENV["PATH"].split(File::PATH_SEPARATOR).any? do |directory|
       File.executable?(File.join(directory, command.to_s))
@@ -37,11 +46,11 @@ module MailCatcher extend self
   end
 
   def mac?
-    RbConfig::CONFIG['host_os'] =~ /darwin/
+    RbConfig::CONFIG["host_os"] =~ /darwin/
   end
 
   def windows?
-    RbConfig::CONFIG['host_os'] =~ /mswin|mingw/
+    RbConfig::CONFIG["host_os"] =~ /mswin|mingw/
   end
 
   def macruby?
@@ -62,7 +71,7 @@ module MailCatcher extend self
 
   def log_exception(message, context, exception)
     gems_paths = (Gem.path | [Gem.default_dir]).map { |path| Regexp.escape(path) }
-    gems_regexp = %r{(?:#{gems_paths.join('|')})/gems/([^/]+)-([\w.]+)/(.*)}
+    gems_regexp = %r{(?:#{gems_paths.join("|")})/gems/([^/]+)-([\w.]+)/(.*)}
     gems_replace = '\1 (\2) \3'
 
     puts "*** #{message}: #{context.inspect}"
@@ -72,10 +81,11 @@ module MailCatcher extend self
   end
 
   @@defaults = {
-    :smtp_ip => '127.0.0.1',
-    :smtp_port => '1025',
-    :http_ip => '127.0.0.1',
-    :http_port => '1080',
+    :smtp_ip => "127.0.0.1",
+    :smtp_port => "1025",
+    :http_ip => "127.0.0.1",
+    :http_port => "1080",
+    :http_path => "/",
     :verbose => false,
     :daemon => !windows?,
     :browse => false,
@@ -116,6 +126,12 @@ module MailCatcher extend self
           options[:http_port] = port
         end
 
+        parser.on("--http-path PATH", String, "Add a prefix to all HTTP paths") do |path|
+          clean_path = Rack::Utils.clean_path_info("/#{path}")
+
+          options[:http_path] = clean_path
+        end
+
         parser.on("--no-quit", "Don't allow quitting the process") do
           options[:quit] = false
         end
@@ -128,22 +144,22 @@ module MailCatcher extend self
         end
 
         unless windows?
-          parser.on('-f', '--foreground', 'Run in the foreground') do
+          parser.on("-f", "--foreground", "Run in the foreground") do
             options[:daemon] = false
           end
         end
 
         if browseable?
-          parser.on('-b', '--browse', 'Open web browser') do
+          parser.on("-b", "--browse", "Open web browser") do
             options[:browse] = true
           end
         end
 
-        parser.on('-v', '--verbose', 'Be more verbose') do
+        parser.on("-v", "--verbose", "Be more verbose") do
           options[:verbose] = true
         end
 
-        parser.on('-h', '--help', 'Display this help information') do
+        parser.on("-h", "--help", "Display this help information") do
           puts parser
           exit
         end
@@ -167,7 +183,8 @@ module MailCatcher extend self
 
     puts "Starting MailCatcher"
 
-    Thin::Logging.silent = (ENV["MAILCATCHER_ENV"] != "development")
+    Thin::Logging.debug = development?
+    Thin::Logging.silent = !development?
 
     # One EventMachine loop...
     EventMachine.run do
@@ -216,7 +233,7 @@ protected
   end
 
   def http_url
-    "http://#{@@options[:http_ip]}:#{@@options[:http_port]}"
+    "http://#{@@options[:http_ip]}:#{@@options[:http_port]}#{@@options[:http_path]}"
   end
 
   def rescue_port port
