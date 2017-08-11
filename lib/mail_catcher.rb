@@ -74,9 +74,9 @@ module MailCatcher extend self
     gems_regexp = %r{(?:#{gems_paths.join("|")})/gems/([^/]+)-([\w.]+)/(.*)}
     gems_replace = '\1 (\2) \3'
 
-    puts Time.new + "*** #{message}: #{context.inspect}"
-    puts Time.new + "    Exception: #{exception}"
-    puts Time.new + "    Backtrace:", *exception.backtrace.map { |line| "       #{line.sub(gems_regexp, gems_replace)}" }
+    puts "*** #{message}: #{context.inspect}"
+    puts "    Exception: #{exception}"
+    puts "    Backtrace:", *exception.backtrace.map { |line| "       #{line.sub(gems_regexp, gems_replace)}" }
     puts "    Please submit this as an issue at http://github.com/sj26/mailcatcher/issues"
   end
 
