@@ -44,7 +44,7 @@ class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
 
   def receive_message
     MailCatcher::Mail.add_message current_message
-    puts "==> SMTP: Received message from '#{current_message[:sender]}' (#{current_message[:source].length} bytes)"
+    puts Time.new + "==> SMTP: Received message from '#{current_message[:sender]}' (#{current_message[:source].length} bytes)"
     true
   rescue => exception
     MailCatcher.log_exception("Error receiving message", @current_message, exception)
