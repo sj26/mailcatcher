@@ -11,3 +11,4 @@
 
 # Build gems
 *.gem
+/nbproject/private/
