@@ -105,10 +105,6 @@ I work on MailCatcher mostly in my own spare time. If you've found Mailcatcher u
 
 Copyright © 2010-2018 Samuel Cochran (sj26@sj26.com). Released under the MIT License, see [LICENSE][license] for details.
 
-## Dreams
-
-For dream catching, try [this](http://www.adultswim.com/games/web/robot-unicorn-attack). OR [THIS](http://www.nyanicorn.com), OMG.
-
   [donate]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=522WUPLRWUSKE
   [license]: https://github.com/sj26/mailcatcher/blob/master/LICENSE
   [mailcatcher-github]: https://github.com/sj26/mailcatcher
