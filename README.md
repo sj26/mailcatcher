@@ -21,10 +21,11 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 
 ## How
 
+1. Install [Ruby](https://www.ruby-lang.org/)
 1. `gem install mailcatcher`
-2. `mailcatcher`
-3. Go to http://127.0.0.1:1080/
-4. Send mail through smtp://127.0.0.1:1025
+1. `mailcatcher`
+1. Go to http://127.0.0.1:1080/
+1. Send mail through `smtp://127.0.0.1:1025`
 
 Use `mailcatcher --help` to see the command line options. The brave can get the source from [the GitHub repository][mailcatcher-github].
 
