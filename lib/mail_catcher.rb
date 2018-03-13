@@ -90,6 +90,7 @@ module MailCatcher extend self
     :daemon => !windows?,
     :browse => false,
     :quit => true,
+    :title_prefix => ""
   }
 
   def options
@@ -134,6 +135,10 @@ module MailCatcher extend self
 
         parser.on("--no-quit", "Don't allow quitting the process") do
           options[:quit] = false
+        end
+
+        parser.on("--title-prefix TITLE", "Add prefix to the title of the webpage") do |title_prefix|
+          options[:title_prefix] = title_prefix
         end
 
         if mac?

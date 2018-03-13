@@ -17,6 +17,7 @@ module MailCatcher
     class Application < Sinatra::Base
       set :environment, MailCatcher.env
       set :prefix, MailCatcher.options[:http_path]
+      set :title_prefix, MailCatcher.options[:title_prefix]
       set :asset_prefix, File.join(prefix, "assets")
       set :root, File.expand_path("#{__FILE__}/../../../..")
 

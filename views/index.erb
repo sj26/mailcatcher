@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="mailcatcher">
 <head>
-  <title>MailCatcher</title>
+  <title data-title="<%= settings.title_prefix != '' ? settings.title_prefix + ' ' : '' %>MailCatcher">MailCatcher</title>
   <base href="<%= settings.prefix.chomp("/") %>/">
   <link href="favicon.ico" rel="icon">
   <script src="<%= asset_path("mailcatcher.js") %>"></script>
@@ -9,7 +9,7 @@
 </head>
 <body>
   <header>
-    <h1><a href="http://mailcatcher.me" target="_blank">MailCatcher</a></h1>
+    <h1><%= settings.title_prefix != '' ? settings.title_prefix + ' ' : '' %><a href="http://mailcatcher.me" target="_blank">MailCatcher</a></h1>
     <nav class="app">
       <ul>
         <li class="search"><input type="search" name="search" placeholder="Search messages..." incremental="true" /></li>
