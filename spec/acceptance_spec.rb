@@ -42,6 +42,7 @@ describe MailCatcher do
 
   def deliver_example(name, options={})
     deliver(read_example(name), options)
+    navigate
   end
 
   def selenium

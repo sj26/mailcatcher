@@ -1,0 +1,27 @@
+ruby2.4:
+  image: ruby:2.4.0
+  volumes:
+    - .:/srv
+  working_dir: /srv
+  ports:
+    - "8080:80"
+    - "8025:25"
+  environment:
+    - RUBYLIB=/srv/lib
+    - GEM_PATH=/srv/deps/ruby/2.4.0:/usr/local/lib/ruby/gems/2.4.0:/usr/local/bundle
+    - PATH=/srv/bin:/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+  command: ./scripts/web
+
+#ruby2.3:
+#  image: ruby:2.3.0
+#  volumes:
+#    - .:/srv
+#  working_dir: /srv
+#  ports:
+#    - "8180:80"
+#    - "8125:25"
+#  environment:
+#    - RUBYLIB=/srv/lib
+#    - GEM_PATH=/srv/deps/ruby/2.3.0:/usr/local/lib/ruby/gems/2.3.0:/usr/local/bundle
+#    - PATH=/srv/bin:/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+#  command: ./scripts/web

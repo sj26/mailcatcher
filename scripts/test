@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e # exit if any commands returns a non-zero exit code.
+
+cd "$(dirname "$0")/.." # cd into project root.
+
+./scripts/setup
+
+bundle exec rake

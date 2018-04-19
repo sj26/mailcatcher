@@ -11,3 +11,13 @@
 
 # Build gems
 *.gem
+
+# Docker elements
+/deps
+
+# Nodejs
+/bin/node
+/bin/npm
+/bin/phantomjs
+/node_modules
+/package-lock.json

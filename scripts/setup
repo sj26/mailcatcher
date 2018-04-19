@@ -1,0 +1,35 @@
+#!/bin/bash
+
+set -e # exit if any commands returns a non-zero exit code.
+
+cd "$(dirname "$0")/.." # cd into project root.
+
+NODE_VERSION="8.11.1"
+PHANTOMJS_VERSION="2.1.1"
+
+function node_installed?() {
+  node --version || return 1
+  return 0
+}
+
+function install_node() {
+  wget --no-verbose https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz -O /tmp/node.tar.zx
+  tar -xJf /tmp/node.tar.zx -C deps
+  ln -fns $(pwd)/deps/node-v${NODE_VERSION}-linux-x64/bin/{node,npm} bin/
+}
+
+function phantomjs_installed?() {
+  phantomjs --version || return 1
+  return 0
+}
+
+function install_phantomjs() {
+  npm install --unsafe-perm phantomjs@${PHANTOMJS_VERSION}
+  ln -fns $(pwd)/node_modules/.bin/phantomjs bin/
+}
+
+mkdir -p deps
+node_installed? || install_node
+phantomjs_installed? || install_phantomjs
+
+bundle install --path deps
