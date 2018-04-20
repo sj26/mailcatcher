@@ -157,4 +157,13 @@ module MailCatcher::Mail extend self
     @delete_messages_query.execute(message_id) and
     @delete_message_parts_query.execute(message_id)
   end
+
+  def delete_older_messages!(max_mail_to_keep = MailCatcher::options[:max_mail_to_keep])
+    return if max_mail_to_keep <= 0
+    @delete_older_messages_query ||= db.prepare "DELETE FROM message WHERE id NOT IN (SELECT id FROM message ORDER BY created_at DESC LIMIT ?)"
+    @delete_older_message_parts_query ||= db.prepare "DELETE FROM message_part WHERE id NOT IN (SELECT id FROM message_part ORDER BY created_at DESC LIMIT ?)"
+
+    @delete_older_messages_query.execute(max_mail_to_keep) and
+    @delete_older_message_parts_query.execute(max_mail_to_keep)
+  end
 end
