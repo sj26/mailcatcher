@@ -88,6 +88,7 @@ module MailCatcher extend self
     :http_ip => "127.0.0.1",
     :http_port => "1080",
     :http_path => "/",
+    :max_mail_to_keep => -1,
     :verbose => false,
     :daemon => !windows?,
     :browse => false,
@@ -126,6 +127,10 @@ module MailCatcher extend self
 
         parser.on("--http-port PORT", Integer, "Set the port address of the http server") do |port|
           options[:http_port] = port
+        end
+
+        parser.on("--max_mail_to_keep NUM", Integer, "Set the maximum number of mails to keep") do |num|
+          options[:max_mail_to_keep] = num
         end
 
         parser.on("--http-path PATH", String, "Add a prefix to all HTTP paths") do |path|
