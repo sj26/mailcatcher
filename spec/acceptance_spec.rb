@@ -42,13 +42,16 @@ describe MailCatcher do
 
   def deliver_example(name, options={})
     deliver(read_example(name), options)
+    navigate
   end
 
   def selenium
     @selenium ||= Selenium::WebDriver.for(:phantomjs)
   end
 
-  before { selenium.navigate.to("http://127.0.0.1:#{HTTP_PORT}") }
+  def navigate
+    selenium.navigate.to("http://127.0.0.1:#{HTTP_PORT}")
+  end
 
   def messages_element
     selenium.find_element(:id, "messages")
