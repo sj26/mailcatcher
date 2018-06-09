@@ -45,7 +45,14 @@ describe MailCatcher do
   end
 
   def selenium
-    @selenium ||= Selenium::WebDriver.for(:phantomjs)
+    @selenium ||=
+      begin
+        options = Selenium::WebDriver::Chrome::Options.new
+        options.headless!
+        options.add_argument "no-sandbox" if ENV["TRAVIS"]
+
+        Selenium::WebDriver.for(:chrome, options: options)
+      end
   end
 
   before do
