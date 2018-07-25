@@ -1,4 +1,4 @@
-FROM ruby:2.4
+FROM ruby:2.5
 MAINTAINER Samuel Cochran <sj26@sj26.com>
 
 RUN gem install mailcatcher
