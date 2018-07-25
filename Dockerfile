@@ -7,5 +7,5 @@ RUN gem install mailcatcher -v $VERSION
 
 EXPOSE 1025 1080
 
-ENTRYPOINT ["mailcatcher", "-f"]
+ENTRYPOINT ["mailcatcher", "--foreground"]
 CMD ["--ip", "0.0.0.0"]
