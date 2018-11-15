@@ -36,10 +36,10 @@ Instead, pop a note in your README stating you use mailcatcher, and to run `gem 
 
 ### RVM
 
-Under RVM your mailcatcher command may only be available under the ruby you install mailcatcher into. To prevent this, and to prevent gem conflicts, install mailcatcher into a dedicated gemset and for convenience create a link to a wrapper scripts (YMMV depending on OS):
+Under RVM your mailcatcher command may only be available under the ruby you install mailcatcher into. To prevent this, and to prevent gem conflicts, install mailcatcher into a dedicated gemset with a wrapper script:
 
     rvm default@mailcatcher --create do gem install mailcatcher
-    ln -s `rvm default@mailcatcher do rvm wrapper show mailcatcher` ~/.rvm/bin/mailcatcher
+    ln -s "$(rvm default@mailcatcher do rvm wrapper show mailcatcher)" "$rvm_bin_path/"
 
 ### Rails
 
