@@ -1,6 +1,7 @@
 # Apparently rubygems won't activate these on its own, so here we go. Let's
 # repeat the invention of Bundler all over again.
 gem "eventmachine", "1.0.9.1"
+gem "midi-smtp-server", "~> 2.3.1"
 gem "mail", "~> 2.3"
 gem "rack", "~> 1.5"
 gem "sinatra", "~> 1.2"
@@ -12,6 +13,8 @@ require "open3"
 require "optparse"
 require "rbconfig"
 
+
+require "midi-smtp-server"
 require "eventmachine"
 require "thin"
 
@@ -188,9 +191,9 @@ module MailCatcher extend self
 
     # One EventMachine loop...
     EventMachine.run do
-      # Set up an SMTP server to run within EventMachine
+      # Set up  MidiSmtpServer server to run within EventMachine loop
       rescue_port options[:smtp_port] do
-        EventMachine.start_server options[:smtp_ip], options[:smtp_port], Smtp
+        Smtp.new(options[:smtp_port], options[:smtp_ip], 4, { logger_severity: development? ? 0:9 }).start
         puts "==> #{smtp_url}"
       end
 
@@ -241,8 +244,9 @@ protected
       yield
 
     # XXX: EventMachine only spits out RuntimeError with a string description
-    rescue RuntimeError
-      if $!.to_s =~ /\bno acceptor\b/
+    # XXX: MidiSmtpServer uses seperate ErrorClass
+    rescue RuntimeError, Errno::EADDRINUSE
+      if $!.to_s =~ /\bno acceptor\b/ || $!.class == Errno::EADDRINUSE
         puts "~~> ERROR: Something's using port #{port}. Are you already running MailCatcher?"
         puts "==> #{smtp_url}"
         puts "==> #{http_url}"
