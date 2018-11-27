@@ -179,14 +179,6 @@ module MailCatcher extend self
     # Stash them away for later
     @@options = options
 
-    # daemonize mode, reap the child automatically to prevent zombie
-    if options[:daemon] && pid = fork
-      Process.detach(pid)
-      # wait a second to make sure that all output is send before exit
-      sleep 2
-      exit
-    end
-
     # If we're running in the foreground sync the output.
     unless options[:daemon]
       $stdout.sync = $stderr.sync = true
@@ -231,6 +223,11 @@ module MailCatcher extend self
           $stdin.reopen "/dev/null"
           $stdout.reopen "/dev/null", "a"
           $stderr.reopen '/dev/null', 'a'
+          # daemonize mode, reap the child automatically to prevent zombie
+          if pid = fork
+            Process.detach(pid)
+            exit
+          end
         end
       end
     end
