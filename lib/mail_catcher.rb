@@ -121,6 +121,10 @@ module MailCatcher extend self
           options[:smtp_port] = port
         end
 
+        parser.on("--smtp-tls", "Enable tls for the smtp server") do
+          options[:smtp_tls] = true
+        end
+
         parser.on("--http-ip IP", "Set the ip address of the http server") do |ip|
           options[:http_ip] = ip
         end
@@ -193,7 +197,10 @@ module MailCatcher extend self
     EventMachine.run do
       # Set up  MidiSmtpServer server to run within EventMachine loop
       rescue_port options[:smtp_port] do
-        Smtp.new(options[:smtp_port], options[:smtp_ip], 4, { logger_severity: development? ? 0:9 }).start
+        midi_smtp_server_opts = {}
+        midi_smtp_server_opts[:tls_mode] = :TLS_OPTIONAL if options[:smtp_tls]
+        midi_smtp_server_opts[:logger_severity] = development? ? 0:9
+        Smtp.new(options[:smtp_port], options[:smtp_ip], 4, midi_smtp_server_opts).start
         puts "==> #{smtp_url}"
       end
 

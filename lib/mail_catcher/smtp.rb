@@ -7,7 +7,6 @@ class MailCatcher::Smtp < MidiSmtpServer::Smtpd
   def initialize(ports = DEFAULT_SMTPD_PORT, hosts = DEFAULT_SMTPD_HOST, max_processings = DEFAULT_SMTPD_MAX_PROCESSINGS, opts = {})
     # set compatible modes and enable optional TLS and AUTH per default
     opts[:io_cmd_timeout] = nil
-    opts[:tls_mode] = :TLS_OPTIONAL
     opts[:auth_mode] = :AUTH_OPTIONAL
     opts[:pipelining_extension] = true
     # initialize MidiSmtpServer::Smtpd
