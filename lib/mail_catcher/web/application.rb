@@ -3,14 +3,8 @@ require "net/http"
 require "uri"
 
 require "sinatra"
-require "skinny"
 
-require "mail_catcher/events"
 require "mail_catcher/mail"
-
-class Sinatra::Request
-  include Skinny::Helpers
-end
 
 module MailCatcher
   module Web
@@ -59,25 +53,8 @@ module MailCatcher
       end
 
       get "/messages" do
-        if request.websocket?
-          request.websocket!(
-            :on_start => proc do |websocket|
-              subscription = Events::MessageAdded.subscribe do |message|
-                begin
-                  websocket.send_message(JSON.generate(message))
-                rescue => exception
-                  MailCatcher.log_exception("Error sending message through websocket", message, exception)
-                end
-              end
-
-              websocket.on_close do |*|
-                Events::MessageAdded.unsubscribe subscription
-              end
-            end)
-        else
-          content_type :json
-          JSON.generate(Mail.messages)
-        end
+        content_type :json
+        JSON.generate(Mail.messages)
       end
 
       delete "/messages" do

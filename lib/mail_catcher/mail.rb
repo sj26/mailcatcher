@@ -1,4 +1,3 @@
-require "eventmachine"
 require "json"
 require "mail"
 require "sqlite3"
@@ -50,11 +49,6 @@ module MailCatcher::Mail extend self
       # Only parts have CIDs, not mail
       cid = part.cid if part.respond_to? :cid
       add_message_part(message_id, cid, part.mime_type || "text/plain", part.attachment? ? 1 : 0, part.filename, part.charset, body, body.length)
-    end
-
-    EventMachine.next_tick do
-      message = MailCatcher::Mail.message message_id
-      MailCatcher::Events::MessageAdded.push message
     end
   end
 

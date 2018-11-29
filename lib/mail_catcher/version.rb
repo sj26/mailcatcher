@@ -1,3 +1,3 @@
 module MailCatcher
-  VERSION = "0.7.0.beta1"
+  VERSION = "1.0.0.alpha"
 end

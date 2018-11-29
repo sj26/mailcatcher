@@ -1,34 +1,20 @@
-# Apparently rubygems won't activate these on its own, so here we go. Let's
-# repeat the invention of Bundler all over again.
-gem "eventmachine", "1.0.9.1"
-gem "mail", "~> 2.3"
-gem "rack", "~> 1.5"
-gem "sinatra", "~> 1.2"
-gem "sqlite3", "~> 1.3"
-gem "thin", "~> 1.5.0"
-gem "skinny", "~> 0.2.3"
-
-require "open3"
 require "optparse"
 require "rbconfig"
+require "socket"
 
-require "eventmachine"
-require "thin"
-
-module EventMachine
-  # Monkey patch fix for 10deb4
-  # See https://github.com/eventmachine/eventmachine/issues/569
-  def self.reactor_running?
-    (@reactor_running || false)
-  end
-end
+require "async/reactor"
+require "async/io/address"
+require "async/io/address_endpoint"
+require "async/http/url_endpoint"
+require "falcon/adapters/rack"
+require "falcon/server"
+require "rack"
 
 require "mail_catcher/version"
 
 module MailCatcher extend self
-  autoload :Events, "mail_catcher/events"
   autoload :Mail, "mail_catcher/mail"
-  autoload :Smtp, "mail_catcher/smtp"
+  autoload :SMTP, "mail_catcher/smtp"
   autoload :Web, "mail_catcher/web"
 
   def env
@@ -183,47 +169,45 @@ module MailCatcher extend self
 
     puts "Starting MailCatcher"
 
-    Thin::Logging.debug = development?
-    Thin::Logging.silent = !development?
+    Async::Reactor.run do |task|
+      http_address = Async::IO::Address.tcp(options[:http_ip], options[:http_port])
+      http_endpoint = Async::IO::AddressEndpoint.new(http_address)
+      http_socket = rescue_port(options[:http_port]) { http_endpoint.bind }
+      puts "==> #{http_url}"
 
-    # One EventMachine loop...
-    EventMachine.run do
-      # Set up an SMTP server to run within EventMachine
-      rescue_port options[:smtp_port] do
-        EventMachine.start_server options[:smtp_ip], options[:smtp_port], Smtp
-        puts "==> #{smtp_url}"
-      end
+      http_endpoint = Async::HTTP::URLEndpoint.new(URI.parse(http_url), http_endpoint)
+      http_app = Falcon::Adapters::Rack.new(MailCatcher::Web)
+      http_server = Falcon::Server.new(http_app, http_endpoint)
 
-      # Let Thin set itself up inside our EventMachine loop
-      # (Skinny/WebSockets just works on the inside)
-      rescue_port options[:http_port] do
-        Thin::Server.start(options[:http_ip], options[:http_port], Web)
-        puts "==> #{http_url}"
-      end
+      http_task = task.async do |task|
+        task.annotate "binding to #{http_socket.local_address.inspect}"
 
-      # Open the web browser before detatching console
-      if options[:browse]
-        EventMachine.next_tick do
-          browse http_url
+        begin
+          http_socket.listen(Socket::SOMAXCONN)
+          http_socket.accept_each(task: task, &http_server.method(:accept))
+        ensure
+          http_socket.close
         end
+      end
+
+      if options[:browse]
+        browse(http_url)
       end
 
       # Daemonize, if we should, but only after the servers have started.
       if options[:daemon]
-        EventMachine.next_tick do
-          if quittable?
-            puts "*** MailCatcher runs as a daemon by default. Go to the web interface to quit."
-          else
-            puts "*** MailCatcher is now running as a daemon that cannot be quit."
-          end
-          Process.daemon
+        if quittable?
+          puts "*** MailCatcher runs as a daemon by default. Go to the web interface to quit."
+        else
+          puts "*** MailCatcher is now running as a daemon that cannot be quit."
         end
+        Process.daemon
       end
     end
   end
 
   def quit!
-    EventMachine.next_tick { EventMachine.stop_event_loop }
+    Async::Task.current.reactor.stop
   end
 
 protected
@@ -238,18 +222,12 @@ protected
 
   def rescue_port port
     begin
-      yield
-
-    # XXX: EventMachine only spits out RuntimeError with a string description
-    rescue RuntimeError
-      if $!.to_s =~ /\bno acceptor\b/
-        puts "~~> ERROR: Something's using port #{port}. Are you already running MailCatcher?"
-        puts "==> #{smtp_url}"
-        puts "==> #{http_url}"
-        exit -1
-      else
-        raise
-      end
+      return yield
+    rescue Errno::EADDRINUSE
+      puts "~~> ERROR: Something's using port #{port}. Are you already running MailCatcher?"
+      puts "==> #{smtp_url}"
+      puts "==> #{http_url}"
+      exit -1
     end
   end
 end
