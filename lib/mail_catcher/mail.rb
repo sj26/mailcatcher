@@ -2,7 +2,7 @@ require "json"
 require "mail"
 require "sqlite3"
 
-module MailCatcher::Mail extend self
+class MailCatcher::Mail
   def db
     @__db ||= begin
       SQLite3::Database.new(":memory:", :type_translation => true).tap do |db|

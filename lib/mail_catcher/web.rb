@@ -4,13 +4,17 @@ require "uri"
 
 require "sinatra"
 
-require "mail_catcher/mail"
-
 module MailCatcher
   class Web < Sinatra::Base
-    set :prefix, MailCatcher.options[:http_path]
+    set :prefix, "/"
     set :asset_prefix, File.join(prefix, "assets")
     set :root, File.expand_path("#{__FILE__}/../../..")
+
+    def initialize(mail: MailCatcher::Mail.new)
+      super()
+
+      @mail = mail
+    end
 
     helpers do
       def asset_path(filename)
@@ -33,25 +37,25 @@ module MailCatcher
 
     get "/messages" do
       content_type :json
-      JSON.generate(Mail.messages)
+      JSON.generate(@mail.messages)
     end
 
     delete "/messages" do
-      Mail.delete!
+      @mail.delete!
       status 204
     end
 
     get "/messages/:id.json" do
       id = params[:id].to_i
-      if message = Mail.message(id)
+      if message = @mail.message(id)
         content_type :json
         JSON.generate(message.merge({
           "formats" => [
             "source",
-            ("html" if Mail.message_has_html? id),
-            ("plain" if Mail.message_has_plain? id)
+            ("html" if @mail.message_has_html? id),
+            ("plain" if @mail.message_has_plain? id)
           ].compact,
-          "attachments" => Mail.message_attachments(id).map do |attachment|
+          "attachments" => @mail.message_attachments(id).map do |attachment|
             attachment.merge({"href" => "/messages/#{escape(id)}/parts/#{escape(attachment["cid"])}"})
           end,
         }))
@@ -62,7 +66,7 @@ module MailCatcher
 
     get "/messages/:id.html" do
       id = params[:id].to_i
-      if part = Mail.message_part_html(id)
+      if part = @mail.message_part_html(id)
         content_type :html, :charset => (part["charset"] || "utf8")
 
         body = part["body"]
@@ -78,7 +82,7 @@ module MailCatcher
 
     get "/messages/:id.plain" do
       id = params[:id].to_i
-      if part = Mail.message_part_plain(id)
+      if part = @mail.message_part_plain(id)
         content_type part["type"], :charset => (part["charset"] || "utf8")
         part["body"]
       else
@@ -88,7 +92,7 @@ module MailCatcher
 
     get "/messages/:id.source" do
       id = params[:id].to_i
-      if message = Mail.message(id)
+      if message = @mail.message(id)
         content_type "text/plain"
         message["source"]
       else
@@ -98,7 +102,7 @@ module MailCatcher
 
     get "/messages/:id.eml" do
       id = params[:id].to_i
-      if message = Mail.message(id)
+      if message = @mail.message(id)
         content_type "message/rfc822"
         message["source"]
       else
@@ -108,7 +112,7 @@ module MailCatcher
 
     get "/messages/:id/parts/:cid" do
       id = params[:id].to_i
-      if part = Mail.message_part_cid(id, params[:cid])
+      if part = @mail.message_part_cid(id, params[:cid])
         content_type part["type"], :charset => (part["charset"] || "utf8")
         attachment part["filename"] if part["is_attachment"] == 1
         body part["body"].to_s
@@ -119,8 +123,8 @@ module MailCatcher
 
     delete "/messages/:id" do
       id = params[:id].to_i
-      if Mail.message(id)
-        Mail.delete_message!(id)
+      if @mail.message(id)
+        @mail.delete_message!(id)
         status 204
       else
         not_found

@@ -152,12 +152,14 @@ module MailCatcher extend self
     end
 
     Async::Reactor.run do |task|
+      mail = MailCatcher::Mail.new
+
       http_address = Async::IO::Address.tcp(options[:http_ip], options[:http_port])
       http_endpoint = Async::IO::AddressEndpoint.new(http_address)
       http_socket = rescue_port(options[:http_port]) { http_endpoint.bind }
       puts "==> #{http_url}"
 
-      web = MailCatcher::Web.new
+      web = MailCatcher::Web.new(mail: mail)
       rack_app = Rack::Builder.app do
         map(options[:http_path]) { run web }
         run lambda { |env| [302, {"Location" => MailCatcher.options[:http_path]}, []] }
@@ -185,7 +187,7 @@ module MailCatcher extend self
 
       smtp_endpoint = MailCatcher::SMTP::URLEndpoint.new(URI.parse(smtp_url), smtp_endpoint)
       smtp_server = MailCatcher::SMTP::Server.new(smtp_endpoint) do |envelope|
-        MailCatcher::Mail.add_message(sender: envelope.sender, recipients: envelope.recipients, source: envelope.content)
+        mail.add_message(sender: envelope.sender, recipients: envelope.recipients, source: envelope.content)
       end
 
       smtp_task = task.async do |task|
