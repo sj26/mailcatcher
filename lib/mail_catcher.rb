@@ -18,14 +18,6 @@ module MailCatcher extend self
   autoload :SMTP, "mail_catcher/smtp"
   autoload :Web, "mail_catcher/web"
 
-  def env
-    ENV.fetch("MAILCATCHER_ENV", "production")
-  end
-
-  def development?
-    env == "development"
-  end
-
   def which?(command)
     ENV["PATH"].split(File::PATH_SEPARATOR).any? do |directory|
       File.executable?(File.join(directory, command.to_s))
@@ -165,8 +157,14 @@ module MailCatcher extend self
       http_socket = rescue_port(options[:http_port]) { http_endpoint.bind }
       puts "==> #{http_url}"
 
+      web = MailCatcher::Web.new
+      rack_app = Rack::Builder.app do
+        map(options[:http_path]) { run web }
+        run lambda { |env| [302, {"Location" => MailCatcher.options[:http_path]}, []] }
+      end
+
       http_endpoint = Async::HTTP::URLEndpoint.new(URI.parse(http_url), http_endpoint)
-      http_app = Falcon::Adapters::Rack.new(MailCatcher::Web)
+      http_app = Falcon::Adapters::Rack.new(rack_app)
       http_server = Falcon::Server.new(http_app, http_endpoint)
 
       http_task = task.async do |task|
