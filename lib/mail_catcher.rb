@@ -2,6 +2,7 @@ require "optparse"
 require "rbconfig"
 require "socket"
 
+require "async"
 require "async/reactor"
 require "async/io/address"
 require "async/io/address_endpoint"
@@ -31,16 +32,8 @@ module MailCatcher extend self
     end
   end
 
-  def mac?
-    RbConfig::CONFIG["host_os"] =~ /darwin/
-  end
-
   def windows?
     RbConfig::CONFIG["host_os"] =~ /mswin|mingw/
-  end
-
-  def macruby?
-    mac? and const_defined? :MACRUBY_VERSION
   end
 
   def browseable?
@@ -122,13 +115,6 @@ module MailCatcher extend self
           options[:quit] = false
         end
 
-        if mac?
-          parser.on("--[no-]growl") do |growl|
-            puts "Growl is no longer supported"
-            exit -2
-          end
-        end
-
         unless windows?
           parser.on("-f", "--foreground", "Run in the foreground") do
             options[:daemon] = false
@@ -169,6 +155,10 @@ module MailCatcher extend self
 
     puts "Starting MailCatcher"
 
+    if options[:verbose]
+      Async.logger.level = Logger::DEBUG
+    end
+
     Async::Reactor.run do |task|
       http_address = Async::IO::Address.tcp(options[:http_ip], options[:http_port])
       http_endpoint = Async::IO::AddressEndpoint.new(http_address)
@@ -190,6 +180,27 @@ module MailCatcher extend self
         end
       end
 
+      smtp_address = Async::IO::Address.tcp(options[:smtp_ip], options[:smtp_port])
+      smtp_endpoint = Async::IO::AddressEndpoint.new(smtp_address)
+      smtp_socket = rescue_port(options[:smtp_port]) { smtp_endpoint.bind }
+      puts "==> #{smtp_url}"
+
+      smtp_endpoint = MailCatcher::SMTP::URLEndpoint.new(URI.parse(smtp_url), smtp_endpoint)
+      smtp_server = MailCatcher::SMTP::Server.new(smtp_endpoint) do |envelope|
+        MailCatcher::Mail.add_message(sender: envelope.sender, recipients: envelope.recipients, source: envelope.content)
+      end
+
+      smtp_task = task.async do |task|
+        task.annotate "binding to #{smtp_socket.local_address.inspect}"
+
+        begin
+          smtp_socket.listen(Socket::SOMAXCONN)
+          smtp_socket.accept_each(task: task, &smtp_server.method(:accept))
+        ensure
+          smtp_socket.close
+        end
+      end
+
       if options[:browse]
         browse(http_url)
       end
@@ -204,6 +215,8 @@ module MailCatcher extend self
         Process.daemon
       end
     end
+  rescue Interrupt
+    # Cool story
   end
 
   def quit!
