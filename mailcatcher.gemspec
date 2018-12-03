@@ -33,6 +33,7 @@ Gem::Specification.new do |s|
   s.add_dependency "async"
   s.add_dependency "async-io"
   s.add_dependency "async-http"
+  s.add_dependency "async-websocket"
   s.add_dependency "falcon"
   s.add_dependency "mail"
   s.add_dependency "rack"
