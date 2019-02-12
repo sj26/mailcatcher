@@ -53,7 +53,7 @@ module MailCatcher::Mail extend self
     end
 
     EventMachine.next_tick do
-      message = MailCatcher::Mail.message message_id
+      message = MailCatcher::Mail.message_without_source(message_id)
       MailCatcher::Events::MessageAdded.push message
     end
   end
@@ -82,6 +82,12 @@ module MailCatcher::Mail extend self
     row = @message_query.execute(id).next
     row && Hash[row.fields.zip(row)].tap do |message|
       message["recipients"] &&= JSON.parse(message["recipients"])
+    end
+  end
+
+  def message_without_source(id)
+    message(id).tap do |m|
+      m.delete("source")
     end
   end
 

@@ -87,7 +87,7 @@ module MailCatcher
 
       get "/messages/:id.json" do
         id = params[:id].to_i
-        if message = Mail.message(id)
+        if message = Mail.message_without_source(id)
           content_type :json
           JSON.generate(message.merge({
             "formats" => [
