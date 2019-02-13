@@ -87,7 +87,7 @@ module MailCatcher
 
       get "/messages/:id.json" do
         id = params[:id].to_i
-        if message = Mail.message_without_source(id)
+        if message = Mail.message(id)
           content_type :json
           JSON.generate(message.merge({
             "formats" => [
@@ -132,9 +132,9 @@ module MailCatcher
 
       get "/messages/:id.source" do
         id = params[:id].to_i
-        if message = Mail.message(id)
+        if message_source = Mail.message_source(id)
           content_type "text/plain"
-          message["source"]
+          message_source
         else
           not_found
         end
@@ -142,9 +142,9 @@ module MailCatcher
 
       get "/messages/:id.eml" do
         id = params[:id].to_i
-        if message = Mail.message(id)
+        if message_source = Mail.message_source(id)
           content_type "message/rfc822"
-          message["source"]
+          message_source
         else
           not_found
         end
