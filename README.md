@@ -85,7 +85,7 @@ A fairly RESTful URL schema means you can download a list of messages in JSON fr
 ## Caveats
 
 * Mail processing is fairly basic but easily modified. If something doesn't work for you, fork and fix it or [file an issue][mailcatcher-issues] and let me know. Include the whole message you're having problems with.
-* The interface is very basic and has not been tested on many browsers yet.
+* Encodings are difficult. MailCatcher does not completely support utf-8 straight over the wire, you must use a mail library which encodes things properly based on SMTP server capabilities.
 
 ## TODO
 
