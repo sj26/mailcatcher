@@ -4,6 +4,7 @@
 #= require favcount
 #= require flexie
 #= require keymaster
+#= require url
 
 # Add a new jQuery selector expression which does a case-insensitive :contains
 jQuery.expr[":"].icontains = (a, i, m) ->
