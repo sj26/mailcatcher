@@ -4,6 +4,7 @@
 #= require favcount
 #= require flexie
 #= require keymaster
+#= require url
 
 # Add a new jQuery selector expression which does a case-insensitive :contains
 jQuery.expr[":"].icontains = (a, i, m) ->
@@ -46,7 +47,7 @@ class MailCatcher
       e.preventDefault()
       if confirm "You will lose all your received messages.\n\nAre you sure you want to clear all messages?"
         $.ajax
-          url: new URL("messages")
+          url: new URL("messages", document.baseURI).toString()
           type: "DELETE"
           success: =>
             @unselectMessage()
@@ -100,7 +101,7 @@ class MailCatcher
       id = @selectedMessage()
       if id?
         $.ajax
-          url: new URL("messages/#{id}")
+          url: new URL("messages/#{id}", document.baseURI).toString()
           type: "DELETE"
           success: =>
             messageRow = $("""#messages tbody tr[data-message-id="#{id}"]""")
@@ -295,10 +296,7 @@ class MailCatcher
   subscribeWebSocket: ->
     secure = window.location.protocol is "https:"
     url = new URL("messages", document.baseURI)
-    console.log(url)
     url.protocol = if secure then "wss" else "ws"
-    console.log(url)
-    console.log(url.toString())
     @websocket = new WebSocket(url.toString())
     console.log(@websocket)
     @websocket.onmessage = (event) =>

@@ -10,14 +10,13 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 
 * Catches all mail and stores it for display.
 * Shows HTML, Plain Text and Source version of messages, as applicable.
-* Rewrites HTML enabling display of embedded, inline images/etc and open links in a new window.
+* Rewrites HTML enabling display of embedded, inline images/etc and opens links in a new window.
 * Lists attachments and allows separate downloading of parts.
 * Download original email to view in your native mail client(s).
 * Command line options to override the default SMTP/HTTP IP and port settings.
 * Mail appears instantly if your browser supports [WebSockets][websockets], otherwise updates every thirty seconds.
-* Runs as a daemon run in the background.
-* Sendmail-analogue command, `catchmail`, makes [using mailcatcher from PHP][withphp] a lot easier.
-* Written super-simply in EventMachine, easy to dig in and change.
+* Runs as a daemon in the background, optionally in foreground.
+* Sendmail-analogue command, `catchmail`, makes using mailcatcher from PHP a lot easier.
 * Keyboard navigation between messages
 
 ## How
@@ -33,14 +32,14 @@ Use `mailcatcher --help` to see the command line options. The brave can get the 
 
 Please don't put mailcatcher into your Gemfile. It will conflict with your applications gems at some point.
 
-Instead, pop a note in your README stating you use mailcatcher. Simply run `gem install mailcatcher` then `mailcatcher` to get started.
+Instead, pop a note in your README stating you use mailcatcher, and to run `gem install mailcatcher` then `mailcatcher` to get started.
 
 ### RVM
 
-Under RVM your mailcatcher command may only be available under the ruby you install mailcatcher into. To prevent this, and to prevent gem conflicts, install mailcatcher into a dedicated gemset and create wrapper scripts:
+Under RVM your mailcatcher command may only be available under the ruby you install mailcatcher into. To prevent this, and to prevent gem conflicts, install mailcatcher into a dedicated gemset with a wrapper script:
 
     rvm default@mailcatcher --create do gem install mailcatcher
-    rvm wrapper default@mailcatcher --no-prefix mailcatcher catchmail
+    ln -s "$(rvm default@mailcatcher do rvm wrapper show mailcatcher)" "$rvm_bin_path/"
 
 ### Rails
 
@@ -68,7 +67,7 @@ If starting `mailcatcher` on alternative SMTP IP and/or port with parameters lik
 
 ### Django
 
-For use in Django, simply add the following configuration to your projects' settings.py
+For use in Django, add the following configuration to your projects' settings.py
 
 ```python
 if DEBUG:
@@ -86,7 +85,7 @@ A fairly RESTful URL schema means you can download a list of messages in JSON fr
 ## Caveats
 
 * Mail processing is fairly basic but easily modified. If something doesn't work for you, fork and fix it or [file an issue][mailcatcher-issues] and let me know. Include the whole message you're having problems with.
-* The interface is very basic and has not been tested on many browsers yet.
+* Encodings are difficult. MailCatcher does not completely support utf-8 straight over the wire, you must use a mail library which encodes things properly based on SMTP server capabilities.
 
 ## TODO
 
@@ -98,24 +97,16 @@ A fairly RESTful URL schema means you can download a list of messages in JSON fr
 
 MailCatcher is just a mishmash of other people's hard work. Thank you so much to the people who have built the wonderful guts on which this project relies.
 
-Thanks also to [The Frontier Group][tfg] for giving me the idea, being great guinea pigs and letting me steal pieces of time to keep the project alive.
-
 ## Donations
 
 I work on MailCatcher mostly in my own spare time. If you've found Mailcatcher useful and would like to help feed me and fund continued development and new features, please [donate via PayPal][donate]. If you'd like a specific feature added to MailCatcher and are willing to pay for it, please [email me](mailto:sj26@sj26.com).
 
 ## License
 
-Copyright © 2010-2011 Samuel Cochran (sj26@sj26.com). Released under the MIT License, see [LICENSE][license] for details.
-
-## Dreams
-
-For dream catching, try [this](http://goo.gl/kgbh). OR [THIS](http://www.nyanicorn.com), OMG.
+Copyright © 2010-2018 Samuel Cochran (sj26@sj26.com). Released under the MIT License, see [LICENSE][license] for details.
 
   [donate]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=522WUPLRWUSKE
   [license]: https://github.com/sj26/mailcatcher/blob/master/LICENSE
   [mailcatcher-github]: https://github.com/sj26/mailcatcher
   [mailcatcher-issues]: https://github.com/sj26/mailcatcher/issues
-  [tfg]: http://www.thefrontiergroup.com.au
   [websockets]: http://www.whatwg.org/specs/web-socket-protocol/
-  [withphp]: http://webschuur.com/publications/blogs/2011-05-29-catchmail_for_drupal_and_other_phpapplications_the_simple_version

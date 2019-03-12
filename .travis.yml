@@ -1,9 +1,18 @@
-sudo: false
 language: ruby
+
 rvm:
-  - 1.9.3
-  - 2.0.0
-  - 2.1.5
-  - 2.2.8
-  - 2.3.5
-  - 2.4.2
+  - 2.2.10
+  - 2.3.8
+  - 2.4.5
+  - 2.5.3
+  - 2.6.1
+
+addons:
+  chrome: stable
+  apt:
+    packages:
+    - chromium-chromedriver
+
+before_script:
+  - ln -s /usr/lib/chromium-browser/chromedriver ~/bin/chromedriver
+

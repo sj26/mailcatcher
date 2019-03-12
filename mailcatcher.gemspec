@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
   s.executables = ["mailcatcher", "catchmail"]
   s.extra_rdoc_files = ["README.md", "LICENSE"]
 
-  s.required_ruby_version = ">= 1.9.3"
+  s.required_ruby_version = ">= 2.0.0"
 
   s.add_dependency "eventmachine", "1.0.9.1"
   s.add_dependency "mail", "~> 2.3"
@@ -39,12 +39,12 @@ Gem::Specification.new do |s|
   s.add_dependency "skinny", "~> 0.2.3"
 
   s.add_development_dependency "coffee-script"
-  s.add_development_dependency "compass"
+  s.add_development_dependency "compass", "~> 1.0.3"
   s.add_development_dependency "minitest", "~> 5.0"
   s.add_development_dependency "rake"
   s.add_development_dependency "rdoc"
   s.add_development_dependency "sass"
-  s.add_development_dependency "selenium-webdriver"
+  s.add_development_dependency "selenium-webdriver", "~> 3.7"
   s.add_development_dependency "sprockets"
   s.add_development_dependency "sprockets-sass"
   s.add_development_dependency "sprockets-helpers"

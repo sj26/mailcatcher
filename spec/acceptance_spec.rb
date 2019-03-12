@@ -45,10 +45,19 @@ describe MailCatcher do
   end
 
   def selenium
-    @selenium ||= Selenium::WebDriver.for(:phantomjs)
+    @selenium ||=
+      begin
+        options = Selenium::WebDriver::Chrome::Options.new
+        options.headless!
+        options.add_argument "no-sandbox" if ENV["TRAVIS"]
+
+        Selenium::WebDriver.for(:chrome, options: options)
+      end
   end
 
-  before { selenium.navigate.to("http://127.0.0.1:#{HTTP_PORT}") }
+  before do
+    selenium.navigate.to("http://127.0.0.1:#{HTTP_PORT}")
+  end
 
   def messages_element
     selenium.find_element(:id, "messages")
@@ -199,6 +208,47 @@ describe MailCatcher do
     body_element.text.must_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
     body_element.text.must_include "Plain text mail"
     body_element.text.must_include "<em>HTML</em> mail"
+  end
+
+  it "catches and displays a multipart UTF8 message as text, html and source" do
+    deliver_example("multipartmail-with-utf8")
+
+    message_from_element.text.must_include DEFAULT_FROM
+    message_to_element.text.must_include DEFAULT_TO
+    message_subject_element.text.must_equal "Test Multipart UTF8 Mail"
+    Time.parse(message_received_element.text).must_be_close_to Time.now, 5
+
+    message_row_element.click
+
+    source_tab_element.displayed?.must_equal true
+    plain_tab_element.displayed?.must_equal true
+    html_tab_element.displayed?.must_equal true
+
+    plain_tab_element.click
+
+    iframe_element.displayed?.must_equal true
+    iframe_element.attribute(:src).must_match /\.plain\Z/
+
+    selenium.switch_to.frame(iframe_element)
+
+    body_element.text.must_include "Plain text mail"
+    body_element.text.wont_include "HTML mail"
+    body_element.text.wont_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+
+    selenium.switch_to.default_content
+    html_tab_element.click
+    selenium.switch_to.frame(iframe_element)
+
+    body_element.text.must_include "HTML mail"
+    body_element.text.wont_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+
+    selenium.switch_to.default_content
+    source_tab_element.click
+    selenium.switch_to.frame(iframe_element)
+
+    body_element.text.must_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+    body_element.text.must_include "Plain text mail"
+    body_element.text.must_include "<em>© HTML</em> mail"
   end
 
   it "catches and displays an unknown message as source" do

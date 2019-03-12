@@ -78,11 +78,17 @@ module MailCatcher::Mail extend self
   end
 
   def message(id)
-    @message_query ||= db.prepare "SELECT * FROM message WHERE id = ? LIMIT 1"
+    @message_query ||= db.prepare "SELECT id, sender, recipients, subject, size, type, created_at FROM message WHERE id = ? LIMIT 1"
     row = @message_query.execute(id).next
     row && Hash[row.fields.zip(row)].tap do |message|
       message["recipients"] &&= JSON.parse(message["recipients"])
     end
+  end
+
+  def message_source(id)
+    @message_source_query ||= db.prepare "SELECT source FROM message WHERE id = ? LIMIT 1"
+    row = @message_source_query.execute(id).next
+    row && row.first
   end
 
   def message_has_html?(id)
