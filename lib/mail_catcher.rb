@@ -83,6 +83,9 @@ module MailCatcher extend self
   @@defaults = {
     :smtp_ip => "127.0.0.1",
     :smtp_port => "1025",
+    :smtp_auth => false,
+    :smtp_user => nil,
+    :smtp_pass => nil,
     :http_ip => "127.0.0.1",
     :http_port => "1080",
     :http_path => "/",
@@ -116,6 +119,18 @@ module MailCatcher extend self
 
         parser.on("--smtp-port PORT", Integer, "Set the port of the smtp server") do |port|
           options[:smtp_port] = port
+        end
+
+        parser.on("--smtp-auth true|false", String, "Enable auth in smtp server (default: false)") do |auth|
+          options[:smtp_auth] = (auth.downcase == "true")
+        end
+
+        parser.on("--smtp-user USER", String, "Username of smtp server auth (only if enabled)") do |user|
+          options[:smtp_user] = user
+        end
+
+        parser.on("--smtp-pass PASS", String, "Password of smtp server auth (only if enabled)") do |pass|
+          options[:smtp_pass] = pass
         end
 
         parser.on("--http-ip IP", "Set the ip address of the http server") do |ip|
@@ -190,7 +205,15 @@ module MailCatcher extend self
     EventMachine.run do
       # Set up an SMTP server to run within EventMachine
       rescue_port options[:smtp_port] do
-        EventMachine.start_server options[:smtp_ip], options[:smtp_port], Smtp
+        EventMachine.start_server options[:smtp_ip], options[:smtp_port], Smtp do |smtp|
+          if (options[:smtp_auth])
+            smtp.parms= {
+              :auth => :required,
+              :auth_username => options[:smtp_user],
+              :auth_password => options[:smtp_pass]
+            }
+          end
+        end
         puts "==> #{smtp_url}"
       end
 

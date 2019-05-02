@@ -19,8 +19,19 @@ class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
   end
 
   def receive_reset
+    puts "==> SMTP: Received reset"
     @current_message = nil
     true
+  end
+
+  def receive_plain_auth(username, password)
+    if (!@@parms[:auth])
+      puts "==> SMTP: Received and ignored plain auth with username '#{username}'"
+      return true
+    end
+    valid = (@@parms[:auth_username] == username && @@parms[:auth_password] == password)
+    puts "==> SMTP: Received #{valid ? "valid" : "invalid"} plain auth with username '#{username}'"
+    valid
   end
 
   def receive_sender(sender)
@@ -44,7 +55,7 @@ class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
 
   def receive_message
     MailCatcher::Mail.add_message current_message
-    puts "==> SMTP: Received message from '#{current_message[:sender]}' (#{current_message[:source].length} bytes)"
+    puts "==> SMTP: Received message from '#{current_message[:sender]}' to '#{current_message[:recipients].join(',')}' (#{current_message[:source].length} bytes)"
     true
   rescue => exception
     MailCatcher.log_exception("Error receiving message", @current_message, exception)
