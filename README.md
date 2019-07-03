@@ -103,7 +103,7 @@ I work on MailCatcher mostly in my own spare time. If you've found Mailcatcher u
 
 ## License
 
-Copyright © 2010-2018 Samuel Cochran (sj26@sj26.com). Released under the MIT License, see [LICENSE][license] for details.
+Copyright © 2010-2019 Samuel Cochran (sj26@sj26.com). Released under the MIT License, see [LICENSE][license] for details.
 
   [donate]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=522WUPLRWUSKE
   [license]: https://github.com/sj26/mailcatcher/blob/master/LICENSE
