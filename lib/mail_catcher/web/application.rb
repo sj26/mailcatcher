@@ -12,6 +12,18 @@ class Sinatra::Request
   include Skinny::Helpers
 end
 
+def safe(x)
+  if x.instance_of? String
+    x.encode("UTF-8", :invalid => :replace, :undef => :replace, :replace => '?')
+  elsif x.instance_of? Array
+    x.map { |y| safe(y) }
+  elsif x.instance_of? Hash
+    Hash[x.map { |k,v| [k, safe(v)] }]
+  else
+    x
+  end
+end
+
 module MailCatcher
   module Web
     class Application < Sinatra::Base
@@ -64,7 +76,7 @@ module MailCatcher
             :on_start => proc do |websocket|
               subscription = Events::MessageAdded.subscribe do |message|
                 begin
-                  websocket.send_message(JSON.generate(message))
+                  websocket.send_message(JSON.generate(safe(message)))
                 rescue => exception
                   MailCatcher.log_exception("Error sending message through websocket", message, exception)
                 end
@@ -76,7 +88,7 @@ module MailCatcher
             end)
         else
           content_type :json
-          JSON.generate(Mail.messages)
+          JSON.generate(safe(Mail.messages))
         end
       end
 
@@ -89,7 +101,7 @@ module MailCatcher
         id = params[:id].to_i
         if message = Mail.message(id)
           content_type :json
-          JSON.generate(message.merge({
+          JSON.generate(safe(message.merge({
             "formats" => [
               "source",
               ("html" if Mail.message_has_html? id),
@@ -98,7 +110,7 @@ module MailCatcher
             "attachments" => Mail.message_attachments(id).map do |attachment|
               attachment.merge({"href" => "/messages/#{escape(id)}/parts/#{escape(attachment["cid"])}"})
             end,
-          }))
+          })))
         else
           not_found
         end
