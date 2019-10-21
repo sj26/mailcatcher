@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "eventmachine"
 
 require "mail_catcher/mail"
@@ -35,7 +37,7 @@ class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
   end
 
   def receive_data_chunk(lines)
-    current_message[:source] ||= ""
+    current_message[:source] ||= +""
     lines.each do |line|
       current_message[:source] << line << "\r\n"
     end

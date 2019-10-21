@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Apparently rubygems won't activate these on its own, so here we go. Let's
 # repeat the invention of Bundler all over again.
 gem "eventmachine", "1.0.9.1"

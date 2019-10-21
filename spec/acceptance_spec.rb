@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ENV["MAILCATCHER_ENV"] ||= "test"
 
 require "minitest/autorun"
