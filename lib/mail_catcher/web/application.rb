@@ -98,7 +98,7 @@ module MailCatcher
               ("plain" if Mail.message_has_plain? id)
             ].compact,
             "attachments" => Mail.message_attachments(id).map do |attachment|
-              attachment.merge({"href" => "/messages/#{escape(id)}/parts/#{escape(attachment["cid"])}"})
+              attachment.merge({"href" => "#{settings.prefix}/messages/#{escape(id)}/parts/#{escape(attachment["cid"])}"})
             end,
           }))
         else
