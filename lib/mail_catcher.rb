@@ -32,6 +32,7 @@ module MailCatcher extend self
   autoload :Mail, "mail_catcher/mail"
   autoload :Smtp, "mail_catcher/smtp"
   autoload :Web, "mail_catcher/web"
+  autoload :Mailgun, "mail_catcher/mailgun"
 
   def env
     ENV.fetch("MAILCATCHER_ENV", "production")
@@ -134,6 +135,14 @@ module MailCatcher extend self
           options[:http_path] = clean_path
         end
 
+        parser.on("--mailgun-ip IP", String, "Set an IP address to catch mailgun messages") do |ip|
+          options[:mailgun_ip] = ip
+        end
+
+        parser.on("--mailgun-port PORT", String, "Set an port address to catch mailgun messages") do |port|
+          options[:mailgun_port] = port
+        end
+
         parser.on("--no-quit", "Don't allow quitting the process") do
           options[:quit] = false
         end
@@ -203,6 +212,13 @@ module MailCatcher extend self
         puts "==> #{http_url}"
       end
 
+      if options[:mailgun_port]
+        rescue_port options[:http_port] do
+          Thin::Server.start(options[:mailgun_ip], options[:mailgun_port], Mailgun)
+          puts "==> #{mailgun_url}"
+        end
+      end
+
       # Open the web browser before detatching console
       if options[:browse]
         EventMachine.next_tick do
@@ -236,6 +252,10 @@ protected
 
   def http_url
     "http://#{@@options[:http_ip]}:#{@@options[:http_port]}#{@@options[:http_path]}"
+  end
+
+  def mailgun_url
+    "http://#{@@options[:mailgun_ip]}:#{@@options[:mailgun_port]}"
   end
 
   def rescue_port port
