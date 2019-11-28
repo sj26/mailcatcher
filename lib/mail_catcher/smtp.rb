@@ -46,6 +46,7 @@ class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
 
   def receive_message
     MailCatcher::Mail.add_message current_message
+    MailCatcher::Mail.delete_older_messages!
     puts "==> SMTP: Received message from '#{current_message[:sender]}' (#{current_message[:source].length} bytes)"
     true
   rescue => exception
