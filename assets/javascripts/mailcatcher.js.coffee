@@ -179,6 +179,9 @@ class MailCatcher
   selectedMessage: ->
     $("#messages tr.selected").data "message-id"
 
+  autoselectLatestMessage: ->
+    $("input[name='autoselect']").attr('checked') == true
+
   searchMessages: (query) ->
     selector = (":icontains('#{token}')" for token in query.split /\s+/).join("")
     $rows = $("#messages tbody tr")
@@ -301,6 +304,8 @@ class MailCatcher
     console.log(@websocket)
     @websocket.onmessage = (event) =>
       @addMessage $.parseJSON event.data
+      if @autoselectLatestMessage()
+        @loadMessage $("#messages tbody tr[data-message-id]:first").data("message-id")
 
   subscribePoll: ->
     unless @refreshInterval?

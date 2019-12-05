@@ -69,6 +69,14 @@ describe MailCatcher do
     messages_element.find_element(:xpath, ".//table/tbody/tr[1]")
   end
 
+  def message_selected_row_element
+    begin
+      messages_element.find_element(:css, "table tbody tr.selected")
+    rescue Selenium::WebDriver::Error::NoSuchElementError
+      return nil
+    end
+  end
+
   def message_from_element
     message_row_element.find_element(:xpath, ".//td[1]")
   end
@@ -79,6 +87,11 @@ describe MailCatcher do
 
   def message_subject_element
     message_row_element.find_element(:xpath, ".//td[3]")
+  end
+
+  def selected_message_subject_element
+    # if not found, message_selected_row_element returns nil... and it goes wonky from there
+    message_selected_row_element.find_element(:xpath, ".//td[3]")
   end
 
   def message_received_element
@@ -275,5 +288,21 @@ describe MailCatcher do
     deliver_example("quoted_printable_htmlmail")
 
     skip
+  end
+
+  it "selected newest mail when autoselect checkbox is on" do
+    deliver_example("plainmail")
+    message_selected_row_element.must_be_nil
+
+    # turn on the autoselect
+    selenium.find_element(:css, "input[name='autoselect']").click
+
+    # send first email
+    deliver_example("plainmail")
+    selected_message_subject_element.text.must_equal "Plain mail"
+
+    # send another
+    deliver_example("htmlmail")
+    selected_message_subject_element.text.must_equal "Test HTML Mail"
   end
 end
