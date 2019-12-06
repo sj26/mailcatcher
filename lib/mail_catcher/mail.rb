@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "eventmachine"
 require "json"
 require "mail"
@@ -30,7 +32,8 @@ module MailCatcher::Mail extend self
             charset TEXT,
             body BLOB,
             size INTEGER,
-            created_at DATETIME DEFAULT CURRENT_DATETIME
+            created_at DATETIME DEFAULT CURRENT_DATETIME,
+            FOREIGN KEY (message_id) REFERENCES message (id) ON DELETE CASCADE
           )
         SQL
       end
@@ -78,11 +81,17 @@ module MailCatcher::Mail extend self
   end
 
   def message(id)
-    @message_query ||= db.prepare "SELECT * FROM message WHERE id = ? LIMIT 1"
+    @message_query ||= db.prepare "SELECT id, sender, recipients, subject, size, type, created_at FROM message WHERE id = ? LIMIT 1"
     row = @message_query.execute(id).next
     row && Hash[row.fields.zip(row)].tap do |message|
       message["recipients"] &&= JSON.parse(message["recipients"])
     end
+  end
+
+  def message_source(id)
+    @message_source_query ||= db.prepare "SELECT source FROM message WHERE id = ? LIMIT 1"
+    row = @message_source_query.execute(id).next
+    row && row.first
   end
 
   def message_has_html?(id)
@@ -145,16 +154,17 @@ module MailCatcher::Mail extend self
 
   def delete!
     @delete_all_messages_query ||= db.prepare "DELETE FROM message"
-    @delete_all_message_parts_query ||= db.prepare "DELETE FROM message_part"
-
-    @delete_all_messages_query.execute and
-    @delete_all_message_parts_query.execute
+    @delete_all_messages_query.execute
   end
 
   def delete_message!(message_id)
     @delete_messages_query ||= db.prepare "DELETE FROM message WHERE id = ?"
-    @delete_message_parts_query ||= db.prepare "DELETE FROM message_part WHERE message_id = ?"
-    @delete_messages_query.execute(message_id) and
-    @delete_message_parts_query.execute(message_id)
+    @delete_messages_query.execute(message_id)
+  end
+
+  def delete_older_messages!(count = MailCatcher.options[:messages_limit])
+    return if count.nil?
+    @delete_older_messages_query ||= db.prepare "DELETE FROM message WHERE id NOT IN (SELECT id FROM message ORDER BY created_at DESC LIMIT ?)"
+    @delete_older_messages_query.execute(count)
   end
 end

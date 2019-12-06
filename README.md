@@ -85,7 +85,7 @@ A fairly RESTful URL schema means you can download a list of messages in JSON fr
 ## Caveats
 
 * Mail processing is fairly basic but easily modified. If something doesn't work for you, fork and fix it or [file an issue][mailcatcher-issues] and let me know. Include the whole message you're having problems with.
-* The interface is very basic and has not been tested on many browsers yet.
+* Encodings are difficult. MailCatcher does not completely support utf-8 straight over the wire, you must use a mail library which encodes things properly based on SMTP server capabilities.
 
 ## TODO
 
@@ -103,7 +103,7 @@ I work on MailCatcher mostly in my own spare time. If you've found Mailcatcher u
 
 ## License
 
-Copyright © 2010-2018 Samuel Cochran (sj26@sj26.com). Released under the MIT License, see [LICENSE][license] for details.
+Copyright © 2010-2019 Samuel Cochran (sj26@sj26.com). Released under the MIT License, see [LICENSE][license] for details.
 
   [donate]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=522WUPLRWUSKE
   [license]: https://github.com/sj26/mailcatcher/blob/master/LICENSE

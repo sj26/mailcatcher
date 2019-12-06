@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "midi-smtp-server"
 
 require "mail_catcher/mail"
@@ -32,6 +34,7 @@ class MailCatcher::Smtp < MidiSmtpServer::Smtpd
     current_message[:source] = ctx[:message][:data]
     # append to MailCatcher
     MailCatcher::Mail.add_message current_message
+    MailCatcher::Mail.delete_older_messages!
     puts "==> SMTP: Received message from '#{current_message[:sender]}' (#{current_message[:source].length} bytes)"
   rescue => exception
     MailCatcher.log_exception("Error receiving message", @current_message, exception)

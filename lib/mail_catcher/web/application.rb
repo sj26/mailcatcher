@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "pathname"
 require "net/http"
 require "uri"
@@ -132,9 +134,9 @@ module MailCatcher
 
       get "/messages/:id.source" do
         id = params[:id].to_i
-        if message = Mail.message(id)
+        if message_source = Mail.message_source(id)
           content_type "text/plain"
-          message["source"]
+          message_source
         else
           not_found
         end
@@ -142,9 +144,9 @@ module MailCatcher
 
       get "/messages/:id.eml" do
         id = params[:id].to_i
-        if message = Mail.message(id)
+        if message_source = Mail.message_source(id)
           content_type "message/rfc822"
-          message["source"]
+          message_source
         else
           not_found
         end

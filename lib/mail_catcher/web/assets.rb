@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "sprockets"
 require "sprockets-sass"
 require "compass"

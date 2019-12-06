@@ -1,14 +1,21 @@
-sudo: false
 language: ruby
+
 rvm:
   - 2.2
   - 2.3
   - 2.4
   - 2.5
+  - 2.6
+
 addons:
   chrome: stable
   apt:
     packages:
     - chromium-chromedriver
+
+before_install:
+  - gem install bundler
+
 before_script:
   - ln -s /usr/lib/chromium-browser/chromedriver ~/bin/chromedriver
+

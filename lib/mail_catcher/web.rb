@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rack/builder"
 
 require "mail_catcher/web/application"
