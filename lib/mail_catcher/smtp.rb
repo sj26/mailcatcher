@@ -9,6 +9,7 @@ class MailCatcher::Smtp < MidiSmtpServer::Smtpd
     opts[:io_cmd_timeout] = nil
     opts[:auth_mode] = :AUTH_OPTIONAL
     opts[:pipelining_extension] = true
+    opts[:internationalization_extensions] = true
     # initialize MidiSmtpServer::Smtpd
     super ports, hosts, max_processings, opts
   end
