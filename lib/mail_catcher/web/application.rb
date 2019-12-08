@@ -80,9 +80,18 @@ module MailCatcher
                 end
               end
 
+              messages_cleared_subscription = Events::MessagesCleared.subscribe do
+                begin
+                  websocket.send_message(JSON.generate(type: "clear"))
+                rescue => exception
+                  MailCatcher.log_exception("Error sending clear message through websocket", nil, exception)
+                end
+              end
+
               websocket.on_close do |*|
                 Events::MessageAdded.unsubscribe message_added_subscription
                 Events::MessageRemoved.unsubscribe message_removed_subscription
+                Events::MessagesCleared.unsubscribe messages_cleared_subscription
               end
             end)
         else

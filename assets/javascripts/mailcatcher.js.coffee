@@ -50,8 +50,7 @@ class MailCatcher
           url: new URL("messages", document.baseURI).toString()
           type: "DELETE"
           success: =>
-            @unselectMessage()
-            @updateMessagesCount()
+            @clearMessages()
           error: ->
             alert "Error while clearing all messages."
 
@@ -203,6 +202,11 @@ class MailCatcher
         @unselectMessage()
     @updateMessagesCount()
 
+  clearMessages: ->
+    $("#messages tbody tr").remove()
+    @unselectMessage()
+    @updateMessagesCount()
+
   scrollToRow: (row) ->
     relativePosition = row.offset().top - $("#messages").offset().top
     if relativePosition < 0
@@ -307,9 +311,11 @@ class MailCatcher
     @websocket.onmessage = (event) =>
       data = $.parseJSON event.data
       if data.type == "add"
-        @addMessage data.message
+        @addMessage(data.message)
       else if data.type == "remove"
-        @removeMessage data.id
+        @removeMessage(data.id)
+      else if data.type == "clear"
+        @clearMessages()
 
   subscribePoll: ->
     unless @refreshInterval?
