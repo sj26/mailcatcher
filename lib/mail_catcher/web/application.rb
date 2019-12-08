@@ -64,16 +64,25 @@ module MailCatcher
         if request.websocket?
           request.websocket!(
             :on_start => proc do |websocket|
-              subscription = Events::MessageAdded.subscribe do |message|
+              message_added_subscription = Events::MessageAdded.subscribe do |message|
                 begin
-                  websocket.send_message(JSON.generate(message))
+                  websocket.send_message(JSON.generate(type: "add", message: message))
                 rescue => exception
-                  MailCatcher.log_exception("Error sending message through websocket", message, exception)
+                  MailCatcher.log_exception("Error sending add message through websocket", message, exception)
+                end
+              end
+
+              message_removed_subscription = Events::MessageRemoved.subscribe do |message_id|
+                begin
+                  websocket.send_message(JSON.generate(type: "remove", id: message_id))
+                rescue => exception
+                  MailCatcher.log_exception("Error sending remove message through websocket", message_id, exception)
                 end
               end
 
               websocket.on_close do |*|
-                Events::MessageAdded.unsubscribe subscription
+                Events::MessageAdded.unsubscribe message_added_subscription
+                Events::MessageRemoved.unsubscribe message_removed_subscription
               end
             end)
         else

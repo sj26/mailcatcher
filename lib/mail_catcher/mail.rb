@@ -160,6 +160,10 @@ module MailCatcher::Mail extend self
   def delete_message!(message_id)
     @delete_messages_query ||= db.prepare "DELETE FROM message WHERE id = ?"
     @delete_messages_query.execute(message_id)
+
+    EventMachine.next_tick do
+      MailCatcher::Events::MessageRemoved.push message_id
+    end
   end
 
   def delete_older_messages!(count = MailCatcher.options[:messages_limit])

@@ -104,14 +104,7 @@ class MailCatcher
           url: new URL("messages/#{id}", document.baseURI).toString()
           type: "DELETE"
           success: =>
-            messageRow = $("""#messages tbody tr[data-message-id="#{id}"]""")
-            switchTo = messageRow.next().data("message-id") || messageRow.prev().data("message-id")
-            messageRow.remove()
-            if switchTo
-              @loadMessage switchTo
-            else
-              @unselectMessage()
-            @updateMessagesCount()
+            @removeMessage(id)
 
           error: ->
             alert "Error while removing message."
@@ -195,6 +188,19 @@ class MailCatcher
       .append($("<td/>").text(message.subject or "No subject").toggleClass("blank", !message.subject))
       .append($("<td/>").text(@formatDate(message.created_at)))
       .prependTo($("#messages tbody"))
+    @updateMessagesCount()
+
+  removeMessage: (id) ->
+    messageRow = $("""#messages tbody tr[data-message-id="#{id}"]""")
+    isSelected = messageRow.is(".selected")
+    if isSelected
+      switchTo = messageRow.next().data("message-id") || messageRow.prev().data("message-id")
+    messageRow.remove()
+    if isSelected
+      if switchTo
+        @loadMessage switchTo
+      else
+        @unselectMessage()
     @updateMessagesCount()
 
   scrollToRow: (row) ->
@@ -299,7 +305,11 @@ class MailCatcher
     url.protocol = if secure then "wss" else "ws"
     @websocket = new WebSocket(url.toString())
     @websocket.onmessage = (event) =>
-      @addMessage $.parseJSON event.data
+      data = $.parseJSON event.data
+      if data.type == "add"
+        @addMessage data.message
+      else if data.type == "remove"
+        @removeMessage data.id
 
   subscribePoll: ->
     unless @refreshInterval?
