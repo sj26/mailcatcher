@@ -7,7 +7,7 @@ require "uri"
 require "sinatra"
 require "skinny"
 
-require "mail_catcher/events"
+require "mail_catcher/bus"
 require "mail_catcher/mail"
 
 class Sinatra::Request
@@ -64,34 +64,16 @@ module MailCatcher
         if request.websocket?
           request.websocket!(
             :on_start => proc do |websocket|
-              message_added_subscription = Events::MessageAdded.subscribe do |message|
+              bus_subscription = MailCatcher::Bus.subscribe do |message|
                 begin
-                  websocket.send_message(JSON.generate(type: "add", message: message))
+                  websocket.send_message(JSON.generate(message))
                 rescue => exception
-                  MailCatcher.log_exception("Error sending add message through websocket", message, exception)
-                end
-              end
-
-              message_removed_subscription = Events::MessageRemoved.subscribe do |message_id|
-                begin
-                  websocket.send_message(JSON.generate(type: "remove", id: message_id))
-                rescue => exception
-                  MailCatcher.log_exception("Error sending remove message through websocket", message_id, exception)
-                end
-              end
-
-              messages_cleared_subscription = Events::MessagesCleared.subscribe do
-                begin
-                  websocket.send_message(JSON.generate(type: "clear"))
-                rescue => exception
-                  MailCatcher.log_exception("Error sending clear message through websocket", nil, exception)
+                  MailCatcher.log_exception("Error sending message through websocket", message, exception)
                 end
               end
 
               websocket.on_close do |*|
-                Events::MessageAdded.unsubscribe message_added_subscription
-                Events::MessageRemoved.unsubscribe message_removed_subscription
-                Events::MessagesCleared.unsubscribe messages_cleared_subscription
+                MailCatcher::Bus.unsubscribe bus_subscription
               end
             end)
         else

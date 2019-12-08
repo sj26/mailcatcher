@@ -57,7 +57,7 @@ module MailCatcher::Mail extend self
 
     EventMachine.next_tick do
       message = MailCatcher::Mail.message message_id
-      MailCatcher::Events::MessageAdded.push(message)
+      MailCatcher::Bus.push(type: "add", message: message)
     end
   end
 
@@ -157,7 +157,7 @@ module MailCatcher::Mail extend self
     @delete_all_messages_query.execute
 
     EventMachine.next_tick do
-      MailCatcher::Events::MessagesCleared.push(nil)
+      MailCatcher::Bus.push(type: "clear")
     end
   end
 
@@ -166,7 +166,7 @@ module MailCatcher::Mail extend self
     @delete_messages_query.execute(message_id)
 
     EventMachine.next_tick do
-      MailCatcher::Events::MessageRemoved.push(message_id)
+      MailCatcher::Bus.push(type: "remove", id: message_id)
     end
   end
 
