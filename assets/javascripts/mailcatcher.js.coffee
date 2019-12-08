@@ -298,7 +298,6 @@ class MailCatcher
     url = new URL("messages", document.baseURI)
     url.protocol = if secure then "wss" else "ws"
     @websocket = new WebSocket(url.toString())
-    console.log(@websocket)
     @websocket.onmessage = (event) =>
       @addMessage $.parseJSON event.data
 
