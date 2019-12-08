@@ -172,7 +172,11 @@ module MailCatcher::Mail extend self
 
   def delete_older_messages!(count = MailCatcher.options[:messages_limit])
     return if count.nil?
-    @delete_older_messages_query ||= db.prepare "DELETE FROM message WHERE id NOT IN (SELECT id FROM message ORDER BY created_at DESC LIMIT ?)"
-    @delete_older_messages_query.execute(count)
+    @older_messages_query ||= db.prepare "SELECT id FROM message WHERE id NOT IN (SELECT id FROM message ORDER BY created_at DESC LIMIT ?)"
+    @older_messages_query.execute(count).map do |row|
+      Hash[row.fields.zip(row)]
+    end.each do |message|
+      delete_message!(message["id"])
+    end
   end
 end
