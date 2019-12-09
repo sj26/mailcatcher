@@ -31,7 +31,7 @@ end
 require "mail_catcher/version"
 
 module MailCatcher extend self
-  autoload :Events, "mail_catcher/events"
+  autoload :Bus, "mail_catcher/bus"
   autoload :Mail, "mail_catcher/mail"
   autoload :Smtp, "mail_catcher/smtp"
   autoload :Web, "mail_catcher/web"

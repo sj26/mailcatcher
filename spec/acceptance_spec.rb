@@ -108,149 +108,149 @@ describe MailCatcher do
   it "catches and displays a plain text message as plain text and source" do
     deliver_example("plainmail")
 
-    message_from_element.text.must_include DEFAULT_FROM
-    message_to_element.text.must_include DEFAULT_TO
-    message_subject_element.text.must_equal "Plain mail"
-    Time.parse(message_received_element.text).must_be_close_to Time.now, 5
+    _(message_from_element.text).must_include DEFAULT_FROM
+    _(message_to_element.text).must_include DEFAULT_TO
+    _(message_subject_element.text).must_equal "Plain mail"
+    _(Time.parse(message_received_element.text)).must_be_close_to Time.now, 5
 
     message_row_element.click
 
-    source_tab_element.displayed?.must_equal true
-    plain_tab_element.displayed?.must_equal true
-    html_tab_element.displayed?.must_equal false
+    _(source_tab_element.displayed?).must_equal true
+    _(plain_tab_element.displayed?).must_equal true
+    _(html_tab_element.displayed?).must_equal false
 
     plain_tab_element.click
 
-    iframe_element.displayed?.must_equal true
-    iframe_element.attribute(:src).must_match(/\.plain\Z/)
+    _(iframe_element.displayed?).must_equal true
+    _(iframe_element.attribute(:src)).must_match(/\.plain\Z/)
 
     selenium.switch_to.frame(iframe_element)
 
-    body_element.text.wont_include "Subject: Plain mail"
-    body_element.text.must_include "Here's some text"
+    _(body_element.text).wont_include "Subject: Plain mail"
+    _(body_element.text).must_include "Here's some text"
 
     selenium.switch_to.default_content
     source_tab_element.click
     selenium.switch_to.frame(iframe_element)
 
-    body_element.text.must_include "Subject: Plain mail"
-    body_element.text.must_include "Here's some text"
+    _(body_element.text).must_include "Subject: Plain mail"
+    _(body_element.text).must_include "Here's some text"
   end
 
   it "catches and displays an html message as html and source" do
     deliver_example("htmlmail")
 
-    message_from_element.text.must_include DEFAULT_FROM
-    message_to_element.text.must_include DEFAULT_TO
-    message_subject_element.text.must_equal "Test HTML Mail"
-    Time.parse(message_received_element.text).must_be_close_to Time.now, 5
+    _(message_from_element.text).must_include DEFAULT_FROM
+    _(message_to_element.text).must_include DEFAULT_TO
+    _(message_subject_element.text).must_equal "Test HTML Mail"
+    _(Time.parse(message_received_element.text)).must_be_close_to Time.now, 5
 
     message_row_element.click
 
-    source_tab_element.displayed?.must_equal true
-    plain_tab_element.displayed?.must_equal false
-    html_tab_element.displayed?.must_equal true
+    _(source_tab_element.displayed?).must_equal true
+    _(plain_tab_element.displayed?).must_equal false
+    _(html_tab_element.displayed?).must_equal true
 
     html_tab_element.click
 
-    iframe_element.displayed?.must_equal true
-    iframe_element.attribute(:src).must_match /\.html\Z/
+    _(iframe_element.displayed?).must_equal true
+    _(iframe_element.attribute(:src)).must_match /\.html\Z/
 
     selenium.switch_to.frame(iframe_element)
 
-    body_element.text.must_include "Yo, you slimey scoundrel."
-    body_element.text.wont_include "Content-Type: text/html"
-    body_element.text.wont_include "Yo, you <em>slimey scoundrel</em>."
+    _(body_element.text).must_include "Yo, you slimey scoundrel."
+    _(body_element.text).wont_include "Content-Type: text/html"
+    _(body_element.text).wont_include "Yo, you <em>slimey scoundrel</em>."
 
     selenium.switch_to.default_content
     source_tab_element.click
     selenium.switch_to.frame(iframe_element)
 
-    body_element.text.must_include "Content-Type: text/html"
-    body_element.text.must_include "Yo, you <em>slimey scoundrel</em>."
-    body_element.text.wont_include "Yo, you slimey scoundrel."
+    _(body_element.text).must_include "Content-Type: text/html"
+    _(body_element.text).must_include "Yo, you <em>slimey scoundrel</em>."
+    _(body_element.text).wont_include "Yo, you slimey scoundrel."
   end
 
   it "catches and displays a multipart message as text, html and source" do
     deliver_example("multipartmail")
 
-    message_from_element.text.must_include DEFAULT_FROM
-    message_to_element.text.must_include DEFAULT_TO
-    message_subject_element.text.must_equal "Test Multipart Mail"
-    Time.parse(message_received_element.text).must_be_close_to Time.now, 5
+    _(message_from_element.text).must_include DEFAULT_FROM
+    _(message_to_element.text).must_include DEFAULT_TO
+    _(message_subject_element.text).must_equal "Test Multipart Mail"
+    _(Time.parse(message_received_element.text)).must_be_close_to Time.now, 5
 
     message_row_element.click
 
-    source_tab_element.displayed?.must_equal true
-    plain_tab_element.displayed?.must_equal true
-    html_tab_element.displayed?.must_equal true
+    _(source_tab_element.displayed?).must_equal true
+    _(plain_tab_element.displayed?).must_equal true
+    _(html_tab_element.displayed?).must_equal true
 
     plain_tab_element.click
 
-    iframe_element.displayed?.must_equal true
-    iframe_element.attribute(:src).must_match /\.plain\Z/
+    _(iframe_element.displayed?).must_equal true
+    _(iframe_element.attribute(:src)).must_match /\.plain\Z/
 
     selenium.switch_to.frame(iframe_element)
 
-    body_element.text.must_include "Plain text mail"
-    body_element.text.wont_include "HTML mail"
-    body_element.text.wont_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+    _(body_element.text).must_include "Plain text mail"
+    _(body_element.text).wont_include "HTML mail"
+    _(body_element.text).wont_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
 
     selenium.switch_to.default_content
     html_tab_element.click
     selenium.switch_to.frame(iframe_element)
 
-    body_element.text.must_include "HTML mail"
-    body_element.text.wont_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+    _(body_element.text).must_include "HTML mail"
+    _(body_element.text).wont_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
 
     selenium.switch_to.default_content
     source_tab_element.click
     selenium.switch_to.frame(iframe_element)
 
-    body_element.text.must_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
-    body_element.text.must_include "Plain text mail"
-    body_element.text.must_include "<em>HTML</em> mail"
+    _(body_element.text).must_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+    _(body_element.text).must_include "Plain text mail"
+    _(body_element.text).must_include "<em>HTML</em> mail"
   end
 
   it "catches and displays a multipart UTF8 message as text, html and source" do
     deliver_example("multipartmail-with-utf8")
 
-    message_from_element.text.must_include DEFAULT_FROM
-    message_to_element.text.must_include DEFAULT_TO
-    message_subject_element.text.must_equal "Test Multipart UTF8 Mail"
-    Time.parse(message_received_element.text).must_be_close_to Time.now, 5
+    _(message_from_element.text).must_include DEFAULT_FROM
+    _(message_to_element.text).must_include DEFAULT_TO
+    _(message_subject_element.text).must_equal "Test Multipart UTF8 Mail"
+    _(Time.parse(message_received_element.text)).must_be_close_to Time.now, 5
 
     message_row_element.click
 
-    source_tab_element.displayed?.must_equal true
-    plain_tab_element.displayed?.must_equal true
-    html_tab_element.displayed?.must_equal true
+    _(source_tab_element.displayed?).must_equal true
+    _(plain_tab_element.displayed?).must_equal true
+    _(html_tab_element.displayed?).must_equal true
 
     plain_tab_element.click
 
-    iframe_element.displayed?.must_equal true
-    iframe_element.attribute(:src).must_match /\.plain\Z/
+    _(iframe_element.displayed?).must_equal true
+    _(iframe_element.attribute(:src)).must_match /\.plain\Z/
 
     selenium.switch_to.frame(iframe_element)
 
-    body_element.text.must_include "Plain text mail"
-    body_element.text.wont_include "HTML mail"
-    body_element.text.wont_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+    _(body_element.text).must_include "Plain text mail"
+    _(body_element.text).wont_include "HTML mail"
+    _(body_element.text).wont_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
 
     selenium.switch_to.default_content
     html_tab_element.click
     selenium.switch_to.frame(iframe_element)
 
-    body_element.text.must_include "HTML mail"
-    body_element.text.wont_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+    _(body_element.text).must_include "HTML mail"
+    _(body_element.text).wont_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
 
     selenium.switch_to.default_content
     source_tab_element.click
     selenium.switch_to.frame(iframe_element)
 
-    body_element.text.must_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
-    body_element.text.must_include "Plain text mail"
-    body_element.text.must_include "<em>© HTML</em> mail"
+    _(body_element.text).must_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+    _(body_element.text).must_include "Plain text mail"
+    _(body_element.text).must_include "<em>© HTML</em> mail"
   end
 
   it "catches and displays an unknown message as source" do

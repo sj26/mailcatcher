@@ -57,7 +57,7 @@ module MailCatcher::Mail extend self
 
     EventMachine.next_tick do
       message = MailCatcher::Mail.message message_id
-      MailCatcher::Events::MessageAdded.push message
+      MailCatcher::Bus.push(type: "add", message: message)
     end
   end
 
@@ -155,16 +155,28 @@ module MailCatcher::Mail extend self
   def delete!
     @delete_all_messages_query ||= db.prepare "DELETE FROM message"
     @delete_all_messages_query.execute
+
+    EventMachine.next_tick do
+      MailCatcher::Bus.push(type: "clear")
+    end
   end
 
   def delete_message!(message_id)
     @delete_messages_query ||= db.prepare "DELETE FROM message WHERE id = ?"
     @delete_messages_query.execute(message_id)
+
+    EventMachine.next_tick do
+      MailCatcher::Bus.push(type: "remove", id: message_id)
+    end
   end
 
   def delete_older_messages!(count = MailCatcher.options[:messages_limit])
     return if count.nil?
-    @delete_older_messages_query ||= db.prepare "DELETE FROM message WHERE id NOT IN (SELECT id FROM message ORDER BY created_at DESC LIMIT ?)"
-    @delete_older_messages_query.execute(count)
+    @older_messages_query ||= db.prepare "SELECT id FROM message WHERE id NOT IN (SELECT id FROM message ORDER BY created_at DESC LIMIT ?)"
+    @older_messages_query.execute(count).map do |row|
+      Hash[row.fields.zip(row)]
+    end.each do |message|
+      delete_message!(message["id"])
+    end
   end
 end

@@ -7,7 +7,7 @@ require "uri"
 require "sinatra"
 require "skinny"
 
-require "mail_catcher/events"
+require "mail_catcher/bus"
 require "mail_catcher/mail"
 
 class Sinatra::Request
@@ -64,7 +64,7 @@ module MailCatcher
         if request.websocket?
           request.websocket!(
             :on_start => proc do |websocket|
-              subscription = Events::MessageAdded.subscribe do |message|
+              bus_subscription = MailCatcher::Bus.subscribe do |message|
                 begin
                   websocket.send_message(JSON.generate(message))
                 rescue => exception
@@ -73,7 +73,7 @@ module MailCatcher
               end
 
               websocket.on_close do |*|
-                Events::MessageAdded.unsubscribe subscription
+                MailCatcher::Bus.unsubscribe bus_subscription
               end
             end)
         else
