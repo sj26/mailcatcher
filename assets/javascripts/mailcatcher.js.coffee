@@ -244,7 +244,7 @@ class MailCatcher
           $ul = $("<ul/>").appendTo($("#message .metadata dd.attachments").empty())
 
           $.each message.attachments, (i, attachment) ->
-            $ul.append($("<li>").append($("<a>").attr("href", attachment["href"]).addClass(attachment["type"].split("/", 1)[0]).addClass(attachment["type"].replace("/", "-")).text(attachment["filename"])))
+            $ul.append($("<li>").append($("<a>").attr("href", "messages/#{id}/parts/#{attachment["cid"]}").addClass(attachment["type"].split("/", 1)[0]).addClass(attachment["type"].replace("/", "-")).text(attachment["filename"])))
           $("#message .metadata .attachments").show()
         else
           $("#message .metadata .attachments").hide()
