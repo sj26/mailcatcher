@@ -253,8 +253,6 @@ class MailCatcher
 
         @loadMessageBody()
 
-  # XXX: These should probably cache their iframes for the current message now we're using a remote service:
-
   loadMessageBody: (id, format) ->
     id ||= @selectedMessage()
     format ||= $("#message .views .tab.format.selected").attr("data-message-format")
