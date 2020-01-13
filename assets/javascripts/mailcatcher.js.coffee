@@ -284,8 +284,11 @@ class MailCatcher
       when "plain"
         message_iframe = $("#message iframe").contents()
         text = message_iframe.text()
-        text = text.replace(/((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?)/g, """<a href="$1" target="_blank">$1</a>""")
+        text = text.replace(/&/g, "&amp;")
+        text = text.replace(/</g, "&lt;")
+        text = text.replace(/>/g, "&gt;")
         text = text.replace(/\n/g, "<br/>")
+        text = text.replace(/((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?)/g, """<a href="$1" target="_blank">$1</a>""")
         message_iframe.find("html").html("<html><body>#{text}</html></body>")
 
   refresh: ->
