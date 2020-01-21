@@ -1,5 +1,6 @@
 #= require modernizr
 #= require jquery
+#= require jquery-migrate
 #= require date
 #= require favcount
 #= require flexie
@@ -12,7 +13,7 @@ jQuery.expr[":"].icontains = (a, i, m) ->
 
 class MailCatcher
   constructor: ->
-    $("#messages tr").live "click", (e) =>
+    $("#messages").on "click", "tr", (e) =>
       e.preventDefault()
       @loadMessage $(e.currentTarget).attr("data-message-id")
 
@@ -23,27 +24,27 @@ class MailCatcher
       else
         @clearSearch()
 
-    $("#message .views .format.tab a").live "click", (e) =>
+    $("#message").on "click", ".views .format.tab a", (e) =>
       e.preventDefault()
       @loadMessageBody @selectedMessage(), $($(e.currentTarget).parent("li")).data("message-format")
 
-    $("#message iframe").load =>
+    $("#message iframe").on "load", =>
       @decorateMessageBody()
 
-    $("#resizer").live
-      mousedown: (e) =>
-        e.preventDefault()
-        $(window).bind events =
-          mouseup: (e) =>
-            e.preventDefault()
-            $(window).unbind events
-          mousemove: (e) =>
-            e.preventDefault()
-            @resizeTo e.clientY
+    $("#resizer").on "mousedown", (e) =>
+      e.preventDefault()
+      events =
+        mouseup: (e) =>
+          e.preventDefault()
+          $(window).unbind events
+        mousemove: (e) =>
+          e.preventDefault()
+          @resizeTo e.clientY
+      $(window).bind(events)
 
     @resizeToSaved()
 
-    $("nav.app .clear a").live "click", (e) =>
+    $("nav.app .clear a").on "click", (e) =>
       e.preventDefault()
       if confirm "You will lose all your received messages.\n\nAre you sure you want to clear all messages?"
         $.ajax
@@ -54,7 +55,7 @@ class MailCatcher
           error: ->
             alert "Error while clearing all messages."
 
-    $("nav.app .quit a").live "click", (e) =>
+    $("nav.app .quit a").on "click", (e) =>
       e.preventDefault()
       if confirm "You will lose all your received messages.\n\nAre you sure you want to quit?"
         $.ajax
