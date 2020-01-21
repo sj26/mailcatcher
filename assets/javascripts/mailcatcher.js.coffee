@@ -1,5 +1,6 @@
 #= require modernizr
 #= require jquery
+#= require jquery-migrate
 #= require date
 #= require favcount
 #= require flexie
