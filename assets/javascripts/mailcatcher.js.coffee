@@ -1,6 +1,5 @@
 #= require modernizr
 #= require jquery
-#= require jquery-migrate
 #= require date
 #= require favcount
 #= require flexie
@@ -8,7 +7,7 @@
 #= require url
 
 # Add a new jQuery selector expression which does a case-insensitive :contains
-jQuery.expr[":"].icontains = (a, i, m) ->
+jQuery.expr.pseudos.icontains = (a, i, m) ->
   (a.textContent ? a.innerText ? "").toUpperCase().indexOf(m[3].toUpperCase()) >= 0
 
 class MailCatcher
@@ -17,7 +16,7 @@ class MailCatcher
       e.preventDefault()
       @loadMessage $(e.currentTarget).attr("data-message-id")
 
-    $("input[name=search]").keyup (e) =>
+    $("input[name=search]").on "keyup", (e) =>
       query = $.trim $(e.currentTarget).val()
       if query
         @searchMessages query
@@ -36,11 +35,11 @@ class MailCatcher
       events =
         mouseup: (e) =>
           e.preventDefault()
-          $(window).unbind events
+          $(window).off(events)
         mousemove: (e) =>
           e.preventDefault()
           @resizeTo e.clientY
-      $(window).bind(events)
+      $(window).on(events)
 
     @resizeToSaved()
 
@@ -311,7 +310,7 @@ class MailCatcher
     url.protocol = if secure then "wss" else "ws"
     @websocket = new WebSocket(url.toString())
     @websocket.onmessage = (event) =>
-      data = $.parseJSON event.data
+      data = JSON.parse(event.data)
       if data.type == "add"
         @addMessage(data.message)
       else if data.type == "remove"
