@@ -68,24 +68,24 @@ class MailCatcher
 
     key "up", =>
       if @selectedMessage()
-        @loadMessage $("#messages tr.selected").prev().data("message-id")
+        @loadMessage $("#messages tr.selected").prevAll(":visible").first().data("message-id")
       else
-        @loadMessage $("#messages tbody tr[data-message-id]:first").data("message-id")
+        @loadMessage $("#messages tbody tr[data-message-id]").first().data("message-id")
       false
 
     key "down", =>
       if @selectedMessage()
-        @loadMessage $("#messages tr.selected").next().data("message-id")
+        @loadMessage $("#messages tr.selected").nextAll(":visible").data("message-id")
       else
         @loadMessage $("#messages tbody tr[data-message-id]:first").data("message-id")
       false
 
     key "⌘+up, ctrl+up", =>
-      @loadMessage $("#messages tbody tr[data-message-id]:first").data("message-id")
+      @loadMessage $("#messages tbody tr[data-message-id]:visible").first().data("message-id")
       false
 
     key "⌘+down, ctrl+down", =>
-      @loadMessage $("#messages tbody tr[data-message-id]:last").data("message-id")
+      @loadMessage $("#messages tbody tr[data-message-id]:visible").first().data("message-id")
       false
 
     key "left", =>
