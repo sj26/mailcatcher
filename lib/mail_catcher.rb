@@ -108,6 +108,9 @@ module MailCatcher extend self
       OptionParser.new do |parser|
         parser.banner = "Usage: mailcatcher [options]"
         parser.version = VERSION
+        parser.separator ""
+        parser.separator "MailCatcher v#{VERSION}"
+        parser.separator ""
 
         parser.on("--ip IP", "Set the ip address of both servers") do |ip|
           options[:smtp_ip] = options[:http_ip] = ip
@@ -166,8 +169,13 @@ module MailCatcher extend self
           options[:verbose] = true
         end
 
-        parser.on("-h", "--help", "Display this help information") do
+        parser.on_tail("-h", "--help", "Display this help information") do
           puts parser
+          exit
+        end
+
+        parser.on_tail("--version", "Display the current version") do
+          puts "mailcatcher #{VERSION}"
           exit
         end
       end.parse!
