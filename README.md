@@ -26,7 +26,8 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 3. Go to http://127.0.0.1:1080/
 4. Send mail through smtp://127.0.0.1:1025
 
-Use `mailcatcher --help` to see the command line options. The brave can get the source from [the GitHub repository][mailcatcher-github].
+Use `mailcatcher --help` to see the command line options or `mailcatcher --version` to display the version.
+The brave can get the source from [the GitHub repository][mailcatcher-github].
 
 ### Bundler
 
