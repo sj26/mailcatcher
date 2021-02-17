@@ -1,30 +1,11 @@
 # frozen_string_literal: true
 
-# Apparently rubygems won't activate these on its own, so here we go. Let's
-# repeat the invention of Bundler all over again.
-gem "eventmachine", "1.0.9.1"
-gem "mail", "~> 2.3"
-gem "rack", "~> 1.5"
-gem "sinatra", "~> 1.2"
-gem "sqlite3", "~> 1.3"
-gem "thin", "~> 1.5.0"
-gem "skinny", "~> 0.2.3"
-
 require "open3"
 require "optparse"
 require "rbconfig"
 
 require "eventmachine"
 require "thin"
-
-module EventMachine
-  # Monkey patch fix for 10deb4
-  # See https://github.com/eventmachine/eventmachine/issues/569
-  def self.reactor_running?
-    (@reactor_running || false)
-  end
-end
-
 require "mail_catcher/version"
 
 module MailCatcher extend self
@@ -201,10 +182,25 @@ module MailCatcher extend self
     Thin::Logging.debug = development?
     Thin::Logging.silent = !development?
 
+    %w(INT TERM).each do |signal|
+      Signal.trap(signal) do
+        quit!
+      end
+    end
+
+    Signal.trap('QUIT') do
+      quit!
+    end unless windows?
+
+    if options[:daemon]
+      Process.daemon(false, true)
+    end
+
     # One EventMachine loop...
     EventMachine.run do
       # Set up an SMTP server to run within EventMachine
       rescue_port options[:smtp_port] do
+        puts "\n"
         EventMachine.start_server options[:smtp_ip], options[:smtp_port], Smtp
         puts "==> #{smtp_url}"
       end
@@ -212,7 +208,7 @@ module MailCatcher extend self
       # Let Thin set itself up inside our EventMachine loop
       # (Skinny/WebSockets just works on the inside)
       rescue_port options[:http_port] do
-        Thin::Server.start(options[:http_ip], options[:http_port], Web)
+        Thin::Server.start(options[:http_ip], options[:http_port], Web, signals: false)
         puts "==> #{http_url}"
       end
 
@@ -223,7 +219,6 @@ module MailCatcher extend self
         end
       end
 
-      # Daemonize, if we should, but only after the servers have started.
       if options[:daemon]
         EventMachine.next_tick do
           if quittable?
@@ -231,17 +226,23 @@ module MailCatcher extend self
           else
             puts "*** MailCatcher is now running as a daemon that cannot be quit."
           end
-          Process.daemon
+          hoist
         end
       end
     end
   end
 
   def quit!
-    EventMachine.next_tick { EventMachine.stop_event_loop }
+    EventMachine.next_tick { EventMachine.stop }
   end
 
 protected
+
+  def hoist
+    $stdin.reopen '/dev/null'
+    $stdout.reopen '/dev/null', 'a'
+    $stderr.reopen '/dev/null', 'a'
+  end
 
   def smtp_url
     "smtp://#{@@options[:smtp_ip]}:#{@@options[:smtp_port]}"
