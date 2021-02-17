@@ -233,7 +233,7 @@ module MailCatcher extend self
   end
 
   def quit!
-    EventMachine.next_tick { EventMachine.stop }
+    EventMachine.next_tick { EventMachine.stop_event_loop }
   end
 
 protected
