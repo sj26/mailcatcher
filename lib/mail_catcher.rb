@@ -200,9 +200,8 @@ module MailCatcher extend self
     EventMachine.run do
       # Set up an SMTP server to run within EventMachine
       rescue_port options[:smtp_port] do
-        puts "\n"
         EventMachine.start_server options[:smtp_ip], options[:smtp_port], Smtp
-        puts "==> #{smtp_url}"
+        puts "\n==> #{smtp_url}"
       end
 
       # Let Thin set itself up inside our EventMachine loop
