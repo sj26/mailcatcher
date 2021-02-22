@@ -104,12 +104,6 @@ A fairly RESTful URL schema means you can download a list of messages in JSON fr
 * Mail processing is fairly basic but easily modified. If something doesn't work for you, fork and fix it or [file an issue][mailcatcher-issues] and let me know. Include the whole message you're having problems with.
 * Encodings are difficult. MailCatcher does not completely support utf-8 straight over the wire, you must use a mail library which encodes things properly based on SMTP server capabilities.
 
-## TODO
-
-* Add mail delivery on request, optionally multiple times.
-* Compatibility testing against CampaignMonitor's [design guidelines](http://www.campaignmonitor.com/design-guidelines/) and [CSS support matrix](http://www.campaignmonitor.com/css/).
-* Forward mail to rendering service, maybe CampaignMonitor?
-
 ## Thanks
 
 MailCatcher is just a mishmash of other people's hard work. Thank you so much to the people who have built the wonderful guts on which this project relies.
