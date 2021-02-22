@@ -1,7 +1,7 @@
-FROM ruby:2.5
+FROM ruby:2.7.2
 MAINTAINER Samuel Cochran <sj26@sj26.com>
 
-ARG VERSION=0.6.5
+ARG VERSION=0.7.1
 
 RUN gem install mailcatcher -v $VERSION
 
