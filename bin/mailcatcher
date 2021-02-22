@@ -1,6 +1,133 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'mail_catcher'
+require "uri"
 
-MailCatcher.run!
+require "async"
+require "async/container/controller"
+require "async/container/threaded"
+require "async/io/trap"
+require "async/io/shared_endpoint"
+
+require "falcon/endpoint"
+require "falcon/server"
+
+module URI
+  class SMTP < Generic
+    DEFAULT_PORT = 25
+
+    COMPONENT = [
+      :scheme,
+      :userinfo, :host, :port
+    ].freeze
+  end
+
+  @@schemes["SMTP"] = URI::SMTP
+end
+
+module MailCatcher
+  class SMTPEndpoint < Async::IO::HostEndpoint
+    def self.smtp(*args, **options)
+      SMTPEndpoint.new(*args, **options)
+    end
+
+    def initialize(host, port, **options)
+      super([host, port, nil, ::Socket::SOCK_STREAM], **options)
+    end
+  end
+
+  class Controller < Async::Container::Controller
+    def initialize(**options)
+      @http_endpoint = nil
+      @bound_http_endpoint = nil
+      @smtp_endpoint = nil
+      @bound_smtp_endpoint = nil
+      @debug_trap = Async::IO::Trap.new(:USR1)
+
+      super(**options)
+    end
+
+    def name
+      "MailCatcher"
+    end
+
+    def create_container
+      Async::Container::Threaded.new
+    end
+
+    def start
+      @http_endpoint = Falcon::Endpoint.parse("http://localhost:1080", hostname: "localhost", port: 1080)
+
+      @bound_http_endpoint = Async do
+        Async::IO::SharedEndpoint.bound(@http_endpoint)
+      end.wait
+
+      @smtp_endpoint = SMTPEndpoint.parse("smtp://localhost:1025")
+
+      @bound_smtp_endpoint = Async do
+        Async::IO::SharedEndpoint.bound(@smtp_endpoint)
+      end.wait
+
+      Async.logger.info(self) do |buffer|
+        buffer << "Starting #{name}"
+        buffer << "- #{@http_endpoint.to_url}"
+        buffer << "- #{@smtp_endpoint}"
+      end
+
+      @debug_trap.ignore!
+
+      super
+    end
+
+    def setup(container)
+      container.run(name: self.name, restart: true) do |instance|
+        Async do |task|
+          task.async do
+            if @debug_trap.install!
+              Async.logger.info(instance) do
+                "- Per-process status: kill -USR1 #{Process.pid}"
+              end
+            end
+
+            @debug_trap.trap do
+              Async.logger.info(self) do |buffer|
+                task.reactor.print_hierarchy(buffer)
+              end
+            end
+          end
+
+          rack_app = lambda { |env| [200, {}, ["Hello, world!"]] }
+
+          app = Falcon::Adapters::Rack.new(rack_app)
+
+          middleware = Falcon::Server.middleware(app, verbose: true, cache: false)
+
+          server = Falcon::Server.new(app, @bound_http_endpoint, @http_endpoint.protocol, @http_endpoint.scheme)
+
+          server.run
+
+          Async.logger.info(self) do |buffer|
+            buffer << server.inspect
+
+            task.reactor.print_hierarchy(buffer)
+          end
+
+          instance.ready!
+
+          task.children.each(&:wait)
+        end
+      end
+    end
+
+    def stop(*)
+      @bound_http_endpoint&.close
+
+      @debug_trap.default!
+
+      super
+    end
+  end
+end
+
+controller = MailCatcher::Controller.new
+controller.run
