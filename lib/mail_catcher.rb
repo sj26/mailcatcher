@@ -227,7 +227,7 @@ module MailCatcher extend self
       if options[:daemon]
         EventMachine.next_tick do
           if quittable?
-            puts "*** MailCatcher runs as a daemon by default. Go to the web interface to quit."
+            puts "*** MailCatcher runs as a daemon by default. Go to the web interface to quit, or use: curl -X DELETE http://127.0.0.1:1080/"
           else
             puts "*** MailCatcher is now running as a daemon that cannot be quit."
           end
