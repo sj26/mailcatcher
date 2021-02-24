@@ -93,6 +93,7 @@ module MailCatcher extend self
     :daemon => !windows?,
     :browse => false,
     :quit => true,
+    :clear_messages => true,
   }
 
   def options
@@ -101,6 +102,10 @@ module MailCatcher extend self
 
   def quittable?
     options[:quit]
+  end
+
+  def clear_messages_allowed?
+    options[:clear_messages]
   end
 
   def parse! arguments=ARGV, defaults=@defaults
@@ -144,6 +149,10 @@ module MailCatcher extend self
 
         parser.on("--no-quit", "Don't allow quitting the process") do
           options[:quit] = false
+        end
+
+        parser.on("--no-clear-messages", "Don't allow clearning messages") do
+          options[:clear_messages] = false
         end
 
         if mac?

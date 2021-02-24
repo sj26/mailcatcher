@@ -83,8 +83,12 @@ module MailCatcher
       end
 
       delete "/messages" do
-        Mail.delete!
-        status 204
+        if MailCatcher.clear_messages_allowed?
+          Mail.delete!
+          status 204
+        else
+          status 403
+        end
       end
 
       get "/messages/:id.json" do
@@ -162,12 +166,16 @@ module MailCatcher
       end
 
       delete "/messages/:id" do
-        id = params[:id].to_i
-        if Mail.message(id)
-          Mail.delete_message!(id)
-          status 204
+        if MailCatcher.clear_messages_allowed?
+          id = params[:id].to_i
+          if Mail.message(id)
+            Mail.delete_message!(id)
+            status 204
+          else
+            not_found
+          end
         else
-          not_found
+            status 403
         end
       end
 
