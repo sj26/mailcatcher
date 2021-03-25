@@ -36,6 +36,7 @@ module MailCatcher::Mail extend self
             FOREIGN KEY (message_id) REFERENCES message (id) ON DELETE CASCADE
           )
         SQL
+        db.foreign_keys = true
       end
     end
   end
@@ -153,7 +154,7 @@ module MailCatcher::Mail extend self
   end
 
   def delete!
-    @delete_all_messages_query ||= db.prepare "PRAGMA foreign_keys = ON;DELETE FROM message"
+    @delete_all_messages_query ||= db.prepare "DELETE FROM message"
     @delete_all_messages_query.execute
 
     EventMachine.next_tick do
@@ -162,7 +163,7 @@ module MailCatcher::Mail extend self
   end
 
   def delete_message!(message_id)
-    @delete_messages_query ||= db.prepare "PRAGMA foreign_keys = ON;DELETE FROM message WHERE id = ?"
+    @delete_messages_query ||= db.prepare "DELETE FROM message WHERE id = ?"
     @delete_messages_query.execute(message_id)
 
     EventMachine.next_tick do
