@@ -70,6 +70,8 @@ module MailCatcher extend self
     :http_ip => "127.0.0.1",
     :http_port => "1080",
     :http_path => "/",
+    :http_basic_auth_username => nil,
+    :http_basic_auth_password => nil,
     :messages_limit => nil,
     :verbose => false,
     :daemon => !windows?,
@@ -83,6 +85,10 @@ module MailCatcher extend self
 
   def quittable?
     options[:quit]
+  end
+
+  def use_http_basic_auth?
+    !!options[:http_basic_auth_username] && !!options[:http_basic_auth_password]
   end
 
   def parse! arguments=ARGV, defaults=@defaults
@@ -112,6 +118,21 @@ module MailCatcher extend self
 
         parser.on("--http-port PORT", Integer, "Set the port address of the http server") do |port|
           options[:http_port] = port
+        end
+
+        parser.on("--http-basic-auth-username USERNAME", String, "Set the HTTP Basic Auth username") do |username|
+          options[:http_basic_auth_username] = username
+        end
+
+        parser.on("--http-basic-auth-password [PASSWORD]",  "Set the HTTP Basic Auth password. Leave blank to enter securely.") do |password|
+          if password.nil?
+            require 'io/console'
+
+            puts "Please provide the HTTP Basic Auth password:"
+            password = STDIN.getpass
+          end
+
+          options[:http_basic_auth_password] = password
         end
 
         parser.on("--messages-limit COUNT", Integer, "Only keep up to COUNT most recent messages") do |count|
