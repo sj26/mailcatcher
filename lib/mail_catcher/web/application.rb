@@ -22,6 +22,12 @@ module MailCatcher
       set :asset_prefix, File.join(prefix, "assets")
       set :root, File.expand_path("#{__FILE__}/../../../..")
 
+      if MailCatcher.use_http_basic_auth?
+        use Rack::Auth::Basic do |username, password|
+          username == MailCatcher.options[:http_basic_auth_username] && password == MailCatcher.options[:http_basic_auth_password]
+        end
+      end
+
       if development?
         require "sprockets-helpers"
 
