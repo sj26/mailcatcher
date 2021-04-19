@@ -2,6 +2,8 @@
 
 source "https://rubygems.org"
 
+gem "skinny", github: "montdidier/skinny", branch: "upgrade/eventmachine-thin"
+
 gemspec
 
 # mime-types 3+, required by mail, requires ruby 2.0+
