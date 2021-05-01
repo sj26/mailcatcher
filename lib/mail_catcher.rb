@@ -79,7 +79,7 @@ module MailCatcher extend self
     puts "*** #{message}: #{context.inspect}"
     puts "    Exception: #{exception}"
     puts "    Backtrace:", *exception.backtrace.map { |line| "       #{line.sub(gems_regexp, gems_replace)}" }
-    puts "    Please submit this as an issue at http://github.com/sj26/mailcatcher/issues"
+    puts "    Please submit this as an issue at https://github.com/sj26/mailcatcher/issues"
   end
 
   @@defaults = {
