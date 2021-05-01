@@ -1,7 +1,6 @@
 module MailCatcher
   class TcpServer < Thin::Backends::Base
     # Address and port on which the server is listening for connections.
-    attr_accessor :socket
 
     def initialize(host, port, options)
       @host = host
