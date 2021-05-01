@@ -7,6 +7,7 @@ require "rbconfig"
 require "eventmachine"
 require "thin"
 require "mail_catcher/version"
+require "mail_catcher/tcpserver"
 
 module MailCatcher extend self
   autoload :Bus, "mail_catcher/bus"
@@ -182,34 +183,46 @@ module MailCatcher extend self
     Thin::Logging.debug = development?
     Thin::Logging.silent = !development?
 
-    %w(INT TERM).each do |signal|
-      Signal.trap(signal) do
-        quit!
-      end
+    smtp_socket = nil
+    http_socket = nil
+
+    rescue_port options[:smtp_port] do
+      smtp_socket = TCPServer.new options[:smtp_ip], options[:smtp_port]
+      puts "==> #{smtp_url}"
     end
 
+    rescue_port options[:http_port] do
+      http_socket = TCPServer.new options[:http_ip], options[:http_port]
+      puts "==> #{http_url}"
+    end
+
+    %w(INT TERM).each do |signal|
+      Signal.trap(signal) do
+        EventMachine.stop
+      end
+    end
+#
     Signal.trap('QUIT') do
-      quit!
+      EventMachine.stop
     end unless windows?
 
     if options[:daemon]
-      Process.daemon(false, true)
+      if quittable?
+        puts "*** MailCatcher runs as a daemon by default. Go to the web interface to quit."
+      else
+        puts "*** MailCatcher is now running as a daemon that cannot be quit."
+      end
+      Process.daemon
     end
 
     # One EventMachine loop...
     EventMachine.run do
       # Set up an SMTP server to run within EventMachine
-      rescue_port options[:smtp_port] do
-        EventMachine.start_server options[:smtp_ip], options[:smtp_port], Smtp
-        puts "\n==> #{smtp_url}"
-      end
+      EventMachine.attach_server smtp_socket, Smtp
 
       # Let Thin set itself up inside our EventMachine loop
       # (Skinny/WebSockets just works on the inside)
-      rescue_port options[:http_port] do
-        Thin::Server.start(options[:http_ip], options[:http_port], Web, signals: false)
-        puts "==> #{http_url}"
-      end
+      Thin::Server.start(options[:http_ip], options[:http_port], Web, backend: MailCatcher::TcpServer, signals: false, socket: http_socket)
 
       # Open the web browser before detatching console
       if options[:browse]
@@ -217,31 +230,14 @@ module MailCatcher extend self
           browse http_url
         end
       end
-
-      if options[:daemon]
-        EventMachine.next_tick do
-          if quittable?
-            puts "*** MailCatcher runs as a daemon by default. Go to the web interface to quit."
-          else
-            puts "*** MailCatcher is now running as a daemon that cannot be quit."
-          end
-          hoist
-        end
-      end
     end
   end
 
   def quit!
-    EventMachine.next_tick { EventMachine.stop_event_loop }
+    EventMachine.next_tick { EventMachine.stop }
   end
 
 protected
-
-  def hoist
-    $stdin.reopen '/dev/null'
-    $stdout.reopen '/dev/null', 'a'
-    $stderr.reopen '/dev/null', 'a'
-  end
 
   def smtp_url
     "smtp://#{@@options[:smtp_ip]}:#{@@options[:smtp_port]}"
@@ -254,17 +250,11 @@ protected
   def rescue_port port
     begin
       yield
-
-    # XXX: EventMachine only spits out RuntimeError with a string description
-    rescue RuntimeError
-      if $!.to_s =~ /\bno acceptor\b/
-        puts "~~> ERROR: Something's using port #{port}. Are you already running MailCatcher?"
-        puts "==> #{smtp_url}"
-        puts "==> #{http_url}"
-        exit -1
-      else
-        raise
-      end
+    rescue Errno::EADDRINUSE => e
+      puts "~~> ERROR: Something's using port #{port}. Are you already running MailCatcher?"
+      puts "==> #{smtp_url}"
+      puts "==> #{http_url}"
+      exit -1
     end
   end
 end
