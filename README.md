@@ -68,11 +68,11 @@ To set up your rails app, I recommend adding this to your `environments/developm
 
 ### PHP
 
-For projects using PHP, or PHP frameworks and application platforms like Drupal, you can set [PHP's mail configuration](http://www.php.net/manual/en/mail.configuration.php) in your [php.ini](http://www.php.net/manual/en/configuration.file.php) to send via MailCatcher with:
+For projects using PHP, or PHP frameworks and application platforms like Drupal, you can set [PHP's mail configuration](https://www.php.net/manual/en/mail.configuration.php) in your [php.ini](https://www.php.net/manual/en/configuration.file.php) to send via MailCatcher with:
 
     sendmail_path = /usr/bin/env catchmail -f some@from.address
 
-You can do this in your [Apache configuration](http://php.net/manual/en/configuration.changes.php) like so:
+You can do this in your [Apache configuration](https://www.php.net/manual/en/configuration.changes.php) like so:
 
     php_admin_value sendmail_path "/usr/bin/env catchmail -f some@from.address"
 
@@ -120,4 +120,4 @@ Copyright © 2010-2019 Samuel Cochran (sj26@sj26.com). Released under the MIT Li
   [license]: https://github.com/sj26/mailcatcher/blob/master/LICENSE
   [mailcatcher-github]: https://github.com/sj26/mailcatcher
   [mailcatcher-issues]: https://github.com/sj26/mailcatcher/issues
-  [websockets]: http://www.whatwg.org/specs/web-socket-protocol/
+  [websockets]: https://tools.ietf.org/html/rfc6455
