@@ -6,8 +6,6 @@ require "uri"
 
 require "sinatra"
 require 'async/websocket/adapters/rack'
-
-# require '/Users/ahmedgagan/Rails Gem/mailcatcher/lib/mail_catcher/mail'
 require "mail_catcher/mail"
 
 module MailCatcher

@@ -12,27 +12,20 @@ gem "rack", "~> 1.5"
 gem "sinatra", "~> 1.2"
 gem "sqlite3", "~> 1.3"
 
-require "open3"
-require "optparse"
-require "rbconfig"
-require 'socket'
 require 'async/io/address_endpoint'
 require 'async/http/endpoint'
 require 'async/websocket/adapters/rack'
 require 'async/io/shared_endpoint'
-require 'mail'
 require 'falcon'
-
-# require '/Users/ahmedgagan/Rails Gem/mailcatcher/lib/mail_catcher/message'
-# require '/Users/ahmedgagan/Rails Gem/mailcatcher/lib/mail_catcher/version'
-
+require "open3"
+require "optparse"
+require "rbconfig"
+require 'socket'
+require 'mail'
 require 'mail_catcher/message'
 require 'mail_catcher/version'
 
 module MailCatcher extend self
-  # autoload :Mail, '/Users/ahmedgagan/Rails Gem/mailcatcher/lib/mail_catcher/mail'
-  # autoload :SMTP, '/Users/ahmedgagan/Rails Gem/mailcatcher/lib/mail_catcher/smtp'
-  # autoload :Web, '/Users/ahmedgagan/Rails Gem/mailcatcher/lib/mail_catcher/web'
   autoload :Mail, "mail_catcher/mail"
   autoload :SMTP, "mail_catcher/smtp"
   autoload :Web, "mail_catcher/web"
@@ -51,16 +44,8 @@ module MailCatcher extend self
     end
   end
 
-  def mac?
-    RbConfig::CONFIG["host_os"] =~ /darwin/
-  end
-
   def windows?
     RbConfig::CONFIG["host_os"] =~ /mswin|mingw/
-  end
-
-  def macruby?
-    mac? and const_defined? :MACRUBY_VERSION
   end
 
   def browseable?
@@ -229,23 +214,25 @@ module MailCatcher extend self
 
       http_address = Async::IO::Address.tcp(options[:http_ip], options[:http_port])
       http_endpoint = Async::IO::AddressEndpoint.new(http_address)
+      http_socket = rescue_port(options[:http_port]) { http_endpoint.bind }
+      puts "==> #{http_url}"
 
-      http_endpoint = Async::HTTP::Endpoint.parse(http_url)
-      http_app = Falcon::Server.middleware(Web)
+      http_endpoint = Async::HTTP::Endpoint.new(URI.parse(http_url), http_endpoint)
+      http_app = Falcon::Adapters::Rack.new(Web.app)
       http_server = Falcon::Server.new(http_app, http_endpoint)
 
-      http_server.run.each(&:wait)
-      browse(http_url) if options[:browse]
+      http_task = task.async do |task|
+        task.annotate "binding to #{http_socket.local_address.inspect}"
 
-      # Daemonize, if we should, but only after the servers have started.
-      if options[:daemon]
-        if quittable?
-          puts '*** MailCatcher runs as a daemon by default. Go to the web interface to quit.'
-        else
-          puts '*** MailCatcher is now running as a daemon that cannot be quit.'
+        begin
+          http_socket.listen(Socket::SOMAXCONN)
+          http_socket.accept_each(task: task, &http_server.method(:accept))
+        ensure
+          http_socket.close
         end
-        Process.daemon
       end
+
+      browse(http_url) if options[:browse]
     end
   rescue Interrupt
     # Cool story
