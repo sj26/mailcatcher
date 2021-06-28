@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "eventmachine"
 require "json"
 require "mail"
 require "sqlite3"
+require 'async/websocket/client'
 
 module MailCatcher::Mail extend self
   def db
@@ -56,10 +56,7 @@ module MailCatcher::Mail extend self
       add_message_part(message_id, cid, part.mime_type || "text/plain", part.attachment? ? 1 : 0, part.filename, part.charset, body, body.length)
     end
 
-    EventMachine.next_tick do
-      message = MailCatcher::Mail.message message_id
-      MailCatcher::Bus.push(type: "add", message: message)
-    end
+    MailCatcher.send_data(type: 'add', message: message(message_id))
   end
 
   def add_message_part(*args)
@@ -157,18 +154,14 @@ module MailCatcher::Mail extend self
     @delete_all_messages_query ||= db.prepare "DELETE FROM message"
     @delete_all_messages_query.execute
 
-    EventMachine.next_tick do
-      MailCatcher::Bus.push(type: "clear")
-    end
+    MailCatcher.send_data(type: 'clear')
   end
 
   def delete_message!(message_id)
     @delete_messages_query ||= db.prepare "DELETE FROM message WHERE id = ?"
     @delete_messages_query.execute(message_id)
 
-    EventMachine.next_tick do
-      MailCatcher::Bus.push(type: "remove", id: message_id)
-    end
+    MailCatcher.send_data(type: 'remove', id: message_id)
   end
 
   def delete_older_messages!(count = MailCatcher.options[:messages_limit])
