@@ -184,10 +184,8 @@ module MailCatcher extend self
     # Stash them away for later
     @@options = options
 
-    # If we're running in the foreground sync the output.
-    unless options[:daemon]
-      $stdout.sync = $stderr.sync = true
-    end
+    # sync the output.
+    $stdout.sync = $stderr.sync = true
 
     puts "Starting MailCatcher"
 
