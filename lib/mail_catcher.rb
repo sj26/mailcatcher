@@ -221,7 +221,7 @@ module MailCatcher extend self
       http_app = Falcon::Adapters::Rack.new(Web.app)
       http_server = Falcon::Server.new(http_app, http_endpoint)
 
-      http_task = task.async do |task|
+      task.async do |task|
         task.annotate "binding to #{http_socket.local_address.inspect}"
 
         begin
