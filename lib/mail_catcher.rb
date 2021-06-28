@@ -23,19 +23,19 @@ require 'async/io/shared_endpoint'
 require 'mail'
 require 'falcon'
 
-require '/Users/ahmedgagan/Rails Gem/mailcatcher/lib/mail_catcher/message'
-require '/Users/ahmedgagan/Rails Gem/mailcatcher/lib/mail_catcher/version'
+# require '/Users/ahmedgagan/Rails Gem/mailcatcher/lib/mail_catcher/message'
+# require '/Users/ahmedgagan/Rails Gem/mailcatcher/lib/mail_catcher/version'
 
-# require 'mail_catcher/message'
-# require 'mail_catcher/version'
+require 'mail_catcher/message'
+require 'mail_catcher/version'
 
 module MailCatcher extend self
-  autoload :Mail, '/Users/ahmedgagan/Rails Gem/mailcatcher/lib/mail_catcher/mail'
-  autoload :SMTP, '/Users/ahmedgagan/Rails Gem/mailcatcher/lib/mail_catcher/smtp'
-  autoload :Web, '/Users/ahmedgagan/Rails Gem/mailcatcher/lib/mail_catcher/web'
-  # autoload :Mail, "mail_catcher/mail"
-  # autoload :Smtp, "mail_catcher/smtp"
-  # autoload :Web, "mail_catcher/web"
+  # autoload :Mail, '/Users/ahmedgagan/Rails Gem/mailcatcher/lib/mail_catcher/mail'
+  # autoload :SMTP, '/Users/ahmedgagan/Rails Gem/mailcatcher/lib/mail_catcher/smtp'
+  # autoload :Web, '/Users/ahmedgagan/Rails Gem/mailcatcher/lib/mail_catcher/web'
+  autoload :Mail, "mail_catcher/mail"
+  autoload :SMTP, "mail_catcher/smtp"
+  autoload :Web, "mail_catcher/web"
 
   def env
     ENV.fetch("MAILCATCHER_ENV", "production")
