@@ -2,7 +2,7 @@
 
 require "rack/builder"
 
-# require "mail_catcher/web/application"
+require "mail_catcher/web/application"
 
 module MailCatcher
   module Web extend self

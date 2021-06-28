@@ -44,6 +44,10 @@ module MailCatcher extend self
     end
   end
 
+  def mac?
+    RbConfig::CONFIG["host_os"] =~ /darwin/
+  end
+
   def windows?
     RbConfig::CONFIG["host_os"] =~ /mswin|mingw/
   end
