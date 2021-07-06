@@ -32,10 +32,6 @@ module MailCatcher extend self
     end
   end
 
-  def mac?
-    RbConfig::CONFIG["host_os"] =~ /darwin/
-  end
-
   def windows?
     RbConfig::CONFIG["host_os"] =~ /mswin|mingw/
   end
@@ -125,13 +121,6 @@ module MailCatcher extend self
 
         parser.on("--no-quit", "Don't allow quitting the process") do
           options[:quit] = false
-        end
-
-        if mac?
-          parser.on("--[no-]growl") do |growl|
-            puts "Growl is no longer supported"
-            exit -2
-          end
         end
 
         unless windows?

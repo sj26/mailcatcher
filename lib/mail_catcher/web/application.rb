@@ -30,7 +30,6 @@ module MailCatcher
 
       def broadcast(message)
         Async.logger.debug(self) { "Broadcast: #{message.inspect}" }
-        start_time = Async::Clock.now
 
         @connections.each do |connection|
           begin
@@ -40,9 +39,6 @@ module MailCatcher
             disconnect(connection)
           end
         end
-
-        end_time = Async::Clock.now
-        Async.logger.debug(self) { "Duration: #{(end_time - start_time).round(3)}s for #{@connections.count} connected clients." }
       end
 
       def disconnect(connection)
