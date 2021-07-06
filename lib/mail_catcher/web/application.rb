@@ -14,7 +14,6 @@ module MailCatcher
       def initialize
         super
         @connections = Set.new
-        @semaphore = Async::Semaphore.new(512)
 
         @count = 0
       end
@@ -30,25 +29,23 @@ module MailCatcher
       end
 
       def broadcast(message)
-        Console.logger.info "Broadcast: #{message.inspect}"
+        Async.logger.debug(self) { "Broadcast: #{message.inspect}" }
         start_time = Async::Clock.now
 
         @connections.each do |connection|
-          @semaphore.async do
-            begin
-              connection.write(message)
-              connection.flush
-            rescue IOError
-              self.disconnect(connection)
-            end
+          begin
+            connection.write(message)
+            connection.flush
+          rescue IOError
+            disconnect(connection)
           end
         end
 
         end_time = Async::Clock.now
-        Console.logger.info "Duration: #{(end_time - start_time).round(3)}s for #{@connections.count} connected clients."
+        Async.logger.debug(self) { "Duration: #{(end_time - start_time).round(3)}s for #{@connections.count} connected clients." }
       end
 
-      def disconnect connection
+      def disconnect(connection)
         @connections.delete(connection)
       end
 
@@ -99,14 +96,14 @@ module MailCatcher
         if Async::WebSocket::Adapters::Rack.websocket?(env)
           puts 'WebSockets connection opened...'
           Async::WebSocket::Adapters::Rack.open(env, protocols: %w[ws]) do |connection|
-            self.connect(connection)
+            connect(connection)
 
             begin
               while message = connection.read
-                self.broadcast(message)
+                broadcast(message)
               end
             rescue Protocol::WebSocket::ClosedError, IOError
-              self.disconnect(connection)
+              disconnect(connection)
               connection.close
             end
           end

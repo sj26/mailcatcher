@@ -1,17 +1,5 @@
 # frozen_string_literal: true
 
-# Apparently rubygems won't activate these on its own, so here we go. Let's
-# repeat the invention of Bundler all over again.
-gem 'async', '~> 1.25'
-gem 'async-http', '~> 0.56.3'
-gem 'async-io', '~> 1.32.1'
-gem 'async-websocket', '~> 0.19.0'
-gem 'falcon', '~> 0.39.1'
-gem "mail", "~> 2.3"
-gem "rack", "~> 1.5"
-gem "sinatra", "~> 1.2"
-gem "sqlite3", "~> 1.3"
-
 require 'async/io/address_endpoint'
 require 'async/http/endpoint'
 require 'async/websocket/adapters/rack'
@@ -184,18 +172,30 @@ module MailCatcher extend self
     # Stash them away for later
     @@options = options
 
-    # sync the output.
-    $stdout.sync = $stderr.sync = true
+    # If we're running in the foreground sync the output.
+    unless options[:daemon]
+      $stdout.sync = $stderr.sync = true
+    end
 
     puts "Starting MailCatcher"
+    puts "==> #{smtp_url}"
+    puts "==> #{http_url}"
 
     Async.logger.level = Logger::DEBUG if options[:verbose]
+
+    if options[:daemon]
+      if quittable?
+        puts "*** MailCatcher runs as a daemon by default. Go to the web interface to quit."
+      else
+        puts "*** MailCatcher is now running as a daemon that cannot be quit."
+      end
+      Process.daemon
+    end
 
     Async::Reactor.run do |task|
       smtp_address = Async::IO::Address.tcp(options[:smtp_ip], options[:smtp_port])
       smtp_endpoint = Async::IO::AddressEndpoint.new(smtp_address)
       smtp_socket = rescue_port(options[:smtp_port]) { smtp_endpoint.bind }
-      puts "==> #{smtp_url}"
 
       smtp_endpoint = MailCatcher::SMTP::URLEndpoint.new(URI.parse(smtp_url), smtp_endpoint)
       smtp_server = MailCatcher::SMTP::Server.new(smtp_endpoint) do |envelope|
@@ -217,7 +217,6 @@ module MailCatcher extend self
       http_address = Async::IO::Address.tcp(options[:http_ip], options[:http_port])
       http_endpoint = Async::IO::AddressEndpoint.new(http_address)
       http_socket = rescue_port(options[:http_port]) { http_endpoint.bind }
-      puts "==> #{http_url}"
 
       http_endpoint = Async::HTTP::Endpoint.new(URI.parse(http_url), http_endpoint)
       http_app = Falcon::Adapters::Rack.new(Web.app)
