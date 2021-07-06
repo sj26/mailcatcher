@@ -1,18 +1,18 @@
 module MailCatcher
-  def send_data(data)
-    Async do
-      endpoint = Async::HTTP::Endpoint.parse("#{MailCatcher.http_url}/messages")
+  def endpoint
+    Async::HTTP::Endpoint.parse("#{MailCatcher.http_url}/messages")
+  end
 
-      begin
-        Async::WebSocket::Client.connect(endpoint) do |connection|
-          puts 'Connected...'
-
-          connection.write data
-          connection.flush
-        end
-      rescue Errno::ECONNREFUSED
-        puts 'Cannot connect to the host. Please try again...'
-      end
+  def self.connection
+    @connection ||= begin
+      Async::WebSocket::Client.connect(endpoint)
+    rescue Errno::ECONNREFUSED
+      puts 'Cannot connect to the host. Please try again...'
     end
+  end
+
+  def send_data(data)
+    connection.write data
+    connection.flush
   end
 end

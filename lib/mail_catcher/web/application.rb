@@ -106,6 +106,8 @@ module MailCatcher
               disconnect(connection)
               connection.close
             end
+          ensure
+            disconnect(connection)
           end
         else
           content_type :json
