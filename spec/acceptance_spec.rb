@@ -8,8 +8,8 @@ require "socket"
 require "net/smtp"
 require "selenium-webdriver"
 
-SMTP_PORT = 10025
-HTTP_PORT = 10080
+SMTP_PORT = 20025
+HTTP_PORT = 20080
 
 # Start MailCatcher
 MAILCATCHER_PID = spawn "bundle", "exec", "mailcatcher", "--foreground", "--smtp-port", SMTP_PORT.to_s, "--http-port", HTTP_PORT.to_s
