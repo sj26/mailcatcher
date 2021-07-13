@@ -75,7 +75,7 @@ describe MailCatcher do
   end
 
   def message_row_element
-    messages_element.find_element(:xpath, ".//table/tbody/tr[last()]")
+    messages_element.find_element(:xpath, ".//table/tbody/tr[1]")
   end
 
   def message_from_element
