@@ -54,7 +54,10 @@ describe MailCatcher do
         options.add_argument "no-sandbox" if ENV["CI"]
 
         Selenium::WebDriver.for(:chrome, options: options).tap do |selenium|
-          selenium.manage.timeouts.implicit_wait = 10 # seconds
+          if ENV["CI"]
+            selenium.manage.timeouts.page_load = 10 # seconds
+            selenium.manage.timeouts.implicit_wait = 10 # seconds
+          end
         end
       end
   end
