@@ -170,7 +170,7 @@ module MailCatcher extend self
     puts "==> #{smtp_url}"
     puts "==> #{http_url}"
 
-    Async.logger.level = Logger::DEBUG if options[:verbose]
+    Async.logger.level = :debug if options[:verbose]
 
     if options[:daemon]
       if quittable?
