@@ -3,7 +3,6 @@
 require "json"
 require "mail"
 require "sqlite3"
-require 'async/websocket/client'
 
 module MailCatcher::Mail extend self
   def db
