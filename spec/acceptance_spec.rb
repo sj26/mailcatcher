@@ -8,8 +8,8 @@ require "socket"
 require "net/smtp"
 require "selenium-webdriver"
 
-SMTP_PORT = 10025
-HTTP_PORT = 10080
+SMTP_PORT = 20025
+HTTP_PORT = 20080
 
 # Start MailCatcher
 MAILCATCHER_PID = spawn "bundle", "exec", "mailcatcher", "--foreground", "--smtp-port", SMTP_PORT.to_s, "--http-port", HTTP_PORT.to_s
@@ -50,11 +50,20 @@ describe MailCatcher do
     @selenium ||=
       begin
         options = Selenium::WebDriver::Chrome::Options.new
-        options.headless!
-        options.add_argument "no-sandbox" if ENV["TRAVIS"]
+        options.headless! unless ENV["HEADLESS"] == "false"
+        options.add_argument "no-sandbox" if ENV["CI"]
 
-        Selenium::WebDriver.for(:chrome, options: options)
+        Selenium::WebDriver.for(:chrome, options: options).tap do |selenium|
+          if ENV["CI"]
+            selenium.manage.timeouts.page_load = 10 # seconds
+            selenium.manage.timeouts.implicit_wait = 10 # seconds
+          end
+        end
       end
+  end
+
+  def wait
+    @wait ||= Selenium::WebDriver::Wait.new
   end
 
   before do
@@ -115,13 +124,13 @@ describe MailCatcher do
 
     message_row_element.click
 
-    _(source_tab_element.displayed?).must_equal true
-    _(plain_tab_element.displayed?).must_equal true
-    _(html_tab_element.displayed?).must_equal false
+    wait.until { source_tab_element.displayed? }
+    wait.until { plain_tab_element.displayed? }
+    wait.until { !html_tab_element.displayed? }
 
     plain_tab_element.click
 
-    _(iframe_element.displayed?).must_equal true
+    wait.until { iframe_element.displayed? }
     _(iframe_element.attribute(:src)).must_match(/\.plain\Z/)
 
     selenium.switch_to.frame(iframe_element)
@@ -147,13 +156,13 @@ describe MailCatcher do
 
     message_row_element.click
 
-    _(source_tab_element.displayed?).must_equal true
-    _(plain_tab_element.displayed?).must_equal false
-    _(html_tab_element.displayed?).must_equal true
+    wait.until { source_tab_element.displayed? }
+    wait.until { !plain_tab_element.displayed? }
+    wait.until { html_tab_element.displayed? }
 
     html_tab_element.click
 
-    _(iframe_element.displayed?).must_equal true
+    wait.until { iframe_element.displayed? }
     _(iframe_element.attribute(:src)).must_match /\.html\Z/
 
     selenium.switch_to.frame(iframe_element)
@@ -181,13 +190,13 @@ describe MailCatcher do
 
     message_row_element.click
 
-    _(source_tab_element.displayed?).must_equal true
-    _(plain_tab_element.displayed?).must_equal true
-    _(html_tab_element.displayed?).must_equal true
+    wait.until { source_tab_element.displayed? }
+    wait.until { plain_tab_element.displayed? }
+    wait.until { html_tab_element.displayed? }
 
     plain_tab_element.click
 
-    _(iframe_element.displayed?).must_equal true
+    wait.until { iframe_element.displayed? }
     _(iframe_element.attribute(:src)).must_match /\.plain\Z/
 
     selenium.switch_to.frame(iframe_element)
@@ -222,13 +231,13 @@ describe MailCatcher do
 
     message_row_element.click
 
-    _(source_tab_element.displayed?).must_equal true
-    _(plain_tab_element.displayed?).must_equal true
-    _(html_tab_element.displayed?).must_equal true
+    wait.until { source_tab_element.displayed? }
+    wait.until { plain_tab_element.displayed? }
+    wait.until { html_tab_element.displayed? }
 
     plain_tab_element.click
 
-    _(iframe_element.displayed?).must_equal true
+    wait.until { iframe_element.displayed? }
     _(iframe_element.attribute(:src)).must_match /\.plain\Z/
 
     selenium.switch_to.frame(iframe_element)
