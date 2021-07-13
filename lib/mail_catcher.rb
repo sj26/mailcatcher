@@ -168,8 +168,18 @@ module MailCatcher extend self
     end
 
     puts "Starting MailCatcher"
-    puts "==> #{smtp_url}"
-    puts "==> #{http_url}"
+
+    Async.run do
+      @smtp_address = Async::IO::Address.tcp(options[:smtp_ip], options[:smtp_port])
+      @smtp_endpoint = Async::IO::AddressEndpoint.new(@smtp_address)
+      @smtp_socket = rescue_port(options[:smtp_port]) { @smtp_endpoint.bind }
+      puts "==> #{smtp_url}"
+
+      @http_address = Async::IO::Address.tcp(options[:http_ip], options[:http_port])
+      @http_endpoint = Async::IO::AddressEndpoint.new(@http_address)
+      @http_socket = rescue_port(options[:http_port]) { @http_endpoint.bind }
+      puts "==> #{http_url}"
+    end
 
     Async.logger.level = :debug if options[:verbose]
 
@@ -183,43 +193,36 @@ module MailCatcher extend self
     end
 
     Async::Reactor.run do |task|
-      smtp_address = Async::IO::Address.tcp(options[:smtp_ip], options[:smtp_port])
-      smtp_endpoint = Async::IO::AddressEndpoint.new(smtp_address)
-      smtp_socket = rescue_port(options[:smtp_port]) { smtp_endpoint.bind }
 
-      smtp_endpoint = MailCatcher::SMTP::URLEndpoint.new(URI.parse(smtp_url), smtp_endpoint)
+      smtp_endpoint = MailCatcher::SMTP::URLEndpoint.new(URI.parse(smtp_url), @smtp_endpoint)
       smtp_server = MailCatcher::SMTP::Server.new(smtp_endpoint) do |envelope|
         MailCatcher::Mail.add_message(sender: envelope.sender, recipients: envelope.recipients,
                                       source: envelope.content)
       end
 
       smtp_task = task.async do |task|
-        task.annotate "binding to #{smtp_socket.local_address.inspect}"
+        task.annotate "binding to #{@smtp_socket.local_address.inspect}"
 
         begin
-          smtp_socket.listen(Socket::SOMAXCONN)
-          smtp_socket.accept_each(task: task, &smtp_server.method(:accept))
+          @smtp_socket.listen(Socket::SOMAXCONN)
+          @smtp_socket.accept_each(task: task, &smtp_server.method(:accept))
         ensure
-          smtp_socket.close
+          @smtp_socket.close
         end
       end
 
-      http_address = Async::IO::Address.tcp(options[:http_ip], options[:http_port])
-      http_endpoint = Async::IO::AddressEndpoint.new(http_address)
-      http_socket = rescue_port(options[:http_port]) { http_endpoint.bind }
-
-      http_endpoint = Async::HTTP::Endpoint.new(URI.parse(http_url), http_endpoint)
+      http_endpoint = Async::HTTP::Endpoint.new(URI.parse(http_url), @http_endpoint)
       http_app = Falcon::Adapters::Rack.new(Web.app)
       http_server = Falcon::Server.new(http_app, http_endpoint)
 
       task.async do |task|
-        task.annotate "binding to #{http_socket.local_address.inspect}"
+        task.annotate "binding to #{@http_socket.local_address.inspect}"
 
         begin
-          http_socket.listen(Socket::SOMAXCONN)
-          http_socket.accept_each(task: task, &http_server.method(:accept))
+          @http_socket.listen(Socket::SOMAXCONN)
+          @http_socket.accept_each(task: task, &http_server.method(:accept))
         ensure
-          http_socket.close
+          @http_socket.close
         end
       end
 
