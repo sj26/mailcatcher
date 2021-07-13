@@ -105,6 +105,10 @@ describe MailCatcher do
     selenium.find_element(:tag_name, "body")
   end
 
+  def wait_until(&block)
+    Selenium::WebDriver::Wait.new.until(&block)
+  end
+
   it "catches and displays a plain text message as plain text and source" do
     deliver_example("plainmail")
 
@@ -115,13 +119,13 @@ describe MailCatcher do
 
     message_row_element.click
 
-    _(source_tab_element.displayed?).must_equal true
-    _(plain_tab_element.displayed?).must_equal true
-    _(html_tab_element.displayed?).must_equal false
+    wait_until { source_tab_element.displayed? }
+    wait_until { plain_tab_element.displayed? }
+    wait_until { !html_tab_element.displayed? }
 
     plain_tab_element.click
 
-    _(iframe_element.displayed?).must_equal true
+    wait_until { iframe_element.displayed? }
     _(iframe_element.attribute(:src)).must_match(/\.plain\Z/)
 
     selenium.switch_to.frame(iframe_element)
@@ -147,13 +151,13 @@ describe MailCatcher do
 
     message_row_element.click
 
-    _(source_tab_element.displayed?).must_equal true
-    _(plain_tab_element.displayed?).must_equal false
-    _(html_tab_element.displayed?).must_equal true
+    wait_until { source_tab_element.displayed? }
+    wait_until { !plain_tab_element.displayed? }
+    wait_until { html_tab_element.displayed? }
 
     html_tab_element.click
 
-    _(iframe_element.displayed?).must_equal true
+    wait_until { iframe_element.displayed? }
     _(iframe_element.attribute(:src)).must_match /\.html\Z/
 
     selenium.switch_to.frame(iframe_element)
@@ -181,13 +185,13 @@ describe MailCatcher do
 
     message_row_element.click
 
-    _(source_tab_element.displayed?).must_equal true
-    _(plain_tab_element.displayed?).must_equal true
-    _(html_tab_element.displayed?).must_equal true
+    wait_until { source_tab_element.displayed? }
+    wait_until { plain_tab_element.displayed? }
+    wait_until { html_tab_element.displayed? }
 
     plain_tab_element.click
 
-    _(iframe_element.displayed?).must_equal true
+    wait_until { iframe_element.displayed? }
     _(iframe_element.attribute(:src)).must_match /\.plain\Z/
 
     selenium.switch_to.frame(iframe_element)
@@ -222,13 +226,13 @@ describe MailCatcher do
 
     message_row_element.click
 
-    _(source_tab_element.displayed?).must_equal true
-    _(plain_tab_element.displayed?).must_equal true
-    _(html_tab_element.displayed?).must_equal true
+    wait_until { source_tab_element.displayed? }
+    wait_until { plain_tab_element.displayed? }
+    wait_until { html_tab_element.displayed? }
 
     plain_tab_element.click
 
-    _(iframe_element.displayed?).must_equal true
+    wait_until { iframe_element.displayed? }
     _(iframe_element.attribute(:src)).must_match /\.plain\Z/
 
     selenium.switch_to.frame(iframe_element)
