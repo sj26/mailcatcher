@@ -10,10 +10,11 @@ require "optparse"
 require "rbconfig"
 require 'socket'
 require 'mail'
-require 'mail_catcher/message'
-require 'mail_catcher/version'
+
+require "mail_catcher/version"
 
 module MailCatcher extend self
+  autoload :Bus, "mail_catcher/bus"
   autoload :Mail, "mail_catcher/mail"
   autoload :SMTP, "mail_catcher/smtp"
   autoload :Web, "mail_catcher/web"

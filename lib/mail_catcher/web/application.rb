@@ -11,40 +11,6 @@ require "mail_catcher/mail"
 module MailCatcher
   module Web
     class Application < Sinatra::Base
-      def initialize
-        super
-        @connections = Set.new
-
-        @count = 0
-      end
-
-      def connect(connection)
-        @connections << connection
-
-        @count += 1
-      end
-
-      def each(&block)
-        @connections.each(&block)
-      end
-
-      def broadcast(message)
-        Async.logger.debug(self) { "Broadcast: #{message.inspect}" }
-
-        @connections.each do |connection|
-          begin
-            connection.write(message)
-            connection.flush
-          rescue IOError
-            disconnect(connection)
-          end
-        end
-      end
-
-      def disconnect(connection)
-        @connections.delete(connection)
-      end
-
       set :environment, MailCatcher.env
       set :prefix, MailCatcher.options[:http_path]
       set :asset_prefix, File.join(prefix, "assets")
@@ -90,20 +56,30 @@ module MailCatcher
 
       get "/messages" do
         if Async::WebSocket::Adapters::Rack.websocket?(env)
-          puts 'WebSockets connection opened...'
           Async::WebSocket::Adapters::Rack.open(env, protocols: %w[ws]) do |connection|
-            connect(connection)
-
+            Async.logger.debug(connection, "Websocket connection opened")
             begin
-              while message = connection.read
-                broadcast(message)
+              queue = Async::Queue.new
+
+              subscription_id = MailCatcher::Bus.subscribe { |message| queue << message }
+              Async.logger.debug(connection, "Websocket connection subscribed to bus: #{subscription_id}")
+
+              queue.each do |message|
+                begin
+                  Async.logger.debug(connection, "Sending #{message}")
+                  connection.write(message)
+                  connection.flush
+                rescue IOError
+                  Async.logger.error(connection, "Failed sending #{message}", $!)
+                  raise
+                end
               end
-            rescue Protocol::WebSocket::ClosedError, IOError
-              disconnect(connection)
-              connection.close
+            rescue
+              Async.logger.error(connection, "Connection error", $!)
+            ensure
+              Async.logger.debug(connection, "Unsubscribing from bus, subscription #{subscription_id}")
+              MailCatcher::Bus.unsubscribe(subscription_id)
             end
-          ensure
-            disconnect(connection)
           end
         else
           content_type :json

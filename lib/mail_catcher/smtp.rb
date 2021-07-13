@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
+require "uri"
+
+require "async/io/endpoint"
+require "async/io/host_endpoint"
+require "async/io/ssl_endpoint"
+
 module MailCatcher
   module SMTP
-    require 'uri'
-
-    require 'async/io/endpoint'
-    require 'async/io/host_endpoint'
-    require 'async/io/ssl_endpoint'
-
     class URLEndpoint < Async::IO::Endpoint
       def self.parse(string, **options)
         url = URI.parse(string).normalize
