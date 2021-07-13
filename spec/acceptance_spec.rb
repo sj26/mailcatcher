@@ -50,7 +50,7 @@ describe MailCatcher do
     @selenium ||=
       begin
         options = Selenium::WebDriver::Chrome::Options.new
-        options.headless!
+        options.headless! unless ENV["HEADLESS"] == "false"
         options.add_argument "no-sandbox" if ENV["CI"]
 
         Selenium::WebDriver.for(:chrome, options: options).tap do |selenium|
