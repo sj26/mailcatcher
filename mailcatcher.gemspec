@@ -42,7 +42,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "coffee-script"
   s.add_development_dependency "compass", "~> 1.0.3"
-  s.add_development_dependency "minitest", "~> 5.0"
+  s.add_development_dependency "rspec"
   s.add_development_dependency "rake"
   s.add_development_dependency "rdoc"
   s.add_development_dependency "sass"
