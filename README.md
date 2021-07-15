@@ -26,7 +26,25 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 3. Go to http://127.0.0.1:1080/
 4. Send mail through smtp://127.0.0.1:1025
 
-Use `mailcatcher --help` to see the command line options. The brave can get the source from [the GitHub repository][mailcatcher-github].
+## Command Line Options
+
+Use `mailcatcher --help` to see the command line options.
+
+```
+Usage: mailcatcher [options]
+        --ip IP                      Set the ip address of both servers
+        --smtp-ip IP                 Set the ip address of the smtp server
+        --smtp-port PORT             Set the port of the smtp server
+        --http-ip IP                 Set the ip address of the http server
+        --http-port PORT             Set the port address of the http server
+        --http-path PATH             Add a prefix to all HTTP paths
+        --no-quit                    Don't allow quitting the process
+        --[no-]growl
+    -f, --foreground                 Run in the foreground
+    -b, --browse                     Open web browser
+    -v, --verbose                    Be more verbose
+    -h, --help                       Display this help information
+```
 
 ### Ruby
 
