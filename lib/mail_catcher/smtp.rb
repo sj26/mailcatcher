@@ -335,7 +335,7 @@ module MailCatcher
                   write_response 501, 'Unexpected parameters or arguments'
                   next
                 end
-                envelope = nil
+                @state.clear
                 write_response 250, 'OK'
               when 'NOOP'
                 if line && !line.empty?
