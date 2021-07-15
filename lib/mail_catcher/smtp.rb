@@ -25,7 +25,7 @@ module MailCatcher
       end
 
       def to_s
-        "\#<#{self.class} #{@url} #{@options.inspect}>"
+        @url.to_s
       end
 
       attr :url, :options
@@ -71,7 +71,7 @@ module MailCatcher
       end
 
       def path
-        @url.request_uri
+        @url.path
       end
 
       LOCALHOST = 'localhost'
