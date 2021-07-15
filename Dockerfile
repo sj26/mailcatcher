@@ -3,8 +3,9 @@ MAINTAINER Samuel Cochran <sj26@sj26.com>
 
 ARG VERSION=0.7.1
 
-RUN apk add --no-cache gcc g++ make sqlite-dev
-RUN gem install mailcatcher -v $VERSION
+RUN apk add --no-cache build-base sqlite-libs sqlite-dev && \
+    gem install mailcatcher -v $VERSION && \
+    apk del --rdepends --purge build-base sqlite-dev
 
 EXPOSE 1025 1080
 
