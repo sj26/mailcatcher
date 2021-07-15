@@ -24,10 +24,8 @@ jobs:
 
     - uses: actions/setup-node@v2
 
-    # - uses: browser-actions/setup-chrome@latest
-    # - uses: nanasess/setup-chromedriver@master
-    - name: Setup Chrome and chromedriver
-      uses: ./.github/actions/setup-chrome
+    - uses: browser-actions/setup-chrome@latest
+    - uses: nanasess/setup-chromedriver@master
 
     - name: Run tests
       run: bundle exec rake test
