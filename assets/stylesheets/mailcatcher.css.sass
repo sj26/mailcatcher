@@ -62,6 +62,7 @@ body > header
     padding: 6px
     padding-left: 30px
     background: url(logo.png) left no-repeat
+    background-size: 24px 24px
     font-size: 18px
     font-weight: bold
     a
@@ -255,3 +256,8 @@ iframe
   -webkit-box-flex: 1
   box-flex: 1
   background: #fff
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi)
+  body > header
+    h1
+      background-image: url(logo_2x.png)
