@@ -10,23 +10,26 @@ require "selenium-webdriver"
 SMTP_PORT = 20025
 HTTP_PORT = 20080
 
-# Start MailCatcher
-MAILCATCHER_PID = spawn "bundle", "exec", "mailcatcher", "--foreground", "--smtp-port", SMTP_PORT.to_s, "--http-port", HTTP_PORT.to_s
-
-# Wait for it to boot
-begin
-  TCPSocket.new("127.0.0.1", SMTP_PORT).close
-  TCPSocket.new("127.0.0.1", HTTP_PORT).close
-rescue Errno::ECONNREFUSED
-  retry
-end
-
 RSpec.describe MailCatcher do
   DEFAULT_FROM = "from@example.com"
   DEFAULT_TO = "to@example.com"
 
-  after(:all) do
-    Process.kill("TERM", MAILCATCHER_PID) and Process.wait
+  before :all do
+    # Start MailCatcher
+    @pid = spawn "bundle", "exec", "mailcatcher", "--foreground", "--smtp-port", SMTP_PORT.to_s, "--http-port", HTTP_PORT.to_s
+
+    # Wait for it to boot
+    begin
+      TCPSocket.new("127.0.0.1", SMTP_PORT).close
+      TCPSocket.new("127.0.0.1", HTTP_PORT).close
+    rescue Errno::ECONNREFUSED
+      retry
+    end
+  end
+
+  after :all do
+    # Quit MailCatcher at the end
+    Process.kill("TERM", @pid) and Process.wait
   end
 
   def deliver(message, options={})

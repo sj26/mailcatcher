@@ -53,6 +53,8 @@ RDoc::Task.new(:rdoc => "doc",:clobber_rdoc => "doc:clean", :rerdoc => "doc:forc
   rdoc.rdoc_files.include "lib/**/*.rb"
 end
 
+require "rspec/core/rake_task"
+
 RSpec::Core::RakeTask.new(:test)
 
 task :test => :assets
