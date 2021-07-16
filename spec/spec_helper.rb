@@ -10,6 +10,7 @@ require "selenium/webdriver"
 Capybara.default_driver = :selenium
 Capybara.register_driver :selenium do |app|
   Capybara::Selenium::Driver.new app, browser: :chrome,
+    service: Selenium::WebDriver::Service.chrome(args: { log_path: "chrome.log" }),
     options: Selenium::WebDriver::Chrome::Options.new(args: %w[--headless --disable-gpu --force-device-scale-factor=1 --window-size=1400,900])
 end
 
