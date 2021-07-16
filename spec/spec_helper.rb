@@ -19,3 +19,32 @@ Capybara.run_server = false
 
 # Give a little more leeway for slow compute in CI
 Capybara.default_max_wait_time = 10 if ENV["CI"]
+
+RSpec.configure do |config|
+  # Teach RSpec to gather console errors from chrome when there are failures
+  config.after(:each, type: :feature) do |example|
+    # Did the example fail?
+    next unless example.exception # "failed"
+
+    # Do we have a browser?
+    next unless page.driver.browser
+
+    # Retrieve console logs if the browser/driver supports it
+    logs = page.driver.browser.manage.logs.get(:browser) rescue []
+
+    # Anything to report?
+    next if logs.empty?
+
+    # Add the log messages so they appear in failures
+
+    # This might already be a string, an array, or nothing
+    # Array(nil) => [], Array("a") => ["a"], Array(["a", "b"]) => ["a", "b"]
+    lines = example.metadata[:extra_failure_lines] = Array(example.metadata[:extra_failure_lines])
+
+    # Add a gap if there's anything there and it doesn't end with an empty line
+    lines << "" if lines.last
+
+    lines << "Browser console errors:"
+    lines << JSON.pretty_generate(logs.map { |log| log.as_json })
+  end
+end
