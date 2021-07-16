@@ -5,6 +5,7 @@ ENV["MAILCATCHER_ENV"] ||= "test"
 require "mail_catcher"
 
 require "capybara/rspec"
+require "capybara-screenshot/rspec"
 require "selenium/webdriver"
 require "net/smtp"
 require "socket"

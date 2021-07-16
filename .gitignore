@@ -11,3 +11,6 @@
 
 # Build gems
 *.gem
+
+# Test artifacts
+/screenshot_*

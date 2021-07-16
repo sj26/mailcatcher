@@ -41,6 +41,7 @@ Gem::Specification.new do |s|
   s.add_dependency "skinny", "~> 0.2.3"
 
   s.add_development_dependency "capybara"
+  s.add_development_dependency "capybara-screenshot"
   s.add_development_dependency "coffee-script"
   s.add_development_dependency "compass", "~> 1.0.3"
   s.add_development_dependency "rspec"
