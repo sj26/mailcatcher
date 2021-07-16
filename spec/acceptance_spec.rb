@@ -2,7 +2,6 @@
 
 ENV["MAILCATCHER_ENV"] ||= "test"
 
-require "minitest/autorun"
 require "mail_catcher"
 require "socket"
 require "net/smtp"
@@ -11,25 +10,27 @@ require "selenium-webdriver"
 SMTP_PORT = 20025
 HTTP_PORT = 20080
 
-# Start MailCatcher
-MAILCATCHER_PID = spawn "bundle", "exec", "mailcatcher", "--foreground", "--smtp-port", SMTP_PORT.to_s, "--http-port", HTTP_PORT.to_s
-
-# Make sure it will be stopped
-MiniTest.after_run do
-  Process.kill("TERM", MAILCATCHER_PID) and Process.wait
-end
-
-# Wait for it to boot
-begin
-  TCPSocket.new("127.0.0.1", SMTP_PORT).close
-  TCPSocket.new("127.0.0.1", HTTP_PORT).close
-rescue Errno::ECONNREFUSED
-  retry
-end
-
-describe MailCatcher do
+RSpec.describe MailCatcher do
   DEFAULT_FROM = "from@example.com"
   DEFAULT_TO = "to@example.com"
+
+  before :all do
+    # Start MailCatcher
+    @pid = spawn "bundle", "exec", "mailcatcher", "--foreground", "--smtp-port", SMTP_PORT.to_s, "--http-port", HTTP_PORT.to_s
+
+    # Wait for it to boot
+    begin
+      TCPSocket.new("127.0.0.1", SMTP_PORT).close
+      TCPSocket.new("127.0.0.1", HTTP_PORT).close
+    rescue Errno::ECONNREFUSED
+      retry
+    end
+  end
+
+  after :all do
+    # Quit MailCatcher at the end
+    Process.kill("TERM", @pid) and Process.wait
+  end
 
   def deliver(message, options={})
     options = {:from => DEFAULT_FROM, :to => DEFAULT_TO}.merge(options)
@@ -117,10 +118,10 @@ describe MailCatcher do
   it "catches and displays a plain text message as plain text and source" do
     deliver_example("plainmail")
 
-    _(message_from_element.text).must_include DEFAULT_FROM
-    _(message_to_element.text).must_include DEFAULT_TO
-    _(message_subject_element.text).must_equal "Plain mail"
-    _(Time.parse(message_received_element.text)).must_be_close_to Time.now, 5
+    expect(message_from_element.text).to include(DEFAULT_FROM)
+    expect(message_to_element.text).to include(DEFAULT_TO)
+    expect(message_subject_element.text).to include("Plain mail")
+    expect(Time.parse(message_received_element.text)).to be <= Time.now + 5
 
     message_row_element.click
 
@@ -131,28 +132,28 @@ describe MailCatcher do
     plain_tab_element.click
 
     wait.until { iframe_element.displayed? }
-    _(iframe_element.attribute(:src)).must_match(/\.plain\Z/)
+    expect(iframe_element.attribute(:src)).to match(/\.plain\Z/)
 
     selenium.switch_to.frame(iframe_element)
 
-    _(body_element.text).wont_include "Subject: Plain mail"
-    _(body_element.text).must_include "Here's some text"
+    expect(body_element.text).not_to include("Subject: Plain mail")
+    expect(body_element.text).to include("Here's some text")
 
     selenium.switch_to.default_content
     source_tab_element.click
     selenium.switch_to.frame(iframe_element)
 
-    _(body_element.text).must_include "Subject: Plain mail"
-    _(body_element.text).must_include "Here's some text"
+    expect(body_element.text).to include("Subject: Plain mail")
+    expect(body_element.text).to include("Here's some text")
   end
 
   it "catches and displays an html message as html and source" do
     deliver_example("htmlmail")
 
-    _(message_from_element.text).must_include DEFAULT_FROM
-    _(message_to_element.text).must_include DEFAULT_TO
-    _(message_subject_element.text).must_equal "Test HTML Mail"
-    _(Time.parse(message_received_element.text)).must_be_close_to Time.now, 5
+    expect(message_from_element.text).to include(DEFAULT_FROM)
+    expect(message_to_element.text).to include(DEFAULT_TO)
+    expect(message_subject_element.text).to eql("Test HTML Mail")
+    expect(Time.parse(message_received_element.text)).to be <= Time.now + 5
 
     message_row_element.click
 
@@ -163,30 +164,30 @@ describe MailCatcher do
     html_tab_element.click
 
     wait.until { iframe_element.displayed? }
-    _(iframe_element.attribute(:src)).must_match /\.html\Z/
+    expect(iframe_element.attribute(:src)).to match(/\.html\Z/)
 
     selenium.switch_to.frame(iframe_element)
 
-    _(body_element.text).must_include "Yo, you slimey scoundrel."
-    _(body_element.text).wont_include "Content-Type: text/html"
-    _(body_element.text).wont_include "Yo, you <em>slimey scoundrel</em>."
+    expect(body_element.text).to include("Yo, you slimey scoundrel.")
+    expect(body_element.text).not_to include("Content-Type: text/html")
+    expect(body_element.text).not_to include("Yo, you <em>slimey scoundrel</em>.")
 
     selenium.switch_to.default_content
     source_tab_element.click
     selenium.switch_to.frame(iframe_element)
 
-    _(body_element.text).must_include "Content-Type: text/html"
-    _(body_element.text).must_include "Yo, you <em>slimey scoundrel</em>."
-    _(body_element.text).wont_include "Yo, you slimey scoundrel."
+    expect(body_element.text).to include "Content-Type: text/html"
+    expect(body_element.text).to include "Yo, you <em>slimey scoundrel</em>."
+    expect(body_element.text).not_to include "Yo, you slimey scoundrel."
   end
 
   it "catches and displays a multipart message as text, html and source" do
     deliver_example("multipartmail")
 
-    _(message_from_element.text).must_include DEFAULT_FROM
-    _(message_to_element.text).must_include DEFAULT_TO
-    _(message_subject_element.text).must_equal "Test Multipart Mail"
-    _(Time.parse(message_received_element.text)).must_be_close_to Time.now, 5
+    expect(message_from_element.text).to include DEFAULT_FROM
+    expect(message_to_element.text).to include DEFAULT_TO
+    expect(message_subject_element.text).to eql "Test Multipart Mail"
+    expect(Time.parse(message_received_element.text)).to be <= Time.now + 5
 
     message_row_element.click
 
@@ -197,37 +198,37 @@ describe MailCatcher do
     plain_tab_element.click
 
     wait.until { iframe_element.displayed? }
-    _(iframe_element.attribute(:src)).must_match /\.plain\Z/
+    expect(iframe_element.attribute(:src)).to match /\.plain\Z/
 
     selenium.switch_to.frame(iframe_element)
 
-    _(body_element.text).must_include "Plain text mail"
-    _(body_element.text).wont_include "HTML mail"
-    _(body_element.text).wont_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+    expect(body_element.text).to include "Plain text mail"
+    expect(body_element.text).not_to include "HTML mail"
+    expect(body_element.text).not_to include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
 
     selenium.switch_to.default_content
     html_tab_element.click
     selenium.switch_to.frame(iframe_element)
 
-    _(body_element.text).must_include "HTML mail"
-    _(body_element.text).wont_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+    expect(body_element.text).to include "HTML mail"
+    expect(body_element.text).not_to include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
 
     selenium.switch_to.default_content
     source_tab_element.click
     selenium.switch_to.frame(iframe_element)
 
-    _(body_element.text).must_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
-    _(body_element.text).must_include "Plain text mail"
-    _(body_element.text).must_include "<em>HTML</em> mail"
+    expect(body_element.text).to include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+    expect(body_element.text).to include "Plain text mail"
+    expect(body_element.text).to include "<em>HTML</em> mail"
   end
 
   it "catches and displays a multipart UTF8 message as text, html and source" do
     deliver_example("multipartmail-with-utf8")
 
-    _(message_from_element.text).must_include DEFAULT_FROM
-    _(message_to_element.text).must_include DEFAULT_TO
-    _(message_subject_element.text).must_equal "Test Multipart UTF8 Mail"
-    _(Time.parse(message_received_element.text)).must_be_close_to Time.now, 5
+    expect(message_from_element.text).to include DEFAULT_FROM
+    expect(message_to_element.text).to include DEFAULT_TO
+    expect(message_subject_element.text).to eql "Test Multipart UTF8 Mail"
+    expect(Time.parse(message_received_element.text)).to be <= Time.now + 5
 
     message_row_element.click
 
@@ -238,28 +239,28 @@ describe MailCatcher do
     plain_tab_element.click
 
     wait.until { iframe_element.displayed? }
-    _(iframe_element.attribute(:src)).must_match /\.plain\Z/
+    expect(iframe_element.attribute(:src)).to match /\.plain\Z/
 
     selenium.switch_to.frame(iframe_element)
 
-    _(body_element.text).must_include "Plain text mail"
-    _(body_element.text).wont_include "HTML mail"
-    _(body_element.text).wont_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+    expect(body_element.text).to include "Plain text mail"
+    expect(body_element.text).not_to include "HTML mail"
+    expect(body_element.text).not_to include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
 
     selenium.switch_to.default_content
     html_tab_element.click
     selenium.switch_to.frame(iframe_element)
 
-    _(body_element.text).must_include "HTML mail"
-    _(body_element.text).wont_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+    expect(body_element.text).to include "HTML mail"
+    expect(body_element.text).not_to include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
 
     selenium.switch_to.default_content
     source_tab_element.click
     selenium.switch_to.frame(iframe_element)
 
-    _(body_element.text).must_include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
-    _(body_element.text).must_include "Plain text mail"
-    _(body_element.text).must_include "<em>© HTML</em> mail"
+    expect(body_element.text).to include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+    expect(body_element.text).to include "Plain text mail"
+    expect(body_element.text).to include "<em>© HTML</em> mail"
   end
 
   it "catches and displays an unknown message as source" do
