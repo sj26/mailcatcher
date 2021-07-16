@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
-ENV["MAILCATCHER_ENV"] ||= "test"
+require "spec_helper"
 
 require "mail_catcher"
 
-require "capybara/rspec"
-require "capybara-screenshot/rspec"
-require "selenium/webdriver"
 require "net/smtp"
 require "socket"
 
@@ -28,27 +25,14 @@ RSpec.describe MailCatcher, type: :feature do
     rescue Errno::ECONNREFUSED
       retry
     end
+
+    # Tell Capybara to talk to the process
+    Capybara.app_host = "http://127.0.0.1:20080"
   end
 
   after :all do
     # Quit MailCatcher at the end
     Process.kill("TERM", @pid) and Process.wait
-  end
-
-  before :all do
-    # Use headless chrome
-    Capybara.default_driver = :selenium
-    Capybara.register_driver :selenium do |app|
-      Capybara::Selenium::Driver.new app, browser: :chrome,
-        options: Selenium::WebDriver::Chrome::Options.new(args: %w[--headless --disable-gpu --force-device-scale-factor=1 --window-size=1400,900])
-    end
-
-    # Don't start a rack server, connect to mailcatcher process
-    Capybara.run_server = false
-    Capybara.app_host = "http://127.0.0.1:#{HTTP_PORT}"
-
-    # Give a little more leeway for slow compute in CI
-    Capybara.default_max_wait_time = 10 if ENV["CI"]
   end
 
   def deliver(message, options={})
