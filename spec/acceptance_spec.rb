@@ -109,6 +109,8 @@ RSpec.describe MailCatcher, type: :feature do
   it "catches and displays a plain text message as plain text and source" do
     deliver_example("plainmail")
 
+    expect(page).to have_selector("#messages table tbody tr:first-of-type", text: "Plain mail")
+
     expect(message_from_element).to have_text(DEFAULT_FROM)
     expect(message_to_element).to have_text(DEFAULT_TO)
     expect(message_subject_element).to have_text("Plain mail")
@@ -137,6 +139,8 @@ RSpec.describe MailCatcher, type: :feature do
 
   it "catches and displays an html message as html and source" do
     deliver_example("htmlmail")
+
+    expect(page).to have_selector("#messages table tbody tr:first-of-type", text: "Test HTML Mail")
 
     expect(message_from_element).to have_text(DEFAULT_FROM)
     expect(message_to_element).to have_text(DEFAULT_TO)
@@ -168,6 +172,8 @@ RSpec.describe MailCatcher, type: :feature do
 
   it "catches and displays a multipart message as text, html and source" do
     deliver_example("multipartmail")
+
+    expect(page).to have_selector("#messages table tbody tr:first-of-type", text: "Test Multipart Mail")
 
     expect(message_from_element).to have_text(DEFAULT_FROM)
     expect(message_to_element).to have_text(DEFAULT_TO)
@@ -207,6 +213,8 @@ RSpec.describe MailCatcher, type: :feature do
 
   it "catches and displays a multipart UTF8 message as text, html and source" do
     deliver_example("multipartmail-with-utf8")
+
+    expect(page).to have_selector("#messages table tbody tr:first-of-type", text: "Test Multipart UTF8 Mail")
 
     expect(message_from_element).to have_text(DEFAULT_FROM)
     expect(message_to_element).to have_text(DEFAULT_TO)
