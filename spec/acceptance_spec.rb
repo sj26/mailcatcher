@@ -45,6 +45,9 @@ RSpec.describe MailCatcher, type: :feature do
     # Don't start a rack server, connect to mailcatcher process
     Capybara.run_server = false
     Capybara.app_host = "http://127.0.0.1:#{HTTP_PORT}"
+
+    # Give a little more leeway for slow compute in CI
+    Capybara.default_max_wait_time = 10 if ENV["CI"]
   end
 
   def deliver(message, options={})
