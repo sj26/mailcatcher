@@ -150,7 +150,7 @@ module MailCatcher extend self
         end
 
         parser.on_tail("--version", "Display the current version") do
-          puts "mailcatcher #{VERSION}"
+          puts "MailCatcher v#{VERSION}"
           exit
         end
       end.parse!
