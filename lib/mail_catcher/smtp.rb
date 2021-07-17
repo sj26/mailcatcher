@@ -10,6 +10,7 @@ class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
   def process_mail_from sender
     if @state.include? :mail_from
       @state -= [:mail_from, :rcpt, :data]
+
       receive_reset
     end
 
@@ -22,25 +23,34 @@ class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
 
   def receive_reset
     @current_message = nil
+
     true
   end
 
   def receive_sender(sender)
+    # EventMachine SMTP advertises size extensions [https://tools.ietf.org/html/rfc1870]
+    # so strip potential " SIZE=..." suffixes from senders
+    sender = $` if sender =~ / SIZE=\d+\z/
+
     current_message[:sender] = sender
+
     true
   end
 
   def receive_recipient(recipient)
     current_message[:recipients] ||= []
     current_message[:recipients] << recipient
+
     true
   end
 
   def receive_data_chunk(lines)
     current_message[:source] ||= +""
+
     lines.each do |line|
       current_message[:source] << line << "\r\n"
     end
+
     true
   end
 
