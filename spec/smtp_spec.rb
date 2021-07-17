@@ -44,6 +44,16 @@ end
 
 RSpec.describe MailCatcher::SMTP do
   describe MailCatcher::SMTP::URLEndpoint do
+    let(:scheme) { 'smtp' }
+    let(:path) { '/path' }
+    let(:ip) { '127.0.0.1' }
+    let(:smtp_url_1) { "#{scheme}://#{ip}:#{SMTP_PORT}" }
+    let(:smtp_url_2) { "#{scheme}s://#{ip}#{path}" }
+    let(:http_address) { Async::IO::Address.tcp(ip, SMTP_PORT) }
+    let(:http_endpoint) { Async::IO::AddressEndpoint.new(http_address) }
+    let(:url_endpoint_1) { MailCatcher::SMTP::URLEndpoint.new(URI.parse(smtp_url_1), http_endpoint) }
+    let(:url_endpoint_2) { MailCatcher::SMTP::URLEndpoint.new(URI.parse(smtp_url_2), http_endpoint, reuse_port: true) }
+
     context '#to_s' do
       it 'returns string url' do
         expect(url_endpoint_1.to_s).to eql(smtp_url_1)
