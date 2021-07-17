@@ -10,15 +10,20 @@ require "selenium/webdriver"
 Capybara.default_driver = :selenium
 Capybara.register_driver :selenium do |app|
   Capybara::Selenium::Driver.new app, browser: :chrome,
-    service: Selenium::WebDriver::Service.chrome(args: { log_path: "chrome.log" }),
+    service: Selenium::WebDriver::Service.chrome(args: { log_path: File.expand_path("../tmp/chromedriver.log", __dir__) }),
     options: Selenium::WebDriver::Chrome::Options.new(args: %w[--headless --disable-gpu --force-device-scale-factor=1 --window-size=1400,900])
 end
 
-# Don't start a rack server, connect to mailcatcher process
-Capybara.run_server = false
+Capybara.configure do |config|
+  # Don't start a rack server, connect to mailcatcher process
+  config.run_server = false
 
-# Give a little more leeway for slow compute in CI
-Capybara.default_max_wait_time = 10 if ENV["CI"]
+  # Give a little more leeway for slow compute in CI
+  config.default_max_wait_time = 10 if ENV["CI"]
+
+  # Save into tmp directory
+  config.save_path = File.expand_path("../tmp/capybara", __dir__)
+end
 
 RSpec.configure do |config|
   # Teach RSpec to gather console errors from chrome when there are failures

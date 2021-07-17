@@ -30,16 +30,9 @@ jobs:
     - name: Run tests
       run: bundle exec rake test
 
-    - name: Upload screenshots
+    - name: Upload test artifacts
       uses: actions/upload-artifact@v2
       if: always()
       with:
-        name: Screenshots
-        path: screenshot_*
-
-    - name: Upload chromedriver log
-      uses: actions/upload-artifact@v2
-      if: always()
-      with:
-        name: chrome.log
-        path: chrome.log
+        name: test-artifacts
+        path: tmp

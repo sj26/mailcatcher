@@ -12,6 +12,5 @@
 # Build gems
 *.gem
 
-# Test artifacts
-/screenshot_*
-/chrome.log
+# Temp area, used for testing artifacts
+/tmp
