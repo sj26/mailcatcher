@@ -6,42 +6,6 @@ require "mail_catcher"
 
 SMTP_PORT = 20025
 
-def smtp_url_1
-  "#{scheme}://#{ip}:#{SMTP_PORT}"
-end
-
-def smtp_url_2
-  "#{scheme}s://#{ip}#{path}"
-end
-
-def path
-  '/path'
-end
-
-def scheme
-  'smtp'
-end
-
-def ip
-  '127.0.0.1'
-end
-
-def http_address
-  Async::IO::Address.tcp(ip, SMTP_PORT)
-end
-
-def http_endpoint
-  Async::IO::AddressEndpoint.new(http_address)
-end
-
-def url_endpoint_1
-  MailCatcher::SMTP::URLEndpoint.new(URI.parse(smtp_url_1), http_endpoint)
-end
-
-def url_endpoint_2
-  MailCatcher::SMTP::URLEndpoint.new(URI.parse(smtp_url_2), http_endpoint, reuse_port: true)
-end
-
 RSpec.describe MailCatcher::SMTP do
   describe MailCatcher::SMTP::URLEndpoint do
     let(:scheme) { 'smtp' }
