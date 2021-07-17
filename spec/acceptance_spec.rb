@@ -50,8 +50,13 @@ RSpec.describe MailCatcher, type: :feature do
     deliver(read_example(name), options)
   end
 
+  let(:wait) { Selenium::WebDriver::Wait.new }
+
   before do
     visit "/"
+
+    # Wait for the websocket to connect before delivering mail
+    wait.until { page.evaluate_script("MailCatcher.websocket.readyState") == 1 }
   end
 
   def messages_element
