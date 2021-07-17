@@ -171,7 +171,7 @@ module MailCatcher extend self
       $stdout.sync = $stderr.sync = true
     end
 
-    puts "Starting MailCatcher"
+    puts "Starting MailCatcher v#{VERSION}"
 
     Thin::Logging.debug = development?
     Thin::Logging.silent = !development?
