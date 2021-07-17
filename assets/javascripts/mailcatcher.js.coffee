@@ -340,6 +340,6 @@ class MailCatcher
       @resizeTo height
 
   hasQuit: ->
-    location.replace $("body > header h1 a").attr("href")
+    location.assign $("body > header h1 a").attr("href")
 
 $ -> window.MailCatcher = new MailCatcher
