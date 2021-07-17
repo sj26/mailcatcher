@@ -54,7 +54,9 @@ end
 
 require "rspec/core/rake_task"
 
-RSpec::Core::RakeTask.new(:test)
+RSpec::Core::RakeTask.new(:test) do |rspec|
+  rspec.rspec_opts = "--format doc"
+end
 
 task :test => :assets
 

@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
-ENV["MAILCATCHER_ENV"] ||= "test"
+require "spec_helper"
 
 require "mail_catcher"
-require "socket"
+
 require "net/smtp"
-require "selenium-webdriver"
+require "socket"
 
-SMTP_PORT = 20025
-HTTP_PORT = 20080
-
-RSpec.describe MailCatcher do
+RSpec.describe MailCatcher, type: :feature do
   DEFAULT_FROM = "from@example.com"
   DEFAULT_TO = "to@example.com"
+
+  SMTP_PORT = 20025
+  HTTP_PORT = 20080
 
   before :all do
     # Start MailCatcher
@@ -25,6 +25,9 @@ RSpec.describe MailCatcher do
     rescue Errno::ECONNREFUSED
       retry
     end
+
+    # Tell Capybara to talk to the process
+    Capybara.app_host = "http://127.0.0.1:20080"
   end
 
   after :all do
@@ -47,220 +50,199 @@ RSpec.describe MailCatcher do
     deliver(read_example(name), options)
   end
 
-  def selenium
-    @selenium ||=
-      begin
-        options = Selenium::WebDriver::Chrome::Options.new
-        options.headless! unless ENV["HEADLESS"] == "false"
-        options.add_argument "no-sandbox" if ENV["CI"]
-
-        Selenium::WebDriver.for(:chrome, options: options).tap do |selenium|
-          if ENV["CI"]
-            selenium.manage.timeouts.page_load = 10 # seconds
-            selenium.manage.timeouts.implicit_wait = 10 # seconds
-          end
-        end
-      end
-  end
-
-  def wait
-    @wait ||= Selenium::WebDriver::Wait.new
-  end
+  let(:wait) { Selenium::WebDriver::Wait.new }
 
   before do
-    selenium.navigate.to("http://127.0.0.1:#{HTTP_PORT}")
+    visit "/"
+
+    # Wait for the websocket to connect before delivering mail
+    wait.until { page.evaluate_script("MailCatcher.websocket.readyState") == 1 }
   end
 
   def messages_element
-    selenium.find_element(:id, "messages")
+    page.find("#messages")
   end
 
   def message_row_element
-    messages_element.find_element(:xpath, ".//table/tbody/tr[1]")
+    messages_element.find(:xpath, ".//table/tbody/tr[1]")
   end
 
   def message_from_element
-    message_row_element.find_element(:xpath, ".//td[1]")
+    message_row_element.find(:xpath, ".//td[1]")
   end
 
   def message_to_element
-    message_row_element.find_element(:xpath, ".//td[2]")
+    message_row_element.find(:xpath, ".//td[2]")
   end
 
   def message_subject_element
-    message_row_element.find_element(:xpath, ".//td[3]")
+    message_row_element.find(:xpath, ".//td[3]")
   end
 
   def message_received_element
-    message_row_element.find_element(:xpath, ".//td[4]")
+    message_row_element.find(:xpath, ".//td[4]")
   end
 
   def html_tab_element
-    selenium.find_element(:css, "#message header .format.html a")
+    page.find("#message header .format.html a")
   end
 
   def plain_tab_element
-    selenium.find_element(:css, "#message header .format.plain a")
+    page.find("#message header .format.plain a")
   end
 
   def source_tab_element
-    selenium.find_element(:css, "#message header .format.source a")
-  end
-
-  def iframe_element
-    selenium.find_element(:css, "#message iframe")
+    page.find("#message header .format.source a")
   end
 
   def body_element
-    selenium.find_element(:tag_name, "body")
+    page.find("body")
   end
 
   it "catches and displays a plain text message as plain text and source" do
     deliver_example("plainmail")
 
-    expect(message_from_element.text).to include(DEFAULT_FROM)
-    expect(message_to_element.text).to include(DEFAULT_TO)
-    expect(message_subject_element.text).to include("Plain mail")
+    expect(page).to have_selector("#messages table tbody tr:first-of-type", text: "Plain mail")
+
+    expect(message_from_element).to have_text(DEFAULT_FROM)
+    expect(message_to_element).to have_text(DEFAULT_TO)
+    expect(message_subject_element).to have_text("Plain mail")
     expect(Time.parse(message_received_element.text)).to be <= Time.now + 5
 
     message_row_element.click
 
-    wait.until { source_tab_element.displayed? }
-    wait.until { plain_tab_element.displayed? }
-    wait.until { !html_tab_element.displayed? }
+    expect(source_tab_element).to be_visible
+    expect(plain_tab_element).to be_visible
+    expect(page).to have_no_selector("#message header .format.html a")
 
     plain_tab_element.click
 
-    wait.until { iframe_element.displayed? }
-    expect(iframe_element.attribute(:src)).to match(/\.plain\Z/)
+    within_frame do
+      expect(body_element).to have_no_text("Subject: Plain mail")
+      expect(body_element).to have_text("Here's some text")
+    end
 
-    selenium.switch_to.frame(iframe_element)
-
-    expect(body_element.text).not_to include("Subject: Plain mail")
-    expect(body_element.text).to include("Here's some text")
-
-    selenium.switch_to.default_content
     source_tab_element.click
-    selenium.switch_to.frame(iframe_element)
 
-    expect(body_element.text).to include("Subject: Plain mail")
-    expect(body_element.text).to include("Here's some text")
+    within_frame do
+      expect(body_element.text).to include("Subject: Plain mail")
+      expect(body_element.text).to include("Here's some text")
+    end
   end
 
   it "catches and displays an html message as html and source" do
     deliver_example("htmlmail")
 
-    expect(message_from_element.text).to include(DEFAULT_FROM)
-    expect(message_to_element.text).to include(DEFAULT_TO)
-    expect(message_subject_element.text).to eql("Test HTML Mail")
+    expect(page).to have_selector("#messages table tbody tr:first-of-type", text: "Test HTML Mail")
+
+    expect(message_from_element).to have_text(DEFAULT_FROM)
+    expect(message_to_element).to have_text(DEFAULT_TO)
+    expect(message_subject_element).to have_text("Test HTML Mail")
     expect(Time.parse(message_received_element.text)).to be <= Time.now + 5
 
     message_row_element.click
 
-    wait.until { source_tab_element.displayed? }
-    wait.until { !plain_tab_element.displayed? }
-    wait.until { html_tab_element.displayed? }
+    expect(source_tab_element).to be_visible
+    expect(page).to have_no_selector("#message header .format.plain a")
+    expect(html_tab_element).to be_visible
 
     html_tab_element.click
 
-    wait.until { iframe_element.displayed? }
-    expect(iframe_element.attribute(:src)).to match(/\.html\Z/)
+    within_frame do
+      expect(page).to have_text("Yo, you slimey scoundrel.")
+      expect(page).to have_no_text("Content-Type: text/html")
+      expect(page).to have_no_text("Yo, you <em>slimey scoundrel</em>.")
+    end
 
-    selenium.switch_to.frame(iframe_element)
-
-    expect(body_element.text).to include("Yo, you slimey scoundrel.")
-    expect(body_element.text).not_to include("Content-Type: text/html")
-    expect(body_element.text).not_to include("Yo, you <em>slimey scoundrel</em>.")
-
-    selenium.switch_to.default_content
     source_tab_element.click
-    selenium.switch_to.frame(iframe_element)
 
-    expect(body_element.text).to include "Content-Type: text/html"
-    expect(body_element.text).to include "Yo, you <em>slimey scoundrel</em>."
-    expect(body_element.text).not_to include "Yo, you slimey scoundrel."
+    within_frame do
+      expect(page).to have_no_text("Yo, you slimey scoundrel.")
+      expect(page).to have_text("Content-Type: text/html")
+      expect(page).to have_text("Yo, you <em>slimey scoundrel</em>.")
+    end
   end
 
   it "catches and displays a multipart message as text, html and source" do
     deliver_example("multipartmail")
 
-    expect(message_from_element.text).to include DEFAULT_FROM
-    expect(message_to_element.text).to include DEFAULT_TO
-    expect(message_subject_element.text).to eql "Test Multipart Mail"
+    expect(page).to have_selector("#messages table tbody tr:first-of-type", text: "Test Multipart Mail")
+
+    expect(message_from_element).to have_text(DEFAULT_FROM)
+    expect(message_to_element).to have_text(DEFAULT_TO)
+    expect(message_subject_element).to have_text("Test Multipart Mail")
     expect(Time.parse(message_received_element.text)).to be <= Time.now + 5
 
     message_row_element.click
 
-    wait.until { source_tab_element.displayed? }
-    wait.until { plain_tab_element.displayed? }
-    wait.until { html_tab_element.displayed? }
+    expect(source_tab_element).to be_visible
+    expect(plain_tab_element).to be_visible
+    expect(html_tab_element).to be_visible
 
     plain_tab_element.click
 
-    wait.until { iframe_element.displayed? }
-    expect(iframe_element.attribute(:src)).to match /\.plain\Z/
+    within_frame do
+      expect(page).to have_text "Plain text mail"
+      expect(page).to have_no_text "HTML mail"
+      expect(page).to have_no_text "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+    end
 
-    selenium.switch_to.frame(iframe_element)
-
-    expect(body_element.text).to include "Plain text mail"
-    expect(body_element.text).not_to include "HTML mail"
-    expect(body_element.text).not_to include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
-
-    selenium.switch_to.default_content
     html_tab_element.click
-    selenium.switch_to.frame(iframe_element)
 
-    expect(body_element.text).to include "HTML mail"
-    expect(body_element.text).not_to include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+    within_frame do
+      expect(page).to have_no_text "Plain text mail"
+      expect(page).to have_text "HTML mail"
+      expect(page).to have_no_text "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+    end
 
-    selenium.switch_to.default_content
     source_tab_element.click
-    selenium.switch_to.frame(iframe_element)
 
-    expect(body_element.text).to include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
-    expect(body_element.text).to include "Plain text mail"
-    expect(body_element.text).to include "<em>HTML</em> mail"
+    within_frame do
+      expect(page).to have_text "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+      expect(page).to have_text "Plain text mail"
+      expect(page).to have_text "<em>HTML</em> mail"
+    end
   end
 
   it "catches and displays a multipart UTF8 message as text, html and source" do
     deliver_example("multipartmail-with-utf8")
 
-    expect(message_from_element.text).to include DEFAULT_FROM
-    expect(message_to_element.text).to include DEFAULT_TO
-    expect(message_subject_element.text).to eql "Test Multipart UTF8 Mail"
+    expect(page).to have_selector("#messages table tbody tr:first-of-type", text: "Test Multipart UTF8 Mail")
+
+    expect(message_from_element).to have_text(DEFAULT_FROM)
+    expect(message_to_element).to have_text(DEFAULT_TO)
+    expect(message_subject_element).to have_text("Test Multipart UTF8 Mail")
     expect(Time.parse(message_received_element.text)).to be <= Time.now + 5
 
     message_row_element.click
 
-    wait.until { source_tab_element.displayed? }
-    wait.until { plain_tab_element.displayed? }
-    wait.until { html_tab_element.displayed? }
+    expect(source_tab_element).to be_visible
+    expect(plain_tab_element).to be_visible
+    expect(html_tab_element).to be_visible
 
     plain_tab_element.click
 
-    wait.until { iframe_element.displayed? }
-    expect(iframe_element.attribute(:src)).to match /\.plain\Z/
+    within_frame do
+      expect(page).to have_text "Plain text mail"
+      expect(page).to have_no_text "© HTML mail"
+      expect(page).to have_no_text "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+    end
 
-    selenium.switch_to.frame(iframe_element)
-
-    expect(body_element.text).to include "Plain text mail"
-    expect(body_element.text).not_to include "HTML mail"
-    expect(body_element.text).not_to include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
-
-    selenium.switch_to.default_content
     html_tab_element.click
-    selenium.switch_to.frame(iframe_element)
 
-    expect(body_element.text).to include "HTML mail"
-    expect(body_element.text).not_to include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+    within_frame do
+      expect(page).to have_no_text "Plain text mail"
+      expect(page).to have_text "© HTML mail"
+      expect(page).to have_no_text "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+    end
 
-    selenium.switch_to.default_content
     source_tab_element.click
-    selenium.switch_to.frame(iframe_element)
 
-    expect(body_element.text).to include "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
-    expect(body_element.text).to include "Plain text mail"
-    expect(body_element.text).to include "<em>© HTML</em> mail"
+    within_frame do
+      expect(page).to have_text "Content-Type: multipart/alternative; boundary=BOUNDARY--198849662"
+      expect(page).to have_text "Plain text mail"
+      expect(page).to have_text "<em>© HTML</em> mail"
+    end
   end
 
   it "catches and displays an unknown message as source" do

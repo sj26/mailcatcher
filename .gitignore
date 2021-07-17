@@ -11,3 +11,7 @@
 
 # Build gems
 *.gem
+
+# Test artifacts
+/screenshot_*
+/chrome.log
