@@ -39,7 +39,6 @@ Usage: mailcatcher [options]
         --http-port PORT             Set the port address of the http server
         --http-path PATH             Add a prefix to all HTTP paths
         --no-quit                    Don't allow quitting the process
-        --[no-]growl
     -f, --foreground                 Run in the foreground
     -b, --browse                     Open web browser
     -v, --verbose                    Be more verbose
