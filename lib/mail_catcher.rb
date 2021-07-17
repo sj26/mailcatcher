@@ -223,7 +223,7 @@ protected
   end
 
   def http_url
-    "http://#{@@options[:http_ip]}:#{@@options[:http_port]}#{@@options[:http_path]}"
+    "http://#{@@options[:http_ip]}:#{@@options[:http_port]}#{@@options[:http_path]}".chomp("/")
   end
 
   def rescue_port port
