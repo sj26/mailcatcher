@@ -45,10 +45,6 @@ module MailCatcher extend self
     RbConfig::CONFIG["host_os"] =~ /mswin|mingw/
   end
 
-  def macruby?
-    mac? and const_defined? :MACRUBY_VERSION
-  end
-
   def browseable?
     windows? or which? "open"
   end
