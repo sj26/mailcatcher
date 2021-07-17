@@ -292,11 +292,11 @@ class MailCatcher
         text = text.replace(/</g, "&lt;")
         text = text.replace(/>/g, "&gt;")
         text = text.replace(/"/g, "&quot;")
-        text = text.replace(/\n/g, "<br/>")
 
         # Autolink text
         text = text.replace(/((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?)/g, """<a href="$1" target="_blank">$1</a>""")
-        message_iframe.find("html").html("<body>#{text}</body>")
+
+        message_iframe.find("html").html("""<body style="white-space: pre-wrap">#{text}</body>""")
 
   refresh: ->
     $.getJSON "messages", (messages) =>
