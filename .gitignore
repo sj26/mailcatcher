@@ -11,3 +11,6 @@
 
 # Build gems
 *.gem
+
+# Temp area, used for testing artifacts
+/tmp

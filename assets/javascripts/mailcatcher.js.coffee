@@ -57,11 +57,13 @@ class MailCatcher
     $("nav.app .quit a").on "click", (e) =>
       e.preventDefault()
       if confirm "You will lose all your received messages.\n\nAre you sure you want to quit?"
+        @quitting = true
         $.ajax
           type: "DELETE"
-          success: ->
-            location.replace $("body > header h1 a").attr("href")
-          error: ->
+          success: =>
+            @hasQuit()
+          error: =>
+            @quitting = false
             alert "Error while quitting."
 
     @favcount = new Favcount($("""link[rel="icon"]""").attr("href"))
@@ -284,12 +286,17 @@ class MailCatcher
       when "plain"
         message_iframe = $("#message iframe").contents()
         text = message_iframe.text()
+
+        # Escape special characters
         text = text.replace(/&/g, "&amp;")
         text = text.replace(/</g, "&lt;")
         text = text.replace(/>/g, "&gt;")
-        text = text.replace(/\n/g, "<br/>")
+        text = text.replace(/"/g, "&quot;")
+
+        # Autolink text
         text = text.replace(/((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?)/g, """<a href="$1" target="_blank">$1</a>""")
-        message_iframe.find("html").html("<html><body>#{text}</html></body>")
+
+        message_iframe.find("html").html("""<body style="font-family: sans-serif; white-space: pre-wrap">#{text}</body>""")
 
   refresh: ->
     $.getJSON "messages", (messages) =>
@@ -317,6 +324,9 @@ class MailCatcher
         @removeMessage(data.id)
       else if data.type == "clear"
         @clearMessages()
+      else if data.type == "quit" and not @quitting
+        alert "MailCatcher has been quit"
+        @hasQuit()
 
   subscribePoll: ->
     unless @refreshInterval?
@@ -333,5 +343,8 @@ class MailCatcher
     height = parseInt(window.localStorage?.getItem(@resizeToSavedKey))
     unless isNaN height
       @resizeTo height
+
+  hasQuit: ->
+    location.assign $("body > header h1 a").attr("href")
 
 $ -> window.MailCatcher = new MailCatcher

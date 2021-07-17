@@ -26,7 +26,7 @@ MailCatcher runs a super simple SMTP server which catches any message sent to it
 3. Go to http://127.0.0.1:1080/
 4. Send mail through smtp://127.0.0.1:1025
 
-## Command Line Options
+### Command Line Options
 
 Use `mailcatcher --help` to see the command line options.
 
@@ -39,7 +39,6 @@ Usage: mailcatcher [options]
         --http-port PORT             Set the port address of the http server
         --http-path PATH             Add a prefix to all HTTP paths
         --no-quit                    Don't allow quitting the process
-        --[no-]growl
     -f, --foreground                 Run in the foreground
     -b, --browse                     Open web browser
     -v, --verbose                    Be more verbose
@@ -48,7 +47,7 @@ Usage: mailcatcher [options]
 
 ### Ruby
 
-If you have trouble with the above commands, make sure you have [Ruby installed](https://www.ruby-lang.org/en/documentation/installation/):
+If you have trouble with the setup commands, make sure you have [Ruby installed](https://www.ruby-lang.org/en/documentation/installation/):
 
 ```
 ruby -v
