@@ -213,6 +213,8 @@ module MailCatcher extend self
   end
 
   def quit!
+    MailCatcher::Bus.push(type: "quit")
+
     EventMachine.next_tick { EventMachine.stop_event_loop }
   end
 

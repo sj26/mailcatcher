@@ -57,11 +57,13 @@ class MailCatcher
     $("nav.app .quit a").on "click", (e) =>
       e.preventDefault()
       if confirm "You will lose all your received messages.\n\nAre you sure you want to quit?"
+        @quitting = true
         $.ajax
           type: "DELETE"
-          success: ->
-            location.replace $("body > header h1 a").attr("href")
-          error: ->
+          success: =>
+            @hasQuit()
+          error: =>
+            @quitting = false
             alert "Error while quitting."
 
     @favcount = new Favcount($("""link[rel="icon"]""").attr("href"))
@@ -317,6 +319,9 @@ class MailCatcher
         @removeMessage(data.id)
       else if data.type == "clear"
         @clearMessages()
+      else if data.type == "quit" and not @quitting
+        alert "MailCatcher has been quit"
+        @hasQuit()
 
   subscribePoll: ->
     unless @refreshInterval?
@@ -333,5 +338,8 @@ class MailCatcher
     height = parseInt(window.localStorage?.getItem(@resizeToSavedKey))
     unless isNaN height
       @resizeTo height
+
+  hasQuit: ->
+    location.replace $("body > header h1 a").attr("href")
 
 $ -> window.MailCatcher = new MailCatcher
