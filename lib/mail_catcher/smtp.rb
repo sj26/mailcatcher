@@ -196,7 +196,7 @@ module MailCatcher
               when 'HELO'
                 write_response 250, hostname
               when 'EHLO'
-                write_response 250, hostname, 'CHUNKING', '8BITMIME', 'BINARYMIME', 'SMTPUTF8'
+                write_response 250, hostname, '8BITMIME', 'BINARYMIME', 'SMTPUTF8'
               when 'SEND'
                 write_response 502, 'Command not implemented'
               when 'SOML'
