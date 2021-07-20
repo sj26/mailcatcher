@@ -69,7 +69,7 @@ gem install thin -v 1.5.1 -- --with-cflags="-Wno-error=implicit-function-declara
 
 ### Bundler
 
-Please don't put mailcatcher into your Gemfile. It will conflict with your applications gems at some point.
+Please don't put mailcatcher into your Gemfile. It will conflict with your application's gems at some point.
 
 Instead, pop a note in your README stating you use mailcatcher, and to run `gem install mailcatcher` then `mailcatcher` to get started.
 
