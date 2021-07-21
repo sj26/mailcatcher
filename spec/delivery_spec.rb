@@ -2,63 +2,7 @@
 
 require "spec_helper"
 
-require "mail_catcher"
-
-require "net/smtp"
-require "socket"
-
 RSpec.describe MailCatcher, type: :feature do
-  DEFAULT_FROM = "from@example.com"
-  DEFAULT_TO = "to@example.com"
-
-  SMTP_PORT = 20025
-  HTTP_PORT = 20080
-
-  before :all do
-    # Start MailCatcher
-    @pid = spawn "bundle", "exec", "mailcatcher", "--foreground", "--smtp-port", SMTP_PORT.to_s, "--http-port", HTTP_PORT.to_s
-
-    # Wait for it to boot
-    begin
-      TCPSocket.new("127.0.0.1", SMTP_PORT).close
-      TCPSocket.new("127.0.0.1", HTTP_PORT).close
-    rescue Errno::ECONNREFUSED
-      retry
-    end
-
-    # Tell Capybara to talk to the process
-    Capybara.app_host = "http://127.0.0.1:20080"
-  end
-
-  after :all do
-    # Quit MailCatcher at the end
-    Process.kill("TERM", @pid) and Process.wait
-  end
-
-  def deliver(message, options={})
-    options = {:from => DEFAULT_FROM, :to => DEFAULT_TO}.merge(options)
-    Net::SMTP.start('127.0.0.1', SMTP_PORT) do |smtp|
-      smtp.send_message message, options[:from], options[:to]
-    end
-  end
-
-  def read_example(name)
-    File.read(File.expand_path("../../examples/#{name}", __FILE__))
-  end
-
-  def deliver_example(name, options={})
-    deliver(read_example(name), options)
-  end
-
-  let(:wait) { Selenium::WebDriver::Wait.new }
-
-  before do
-    visit "/"
-
-    # Wait for the websocket to connect before delivering mail
-    wait.until { page.evaluate_script("MailCatcher.websocket.readyState") == 1 }
-  end
-
   def messages_element
     page.find("#messages")
   end
