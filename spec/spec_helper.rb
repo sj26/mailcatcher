@@ -44,7 +44,11 @@ Capybara.configure do |config|
   config.save_path = File.expand_path("../tmp/capybara", __dir__)
 end
 
+# Tell Capybara to talk to mailcatcher
+Capybara.app_host = "http://#{LOCALHOST}:#{HTTP_PORT}"
+
 RSpec.configure do |config|
+  # Helpers for delivering example email
   def deliver(message, options={})
     options = {:from => DEFAULT_FROM, :to => DEFAULT_TO}.merge(options)
     Net::SMTP.start(LOCALHOST, SMTP_PORT) do |smtp|
@@ -91,23 +95,21 @@ RSpec.configure do |config|
     Selenium::WebDriver::Wait.new
   end
 
-  config.before :all, type: :feature do
-    # Start MailCatcher
-    @pid = spawn "bundle", "exec", "mailcatcher", "--foreground", "--smtp-port", SMTP_PORT.to_s, "--http-port", HTTP_PORT.to_s
+  config.before :each, type: :feature do
+    # If not already started, or quit ..
+    unless @pid && (Process.kill(0, @pid) rescue false)
+      # Start MailCatcher
+      @pid = spawn "bundle", "exec", "mailcatcher", "--foreground", "--smtp-port", SMTP_PORT.to_s, "--http-port", HTTP_PORT.to_s
 
-    # Wait for it to boot
-    begin
-      TCPSocket.new(LOCALHOST, SMTP_PORT).close
-      TCPSocket.new(LOCALHOST, HTTP_PORT).close
-    rescue Errno::ECONNREFUSED
-      retry
+      # Wait for it to boot
+      begin
+        TCPSocket.new(LOCALHOST, SMTP_PORT).close
+        TCPSocket.new(LOCALHOST, HTTP_PORT).close
+      rescue Errno::ECONNREFUSED
+        retry
+      end
     end
 
-    # Tell Capybara to talk to the process
-    Capybara.app_host = "http://#{LOCALHOST}:#{HTTP_PORT}"
-  end
-
-  config.before :each, type: :feature do
     # Open the web interface
     visit "/"
 
@@ -116,7 +118,9 @@ RSpec.configure do |config|
   end
 
   config.after :all, type: :feature do
-    # Quit MailCatcher at the end
-    Process.kill("TERM", @pid) and Process.wait
+    # Quit any remaining subprocesses at the end
+    Process.kill("TERM", 0) and Process.wait
+  rescue Errno::ESRCH
+    # It's already gone
   end
 end
