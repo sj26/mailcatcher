@@ -5,14 +5,8 @@ require "net/http"
 require "uri"
 
 require "sinatra"
-require "skinny"
-
-require "mail_catcher/bus"
+require 'async/websocket/adapters/rack'
 require "mail_catcher/mail"
-
-class Sinatra::Request
-  include Skinny::Helpers
-end
 
 module MailCatcher
   module Web
@@ -61,21 +55,32 @@ module MailCatcher
       end
 
       get "/messages" do
-        if request.websocket?
-          request.websocket!(
-            :on_start => proc do |websocket|
-              bus_subscription = MailCatcher::Bus.subscribe do |message|
+        if Async::WebSocket::Adapters::Rack.websocket?(env)
+          Async::WebSocket::Adapters::Rack.open(env, protocols: %w[ws]) do |connection|
+            Async.logger.debug(connection, "Websocket connection opened")
+            begin
+              queue = Async::Queue.new
+
+              subscription_id = MailCatcher::Bus.subscribe { |message| queue << message }
+              Async.logger.debug(connection, "Websocket connection subscribed to bus: #{subscription_id}")
+
+              queue.each do |message|
                 begin
-                  websocket.send_message(JSON.generate(message))
-                rescue => exception
-                  MailCatcher.log_exception("Error sending message through websocket", message, exception)
+                  Async.logger.debug(connection, "Sending #{message}")
+                  connection.write(message)
+                  connection.flush
+                rescue IOError
+                  Async.logger.error(connection, "Failed sending #{message}", $!)
+                  raise
                 end
               end
-
-              websocket.on_close do |*|
-                MailCatcher::Bus.unsubscribe bus_subscription
-              end
-            end)
+            rescue
+              Async.logger.error(connection, "Connection error", $!)
+            ensure
+              Async.logger.debug(connection, "Unsubscribing from bus, subscription #{subscription_id}")
+              MailCatcher::Bus.unsubscribe(subscription_id)
+            end
+          end
         else
           content_type :json
           JSON.generate(Mail.messages)
