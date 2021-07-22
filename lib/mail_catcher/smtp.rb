@@ -162,7 +162,7 @@ module MailCatcher
           COLON = ':'
           DOT = '.'
 
-          def initialize(stream, hostname: nil)
+          def initialize(stream, *args)
             super(stream, CRLF)
 
             @hostname = hostname
@@ -377,11 +377,11 @@ module MailCatcher
     require 'async/io/stream'
 
     class Server
-      def initialize(endpoint, protocol = endpoint.protocol)
+      def initialize(endpoint, protocol = endpoint.protocol, &block)
         @endpoint = endpoint
         @protocol = protocol
 
-        define_singleton_method(:call, &proc) if block_given?
+        define_singleton_method(:call, block) if block
       end
 
       def accept(peer, address, task: Async::Task.current)
