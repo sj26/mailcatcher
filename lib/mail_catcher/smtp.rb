@@ -192,7 +192,7 @@ module MailCatcher
             loop do
               line = read_line
               command, line = line.split(SP, 2)
-              case command
+              case command.upcase
               when 'HELO'
                 write_response 250, hostname
               when 'EHLO'
