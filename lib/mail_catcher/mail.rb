@@ -35,7 +35,7 @@ module MailCatcher::Mail extend self
             FOREIGN KEY (message_id) REFERENCES message (id) ON DELETE CASCADE
           )
         SQL
-        db.foreign_keys = true
+        db.execute("PRAGMA foreign_keys = ON")
       end
     end
   end
