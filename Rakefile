@@ -2,6 +2,7 @@
 
 require "fileutils"
 require "rubygems"
+require 'rspec/core/rake_task'
 
 require "mail_catcher/version"
 

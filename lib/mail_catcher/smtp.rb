@@ -1,68 +1,415 @@
 # frozen_string_literal: true
 
-require "eventmachine"
+require "uri"
 
-require "mail_catcher/mail"
+require "async/io/endpoint"
+require "async/io/host_endpoint"
+require "async/io/ssl_endpoint"
 
-class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
-  # We override EM's mail from processing to allow multiple mail-from commands
-  # per [RFC 2821](https://tools.ietf.org/html/rfc2821#section-4.1.1.2)
-  def process_mail_from sender
-    if @state.include? :mail_from
-      @state -= [:mail_from, :rcpt, :data]
+module MailCatcher
+  module SMTP
+    class URLEndpoint < Async::IO::Endpoint
+      def self.parse(string, **options)
+        url = URI.parse(string).normalize
 
-      receive_reset
+        new(url, **options)
+      end
+
+      def initialize(url, endpoint = nil, **options)
+        super(**options)
+
+        raise ArgumentError, "URL must be absolute (include scheme, host): #{url}" unless url.absolute?
+
+        @url = url
+        @endpoint = endpoint
+      end
+
+      def to_s
+        @url.to_s
+      end
+
+      attr :url, :options
+
+      def address
+        endpoint.address
+      end
+
+      def secure?
+        ['smtps'].include?(@url.scheme)
+      end
+
+      def protocol
+        Protocol::SMTP
+      end
+
+      def default_port
+        secure? ? 465 : 25
+      end
+
+      def default_port?
+        port == default_port
+      end
+
+      def port
+        @options[:port] || @url.port || default_port
+      end
+
+      def hostname
+        @options[:hostname] || @url.hostname
+      end
+
+      def scheme
+        @options[:scheme] || @url.scheme
+      end
+
+      def authority
+        if default_port?
+          hostname
+        else
+          "#{hostname}:#{port}"
+        end
+      end
+
+      def path
+        @url.path
+      end
+
+      LOCALHOST = 'localhost'
+
+      # We don't try to validate peer certificates when talking to localhost because they would always be self-signed.
+      def ssl_verify_mode
+        case hostname
+        when LOCALHOST
+          OpenSSL::SSL::VERIFY_NONE
+        else
+          OpenSSL::SSL::VERIFY_PEER
+        end
+      end
+
+      def ssl_context
+        @options[:ssl_context] || ::OpenSSL::SSL::SSLContext.new.tap do |context|
+          context.set_params(
+            verify_mode: ssl_verify_mode
+          )
+        end
+      end
+
+      def tcp_options
+        { reuse_port: @options[:reuse_port] ? true : false }
+      end
+
+      def build_endpoint(endpoint = nil)
+        endpoint ||= Async::IO::Endpoint.tcp(hostname, port, tcp_options)
+
+        if secure?
+          # Wrap it in SSL:
+          return Async::IO::SSLEndpoint.new(endpoint,
+                                            ssl_context: ssl_context,
+                                            hostname: hostname)
+        end
+
+        endpoint
+      end
+
+      def endpoint
+        @endpoint ||= build_endpoint
+      end
+
+      def bind(*args, &block)
+        endpoint.bind(*args, &block)
+      end
+
+      def connect(*args, &block)
+        endpoint.connect(*args, &block)
+      end
+
+      def each
+        return to_enum unless block_given?
+
+        endpoint.each do |endpoint|
+          yield self.class.new(@url, endpoint, @options)
+        end
+      end
+
+      def key
+        [@url.scheme, @url.userinfo, @url.host, @url.port, @options]
+      end
+
+      def eql?(other)
+        key.eql? other.key
+      end
+
+      def hash
+        key.hash
+      end
     end
 
-    super
-  end
+    Envelope = Struct.new(:sender, :recipients, :content)
 
-  def current_message
-    @current_message ||= {}
-  end
+    require 'async/io/protocol/line'
 
-  def receive_reset
-    @current_message = nil
+    module Protocol
+      module SMTP
+        def self.server(stream, *args)
+          Server.new(stream, *args)
+        end
 
-    true
-  end
+        class Server < Async::IO::Protocol::Line
+          CR = "\r"
+          LF = "\n"
+          CRLF = "\r\n"
+          SP = ' '
+          COLON = ':'
+          DOT = '.'
 
-  def receive_sender(sender)
-    # EventMachine SMTP advertises size extensions [https://tools.ietf.org/html/rfc1870]
-    # so strip potential " SIZE=..." suffixes from senders
-    sender = $` if sender =~ / SIZE=\d+\z/
+          def initialize(stream, *args)
+            super(stream, CRLF)
 
-    current_message[:sender] = sender
+            @hostname = hostname
+            @state = {}
+          end
 
-    true
-  end
+          attr :hostname
 
-  def receive_recipient(recipient)
-    current_message[:recipients] ||= []
-    current_message[:recipients] << recipient
+          def read_line
+            if line = @stream.read_until(LF)
+              line.chomp(CR)
+            else
+              @stream.eof!
+            end
+          end
 
-    true
-  end
+          alias write_line write_lines
 
-  def receive_data_chunk(lines)
-    current_message[:source] ||= +""
+          def write_response(code, *lines, last_line)
+            write_lines(*lines.map { |line| "#{code}-#{line}" },
+                        "#{code} #{last_line}")
+          end
 
-    lines.each do |line|
-      current_message[:source] << line << "\r\n"
+          def each(task: Async::Task.current)
+            write_response 220, 'MailCatcher ready'
+
+            loop do
+              line = read_line
+              command, line = line.split(SP, 2)
+              case command.upcase
+              when 'HELO'
+                write_response 250, hostname
+              when 'EHLO'
+                write_response 250, hostname, '8BITMIME', 'BINARYMIME', 'SMTPUTF8'
+              when 'SEND'
+                write_response 502, 'Command not implemented'
+              when 'SOML'
+                write_response 502, 'Command not implemented'
+              when 'SAML'
+                write_response 502, 'Command not implemented'
+              when 'MAIL'
+                from, line = line.split(COLON, 2)
+                unless from == 'FROM'
+                  write_response 500, 'Syntax error, command unrecognized'
+                  next
+                end
+                sender, line = line.split(SP, 2)
+                encoding = nil
+                if line && !line.empty?
+                  line.split(SP).each do |param|
+                    case param
+                    when 'BODY=7BIT'
+                      encoding = :ascii
+                    when 'BODY=8BITMIME'
+                      encoding = :binary
+                    when 'BODY=BINARYMIME'
+                      encoding = :binary
+                    when 'SMTPUTF8'
+                      encoding = :utf8
+                    else
+                      write_response 501, 'Unexpected parameters or arguments'
+                    end
+                  end
+                end
+                @state[:sender] = sender
+                @state[:encoding] = encoding if encoding
+                write_response 250, "New message from: #{sender}"
+              when 'RCPT'
+                unless @state[:sender]
+                  write_response 503, 'Bad sequence of commands'
+                  next
+                end
+                to, line = line.split(COLON, 2)
+                unless to == 'TO'
+                  write_response 501, 'Syntax error in parameters or arguments'
+                  next
+                end
+                recipient, line = line.split(SP, 2)
+                if line && !line.empty?
+                  write_response 501, 'Unexpected parameters or arguments'
+                  next
+                end
+                @state[:recipients] ||= []
+                @state[:recipients] << recipient
+                write_response 250, "Recipient added: #{recipient}"
+              when 'DATA'
+                unless @state[:sender] && @state[:recipients]
+                  write_response 503, 'Bad sequence of commands'
+                  next
+                end
+                if @state.key? :buffer # BDAT
+                  write_response 503, 'Bad sequence of commands'
+                  next
+                end
+                if line && !line.empty?
+                  write_response 501, 'Unexpected parameters or arguments'
+                  next
+                end
+                write_response 354, 'Start mail input; end with <CRLF>.<CRLF>'
+                buffer = ''.b
+                loop do
+                  line = read_line
+                  break if line == DOT
+
+                  line.delete_prefix!(DOT)
+                  buffer << line << CRLF
+                  task.yield
+                end
+                encoding = @state[:encoding]
+                begin
+                  case encoding
+                  when :ascii
+                    buffer.force_encoding(Encoding::ASCII)
+                  when :binary
+                    buffer.force_encoding(Encoding::BINARY)
+                  when :utf8, nil
+                    buffer.force_encoding(Encoding::UTF_8)
+                  end
+                rescue ArgumentError => e
+                  write_response 501, "Incorrect encoding (#{encoding}): #{e}"
+                  @state.clear
+                  next
+                end
+                yield Envelope.new(@state[:sender], @state[:recipients], buffer)
+                @state.clear
+                write_response 250, 'Message sent'
+              when 'BDAT'
+                unless @state[:sender] && @state[:recipients]
+                  write_response 503, 'Bad sequence of commands'
+                  next
+                end
+                size, line = line.split(SP, 2)
+                unless size.to_i.to_s == size
+                  write_response 501, 'Syntax error in parameters or arguments'
+                  next
+                end
+                size = size.to_i
+                last = false
+                if line == 'LAST'
+                  last = true
+                elsif line && !line.empty?
+                  write_response 501, 'Unexpected parameters or arguments'
+                  next
+                end
+                buffer = @state[:buffer] ||= ''.b
+                buffer << read(size)
+                if last
+                  begin
+                    case encoding
+                    when :ascii
+                      buffer.force_encoding(Encoding::ASCII)
+                    when :binary
+                      buffer.force_encoding(Encoding::BINARY)
+                    when :utf8, nil
+                      buffer.force_encoding(Encoding::UTF_8)
+                    end
+                  rescue ArgumentError => e
+                    write_response 500, "Bad encoding: #{e}"
+                    @state.clear
+                    next
+                  end
+                  yield Envelope.new(@state[:sender], @state[:recipients], buffer)
+                  @state.clear
+                  write_response 250, 'Message sent'
+                else
+                  write_response 250, 'Data received'
+                end
+              when 'RSET'
+                if line && !line.empty?
+                  write_response 501, 'Unexpected parameters or arguments'
+                  next
+                end
+                @state.clear
+                write_response 250, 'OK'
+              when 'NOOP'
+                if line && !line.empty?
+                  write_response 501, 'Unexpected parameters or arguments'
+                  next
+                end
+                write_response 250, 'OK'
+              when 'EXPN'
+                write_response 502, 'Command not implemented'
+              when 'VRFY'
+                write_response 502, 'Command not implemented'
+              when 'HELP'
+                write_response 502, 'Command not implemented'
+              when 'STARTTLS'
+                write_response 502, 'Command not implemented'
+              when 'QUIT'
+                if line && !line.empty?
+                  write_response 501, 'Unexpected parameters or arguments'
+                  next
+                end
+                write_response 221, 'Bye!'
+                close unless closed?
+                return
+              else
+                write_response 500, 'Syntax error, command unrecognized'
+              end
+
+              task.yield
+            end
+
+            close unless closed?
+          end
+        end
+      end
     end
 
-    true
-  end
+    require 'async'
+    require 'async/task'
+    require 'async/io/stream'
 
-  def receive_message
-    MailCatcher::Mail.add_message current_message
-    MailCatcher::Mail.delete_older_messages!
-    puts "==> SMTP: Received message from '#{current_message[:sender]}' (#{current_message[:source].length} bytes)"
-    true
-  rescue => exception
-    MailCatcher.log_exception("Error receiving message", @current_message, exception)
-    false
-  ensure
-    @current_message = nil
+    class Server
+      def initialize(endpoint, protocol = endpoint.protocol, &block)
+        @endpoint = endpoint
+        @protocol = protocol
+
+        define_singleton_method(:call, block) if block
+      end
+
+      def accept(peer, address, task: Async::Task.current)
+        Async.logger.debug(self) { "Incoming connnection from #{address.inspect}" }
+
+        stream = Async::IO::Stream.new(peer)
+        protocol = @protocol.server(stream, hostname: @endpoint.hostname)
+
+        protocol.each do |envelope|
+          Async.logger.debug(self) { "Incoming message from #{address.inspect}: #{envelope.inspect}" }
+
+          call(envelope)
+        end
+
+        Async.logger.debug(self) { "Connection from #{address.inspect} closed cleanly" }
+      rescue EOFError, Errno::ECONNRESET, Errno::EPIPE, Errno::EPROTOTYPE
+        # Sometimes client will disconnect without completing a result or reading the entire buffer. That means we are done.
+        # Errno::EPROTOTYPE is a bug with Darwin. It happens because the socket is lazily created (in Darwin).
+        Async.logger.debug(self) { "Connection from #{address.inspect} closed: #{$ERROR_INFO}" }
+      end
+
+      def call
+        raise NotImplementedError, 'Supply a block to MailCatcher::SMTP::Server.new or subclass and implement #call'
+      end
+
+      def run
+        @endpoint.accept(&method(:accept))
+      end
+    end
   end
 end
