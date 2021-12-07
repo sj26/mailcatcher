@@ -295,6 +295,7 @@ class MailCatcher
 
         # Autolink text
         text = text.replace(/((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?)/g, """<a href="$1" target="_blank">$1</a>""")
+        text = text.replace('window[&quot;_gaUserPrefs&quot;] = { ioo : function() { return true; } }', "")
 
         message_iframe.find("html").html("""<body style="font-family: sans-serif; white-space: pre-wrap">#{text}</body>""")
 
