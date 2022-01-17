@@ -40,6 +40,8 @@ MailCatcher v0.8.0
         --smtp-port PORT             Set the port of the smtp server
         --http-ip IP                 Set the ip address of the http server
         --http-port PORT             Set the port address of the http server
+        --http-basic-auth-username   Set the username for HTTP Basic Authentication
+        --http-basic-auth-password   Set the password for HTTP Basic Authentication
         --messages-limit COUNT       Only keep up to COUNT most recent messages
         --http-path PATH             Add a prefix to all HTTP paths
         --no-quit                    Don't allow quitting the process
