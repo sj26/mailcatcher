@@ -178,6 +178,12 @@ module MailCatcher extend self
 
     # One EventMachine loop...
     EventMachine.run do
+      trap("INT") do
+        EventMachine.add_timer(0) do
+          quit!
+        end
+      end
+
       # Set up an SMTP server to run within EventMachine
       rescue_port options[:smtp_port] do
         EventMachine.start_server options[:smtp_ip], options[:smtp_port], Smtp
@@ -187,7 +193,7 @@ module MailCatcher extend self
       # Let Thin set itself up inside our EventMachine loop
       # (Skinny/WebSockets just works on the inside)
       rescue_port options[:http_port] do
-        Thin::Server.start(options[:http_ip], options[:http_port], Web)
+        Thin::Server.start(options[:http_ip], options[:http_port], Web, signals: false)
         puts "==> #{http_url}"
       end
 

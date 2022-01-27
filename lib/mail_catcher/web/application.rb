@@ -5,14 +5,12 @@ require "net/http"
 require "uri"
 
 require "sinatra"
-require "skinny"
+require 'faye/websocket'
 
 require "mail_catcher/bus"
 require "mail_catcher/mail"
 
-class Sinatra::Request
-  include Skinny::Helpers
-end
+Faye::WebSocket.load_adapter('thin')
 
 module MailCatcher
   module Web
@@ -61,21 +59,26 @@ module MailCatcher
       end
 
       get "/messages" do
-        if request.websocket?
-          request.websocket!(
-            :on_start => proc do |websocket|
-              bus_subscription = MailCatcher::Bus.subscribe do |message|
-                begin
-                  websocket.send_message(JSON.generate(message))
-                rescue => exception
-                  MailCatcher.log_exception("Error sending message through websocket", message, exception)
-                end
-              end
+        env = request.env
+        if Faye::WebSocket.websocket?(env)
+          bus_subscription = nil
 
-              websocket.on_close do |*|
-                MailCatcher::Bus.unsubscribe bus_subscription
+          ws = Faye::WebSocket.new(env)
+          ws.on(:open) do |_|
+            bus_subscription = MailCatcher::Bus.subscribe do |message|
+              begin
+                ws.send(JSON.generate(message))
+              rescue => exception
+                MailCatcher.log_exception("Error sending message through websocket", message, exception)
               end
-            end)
+            end
+          end
+
+          ws.on(:close) do |_|
+            MailCatcher::Bus.unsubscribe(bus_subscription) if bus_subscription
+          end
+
+          ws.rack_response
         else
           content_type :json
           JSON.generate(Mail.messages)
