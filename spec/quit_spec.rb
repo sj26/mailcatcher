@@ -30,4 +30,15 @@ RSpec.describe "Quit", type: :feature do
     # .. and navigate to the mailcatcher website
     expect(page).to have_current_path "https://mailcatcher.me"
   end
+
+  it "quits cleanly on Ctrl+C" do
+    # Sending a SIGINT (Ctrl+C) ...
+    Process.kill(:SIGINT, @pid)
+
+    # .. should cause the process to exit cleanly
+    _, status = Process.wait2(@pid)
+
+    expect(status).to be_exited
+    expect(status).to be_success
+  end
 end
