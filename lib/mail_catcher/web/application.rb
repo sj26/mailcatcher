@@ -5,12 +5,12 @@ require "net/http"
 require "uri"
 
 require "sinatra"
-require 'faye/websocket'
+require "faye/websocket"
 
 require "mail_catcher/bus"
 require "mail_catcher/mail"
 
-Faye::WebSocket.load_adapter('thin')
+Faye::WebSocket.load_adapter("thin")
 
 module MailCatcher
   module Web
