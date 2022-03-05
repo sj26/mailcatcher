@@ -45,7 +45,7 @@ class MailCatcher::Smtp < EventMachine::Protocols::SmtpServer
   end
 
   def receive_data_chunk(lines)
-    current_message[:source] ||= "".dup
+    current_message[:source] ||= +""
 
     lines.each do |line|
       current_message[:source] << line << "\r\n"
