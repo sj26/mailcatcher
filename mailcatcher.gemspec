@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
   s.executables = ["mailcatcher", "catchmail"]
   s.extra_rdoc_files = ["README.md", "LICENSE"]
 
-  s.required_ruby_version = ">= 2.0.0"
+  s.required_ruby_version = ">= 2.6.0"
 
   s.add_dependency "eventmachine", "1.0.9.1"
   s.add_dependency "mail", "~> 2.3"
