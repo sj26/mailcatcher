@@ -96,18 +96,15 @@ RSpec.configure do |config|
   end
 
   config.before :each, type: :feature do
-    # If not already started, or quit ..
-    unless @pid && (Process.kill(0, @pid) rescue false)
-      # Start MailCatcher
-      @pid = spawn "bundle", "exec", "mailcatcher", "--foreground", "--smtp-port", SMTP_PORT.to_s, "--http-port", HTTP_PORT.to_s
+    # Start MailCatcher
+    @pid = spawn "bundle", "exec", "mailcatcher", "--foreground", "--smtp-port", SMTP_PORT.to_s, "--http-port", HTTP_PORT.to_s
 
-      # Wait for it to boot
-      begin
-        TCPSocket.new(LOCALHOST, SMTP_PORT).close
-        TCPSocket.new(LOCALHOST, HTTP_PORT).close
-      rescue Errno::ECONNREFUSED
-        retry
-      end
+    # Wait for it to boot
+    begin
+      Socket.tcp(LOCALHOST, SMTP_PORT, connect_timeout: 1) { |s| s.close }
+      Socket.tcp(LOCALHOST, HTTP_PORT, connect_timeout: 1) { |s| s.close }
+    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT
+      retry
     end
 
     # Open the web interface
@@ -117,9 +114,10 @@ RSpec.configure do |config|
     wait.until { page.evaluate_script("MailCatcher.websocket.readyState") == 1 rescue false }
   end
 
-  config.after :all, type: :feature do
-    # Quit any remaining subprocesses at the end
-    Process.kill("TERM", 0) and Process.wait
+  config.after :each, type: :feature do
+    # Quit MailCatcher
+    Process.kill("TERM", @pid)
+    Process.wait
   rescue Errno::ESRCH
     # It's already gone
   end
