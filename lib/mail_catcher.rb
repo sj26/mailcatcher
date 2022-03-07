@@ -178,6 +178,12 @@ module MailCatcher extend self
 
     # One EventMachine loop...
     EventMachine.run do
+      trap("INT") do
+        EventMachine.add_timer(0) do
+          quit!
+        end
+      end
+
       # Set up an SMTP server to run within EventMachine
       rescue_port options[:smtp_port] do
         EventMachine.start_server options[:smtp_ip], options[:smtp_port], Smtp
