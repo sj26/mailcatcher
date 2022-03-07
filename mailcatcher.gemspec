@@ -39,6 +39,7 @@ Gem::Specification.new do |s|
   s.add_dependency "sqlite3", "~> 1.3"
   s.add_dependency "thin", "~> 1.8.0"
   s.add_dependency "net-smtp", "~> 0.3.0"
+  s.add_dependency "net-http", "~> 0.2.0"
   s.add_dependency "faye-websocket", "~> 0.11.1"
 
   s.add_development_dependency "capybara"
