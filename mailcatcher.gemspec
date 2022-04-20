@@ -27,8 +27,8 @@ Gem::Specification.new do |s|
     "views/**/*",
   ] - Dir["lib/mail_catcher/web/assets.rb"]
   s.require_paths = ["lib"]
-  s.executables = ["mailcatcher", "catchmail"]
-  s.extra_rdoc_files = ["README.md", "LICENSE"]
+  s.executables = %w[mailcatcher catchmail]
+  s.extra_rdoc_files = %w[README.md LICENSE]
 
   s.required_ruby_version = ">= 2.6.0"
 
