@@ -2,7 +2,6 @@
 #= require jquery
 #= require date
 #= require favcount
-#= require flexie
 #= require keymaster
 #= require url
 
