@@ -12,6 +12,21 @@ require "mail_catcher/mail"
 
 Faye::WebSocket.load_adapter("thin")
 
+# Faye's adapter isn't smart enough to close websockets when thin is stopped,
+# so we teach it to do so.
+class Thin::Backends::Base
+  alias :thin_stop :stop
+
+  def stop
+    thin_stop
+    @connections.each_value do |connection|
+      if connection.socket_stream
+        connection.socket_stream.close_connection_after_writing
+      end
+    end
+  end
+end
+
 class Sinatra::Request
   include Faye::WebSocket::Adapter
 end
