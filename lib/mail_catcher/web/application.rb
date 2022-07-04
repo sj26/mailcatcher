@@ -4,14 +4,31 @@ require "pathname"
 require "net/http"
 require "uri"
 
+require "faye/websocket"
 require "sinatra"
-require "skinny"
 
 require "mail_catcher/bus"
 require "mail_catcher/mail"
 
+Faye::WebSocket.load_adapter("thin")
+
+# Faye's adapter isn't smart enough to close websockets when thin is stopped,
+# so we teach it to do so.
+class Thin::Backends::Base
+  alias :thin_stop :stop
+
+  def stop
+    thin_stop
+    @connections.each_value do |connection|
+      if connection.socket_stream
+        connection.socket_stream.close_connection_after_writing
+      end
+    end
+  end
+end
+
 class Sinatra::Request
-  include Skinny::Helpers
+  include Faye::WebSocket::Adapter
 end
 
 module MailCatcher
@@ -62,20 +79,24 @@ module MailCatcher
 
       get "/messages" do
         if request.websocket?
-          request.websocket!(
-            :on_start => proc do |websocket|
-              bus_subscription = MailCatcher::Bus.subscribe do |message|
-                begin
-                  websocket.send_message(JSON.generate(message))
-                rescue => exception
-                  MailCatcher.log_exception("Error sending message through websocket", message, exception)
-                end
-              end
+          bus_subscription = nil
 
-              websocket.on_close do |*|
-                MailCatcher::Bus.unsubscribe bus_subscription
+          ws = Faye::WebSocket.new(request.env)
+          ws.on(:open) do |_|
+            bus_subscription = MailCatcher::Bus.subscribe do |message|
+              begin
+                ws.send(JSON.generate(message))
+              rescue => exception
+                MailCatcher.log_exception("Error sending message through websocket", message, exception)
               end
-            end)
+            end
+          end
+
+          ws.on(:close) do |_|
+            MailCatcher::Bus.unsubscribe(bus_subscription) if bus_subscription
+          end
+
+          ws.rack_response
         else
           content_type :json
           JSON.generate(Mail.messages)
