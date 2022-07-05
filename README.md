@@ -50,6 +50,14 @@ MailCatcher v0.8.0
         --version                    Display the current version
 ```
 
+### Upgrading
+
+Upgrading works the same as installation:
+
+```
+gem install mailcatcher
+```
+
 ### Ruby
 
 If you have trouble with the setup commands, make sure you have [Ruby installed](https://www.ruby-lang.org/en/documentation/installation/):
