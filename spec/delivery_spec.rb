@@ -69,6 +69,7 @@ RSpec.describe MailCatcher, type: :feature do
     expect(message_from_element).to have_text(DEFAULT_FROM)
     expect(message_to_element).to have_text(DEFAULT_TO)
     expect(message_subject_element).to have_text("Plain mail")
+    expect(message_attachments_element.text).to eq("")
     expect(Time.parse(message_received_element.text)).to be <= Time.now + 5
 
     message_row_element.click
