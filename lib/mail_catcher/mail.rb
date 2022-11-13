@@ -56,9 +56,11 @@ module MailCatcher::Mail extend self
       add_message_part(message_id, cid, part.mime_type || "text/plain", part.attachment? ? 1 : 0, part.filename, part.charset, body, body.length)
     end
 
+    attachments_count = parts.count(&:attachment?)
+
     EventMachine.next_tick do
       message = MailCatcher::Mail.message message_id
-      MailCatcher::Bus.push(type: "add", message: message)
+      MailCatcher::Bus.push(type: "add", message: message.merge("attachments_count" => attachments_count))
     end
   end
 
