@@ -262,6 +262,11 @@ RSpec.describe MailCatcher, type: :feature do
       expect(page).to have_text "Content-Disposition: attachment"
       # Too hard to add expectations on the transfer encoded attachment contents
     end
+
+    # Refresh the page
+    refresh
+
+    expect(message_attachments_element.text).to eq("1")
   end
 
   it "doesn't choke on messages containing dots" do

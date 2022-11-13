@@ -75,7 +75,7 @@ module MailCatcher::Mail extend self
   end
 
   def messages
-    @messages_query ||= db.prepare "SELECT id, sender, recipients, subject, size, created_at FROM message ORDER BY created_at, id ASC"
+    @messages_query ||= db.prepare "SELECT id, sender, recipients, subject, size, created_at, (SELECT COUNT(*) FROM message_part WHERE message_id = message.id AND is_attachment = 1) AS attachments_count FROM message ORDER BY created_at, id ASC"
     @messages_query.execute.map do |row|
       Hash[row.fields.zip(row)].tap do |message|
         message["recipients"] &&= JSON.parse(message["recipients"])
