@@ -282,6 +282,17 @@ class MailCatcher
       when "html"
         body = $("#message iframe").contents().find("body")
         $("a", body).attr("target", "_blank")
+      when "html-source"
+        message_iframe = $("#message iframe").contents()
+        text = message_iframe.text()
+
+        # Escape special characters
+        text = text.replace(/&/g, "&amp;")
+        text = text.replace(/</g, "&lt;")
+        text = text.replace(/>/g, "&gt;")
+        text = text.replace(/"/g, "&quot;")
+
+        message_iframe.find("html").html("<body><pre>#{text}</pre></body>")
       when "plain"
         message_iframe = $("#message iframe").contents()
         text = message_iframe.text()

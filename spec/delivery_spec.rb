@@ -31,6 +31,10 @@ RSpec.describe MailCatcher, type: :feature do
     page.find("#message header .format.html a")
   end
 
+  def html_source_tab_element
+    page.find("#message header .format.html-source a")
+  end
+
   def plain_tab_element
     page.find("#message header .format.plain a")
   end
@@ -120,6 +124,28 @@ RSpec.describe MailCatcher, type: :feature do
       expect(page).to have_no_text("Yo, you slimey scoundrel.")
       expect(page).to have_text("Content-Type: text/html")
       expect(page).to have_text("Yo, you <em>slimey scoundrel</em>.")
+    end
+  end
+
+  it "catches and displays an html message as html source" do
+    deliver_example("htmlmail")
+
+    # Do not reload, make sure that the message appears via websockets
+
+    expect(page).to have_selector("#messages table tbody tr:first-of-type", text: "Test HTML Mail")
+
+    message_row_element.click
+
+    expect(html_tab_element).to be_visible
+    expect(html_source_tab_element).to be_visible
+
+    html_source_tab_element.click
+
+    # Load the HTML mail but discard the headers
+    html_source = read_example("htmlmail").split("\n\n", 2).last.chomp
+
+    within_frame do
+      expect(page.text).to eq(html_source)
     end
   end
 
