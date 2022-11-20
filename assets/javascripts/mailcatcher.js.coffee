@@ -302,10 +302,10 @@ class MailCatcher
 
   escape_html_reserved_characters: (text) ->
     text
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll("\"", "&quot;")
 
   refresh: ->
     $.getJSON "messages", (messages) =>
