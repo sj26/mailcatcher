@@ -39,7 +39,7 @@ Gem::Specification.new do |s|
   s.add_dependency "rack", "~> 1.5"
   s.add_dependency "sinatra", "~> 1.2"
   s.add_dependency "sqlite3", "~> 1.3"
-  s.add_dependency "thin", "~> 1.5.0"
+  s.add_dependency "thin", "~> 1.8"
 
   s.add_development_dependency "capybara"
   s.add_development_dependency "capybara-screenshot"
