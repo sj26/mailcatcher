@@ -187,8 +187,14 @@ module MailCatcher extend self
       # Let Thin set itself up inside our EventMachine loop
       # Faye connections are hijacked but continue to be supervised by thin
       rescue_port options[:http_port] do
-        Thin::Server.start(options[:http_ip], options[:http_port], Web)
+        Thin::Server.start(options[:http_ip], options[:http_port], Web, signals: false)
         puts "==> #{http_url}"
+      end
+
+      # Make sure we quit nicely when asked
+      # We need to handle outside the trap context, hence the timer
+      %w(INT TERM QUIT).each do |signal|
+        trap(signal) { EM.add_timer(0) { quit! } }
       end
 
       # Open the web browser before detatching console
