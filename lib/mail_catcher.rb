@@ -185,7 +185,7 @@ module MailCatcher extend self
       end
 
       # Let Thin set itself up inside our EventMachine loop
-      # (Skinny/WebSockets just works on the inside)
+      # Faye connections are hijacked but continue to be supervised by thin
       rescue_port options[:http_port] do
         Thin::Server.start(options[:http_ip], options[:http_port], Web)
         puts "==> #{http_url}"
