@@ -13,17 +13,17 @@ jobs:
 
     strategy:
       matrix:
-        ruby-version: ['2.6', '2.7', '3.0', '3.1']
+        ruby-version: ['2.6', '2.7', '3.0', '3.1', '3.2']
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true
 
-    - uses: actions/setup-node@v2
+    - uses: actions/setup-node@v3
 
     - uses: browser-actions/setup-chrome@latest
     - uses: nanasess/setup-chromedriver@master
@@ -32,7 +32,7 @@ jobs:
       run: bundle exec rake test
 
     - name: Upload test artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       if: always()
       with:
         name: test-artifacts
