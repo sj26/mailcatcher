@@ -3,7 +3,7 @@
 require "fileutils"
 require "rubygems"
 
-require "mail_catcher/version"
+require "./lib/mail_catcher/version"
 
 # XXX: Would prefer to use Rake::SprocketsTask but can't populate
 # non-digest assets, and we don't want sprockets at runtime so
@@ -15,7 +15,7 @@ task "assets" do
   compiled_path = File.expand_path("../public/assets", __FILE__)
   FileUtils.mkdir_p(compiled_path)
 
-  require "mail_catcher/web/assets"
+  require "./lib/mail_catcher/web/assets"
   sprockets = MailCatcher::Web::Assets
   sprockets.css_compressor = :sass
   sprockets.js_compressor = :uglifier
