@@ -1,5 +1,7 @@
 FROM ruby:3.2.2-slim-bullseye
 
+LABEL org.opencontainers.image.source=https://github.com/dcotecnologia/mailcatcher
+
 ARG ENVIRONMENT=production
 ARG MAILCATCHER_AUTH_USER=
 ARG MAILCATCHER_AUTH_PASSWORD=

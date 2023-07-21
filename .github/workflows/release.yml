@@ -18,7 +18,23 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-    - name: Constrói a imagem e faz upload para o AWS ECR
+    - name: Build and push (Hub)
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        tags: "latest, $(cat '.ruby-version)"
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        build-args: |
+          "ENVIRONMENT=production"
+    - name: Log in to the Container registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.TOKEN_PAT }}
+    - name: Build and push (GHCR)
       uses: docker/build-push-action@v4
       with:
         context: .
