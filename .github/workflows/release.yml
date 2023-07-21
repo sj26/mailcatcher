@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Set environment variables
+      id: vars
+      run: |
+        echo "project_version=$(cat .version)" >> $GITHUB_OUTPUT
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
     - name: Login to Docker Hub
@@ -23,7 +27,7 @@ jobs:
       with:
         context: .
         push: true
-        tags: "latest, $(cat '.ruby-version)"
+        tags: "dcotecnologia/mailcatcher:latest, dcotecnologia/mailcatcher:${{ steps.vars.outputs.project_version }}"
         cache-from: type=gha
         cache-to: type=gha,mode=max
         build-args: |
@@ -39,8 +43,25 @@ jobs:
       with:
         context: .
         push: true
-        tags: "latest, $(cat '.ruby-version)"
+        tags: "dcotecnologia/mailcatcher:latest, dcotecnologia/mailcatcher:${{ steps.vars.outputs.project_version }}"
         cache-from: type=gha
         cache-to: type=gha,mode=max
         build-args: |
           "ENVIRONMENT=production"
+    - name: Get Changelog Entry
+      id: changelog_reader
+      uses: mindsers/changelog-reader-action@v2
+      with:
+        validation_depth: 10
+        version: ${{ steps.vars.outputs.project_version }}
+        path: ./CHANGELOG.md
+    - name: Create a GitHub release
+      uses: ncipollo/release-action@v1
+      with:
+        tag: v${{ steps.vars.outputs.project_version }}
+        name: v${{ steps.vars.outputs.project_version }}
+        body: ${{ steps.changelog_reader.outputs.changes }}
+        prerelease: ${{ steps.changelog_reader.outputs.status == 'prereleased' }}
+        draft: ${{ steps.changelog_reader.outputs.status == 'unreleased' }}
+        allowUpdates: true
+        token: ${{ secrets.TOKEN_PAT }}
