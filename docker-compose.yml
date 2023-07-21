@@ -1,0 +1,26 @@
+version: "3.9"
+volumes:
+  bundle_cache:
+    driver: local
+services:
+  web:
+    build:
+      context: .
+      args:
+        - ENVIRONMENT=development
+    stdin_open: true
+    tty: true
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    command:
+      - /bin/bash
+      - -c
+      - |
+        bundle check || bundle install --full-index --no-binstubs --jobs 6 --retry 3
+        rerun "bin/mailcatcher --foreground --ip 0.0.0.0 --no-quit"
+    volumes:
+      - .:/app:rw
+      - bundle_cache:/usr/local/bundle
+    env_file:
+      - .env

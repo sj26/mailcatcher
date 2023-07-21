@@ -15,22 +15,13 @@ DEFAULT_FROM = "from@example.com"
 DEFAULT_TO = "to@example.com"
 
 LOCALHOST = "127.0.0.1"
-SMTP_PORT = 20025
-HTTP_PORT = 20080
+SMTP_PORT = 20_025
+HTTP_PORT = 20_080
 
 # Use headless chrome by default
 Capybara.default_driver = :selenium
 Capybara.register_driver :selenium do |app|
-  args = %w[--disable-gpu --force-device-scale-factor=1 --window-size=1400,900]
-
-  # Use NO_HEADLESS to open real chrome when debugging tests
-  unless ENV["NO_HEADLESS"]
-    args << "--headless"
-  end
-
-  Capybara::Selenium::Driver.new app, browser: :chrome,
-    service: Selenium::WebDriver::Service.chrome(args: { log_path: File.expand_path("../tmp/chromedriver.log", __dir__) }),
-    options: Selenium::WebDriver::Chrome::Options.new(args: args)
+  Capybara::Selenium::Driver.new app, browser: :chrome
 end
 
 Capybara.configure do |config|
@@ -49,8 +40,8 @@ Capybara.app_host = "http://#{LOCALHOST}:#{HTTP_PORT}"
 
 RSpec.configure do |config|
   # Helpers for delivering example email
-  def deliver(message, options={})
-    options = {:from => DEFAULT_FROM, :to => DEFAULT_TO}.merge(options)
+  def deliver(message, options = {})
+    options = { from: DEFAULT_FROM, to: DEFAULT_TO }.merge(options)
     Net::SMTP.start(LOCALHOST, SMTP_PORT) do |smtp|
       smtp.send_message message, options[:from], options[:to]
     end
@@ -60,7 +51,7 @@ RSpec.configure do |config|
     File.read(File.expand_path("../../examples/#{name}", __FILE__))
   end
 
-  def deliver_example(name, options={})
+  def deliver_example(name, options = {})
     deliver(read_example(name), options)
   end
 
@@ -73,7 +64,11 @@ RSpec.configure do |config|
     next unless page.driver.browser
 
     # Retrieve console logs if the browser/driver supports it
-    logs = page.driver.browser.manage.logs.get(:browser) rescue []
+    logs = begin
+      page.driver.browser.manage.logs.get(:browser)
+    rescue StandardError
+      []
+    end
 
     # Anything to report?
     next if logs.empty?
@@ -88,7 +83,7 @@ RSpec.configure do |config|
     lines << "" if lines.last
 
     lines << "Browser console errors:"
-    lines << JSON.pretty_generate(logs.map { |log| log.as_json })
+    lines << JSON.pretty_generate(logs.map(&:as_json))
   end
 
   def wait
@@ -97,12 +92,13 @@ RSpec.configure do |config|
 
   config.before :each, type: :feature do
     # Start MailCatcher
-    @pid = spawn "bundle", "exec", "mailcatcher", "--foreground", "--smtp-port", SMTP_PORT.to_s, "--http-port", HTTP_PORT.to_s
+    @pid = spawn "bin/mailcatcher", "--foreground", "--smtp-port", SMTP_PORT.to_s, "--http-port",
+                 HTTP_PORT.to_s, "--quit"
 
     # Wait for it to boot
     begin
-      Socket.tcp(LOCALHOST, SMTP_PORT, connect_timeout: 1) { |s| s.close }
-      Socket.tcp(LOCALHOST, HTTP_PORT, connect_timeout: 1) { |s| s.close }
+      Socket.tcp(LOCALHOST, SMTP_PORT, connect_timeout: 1, &:close)
+      Socket.tcp(LOCALHOST, HTTP_PORT, connect_timeout: 1, &:close)
     rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT
       retry
     end
@@ -111,7 +107,11 @@ RSpec.configure do |config|
     visit "/"
 
     # Wait for the websocket to be available to avoid race conditions
-    wait.until { page.evaluate_script("MailCatcher.websocket.readyState") == 1 rescue false }
+    wait.until do
+      page.evaluate_script("MailCatcher.websocket.readyState") == 1
+    rescue StandardError
+      false
+    end
   end
 
   config.after :each, type: :feature do

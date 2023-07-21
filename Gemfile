@@ -2,21 +2,39 @@
 
 source "https://rubygems.org"
 
-gemspec
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-# mime-types 3+, required by mail, requires ruby 2.0+
-gem "mime-types", "< 3" if RUBY_VERSION < "2"
+gem "eventmachine", "~> 1.2.7"
+gem "faye-websocket", "~> 0.11.1"
+gem "mail", "~> 2.8.1"
+gem "net-smtp", "~> 0.3.3"
+gem "rake", "~> 13.0.6"
+gem "sinatra", "~> 3.0.6"
+gem "sinatra-basic-auth"
+gem "sqlite3", "~> 1.6.3"
+gem "thin", "~> 1.8.2"
 
-if RUBY_VERSION < "2.7"
-  # Ruby 2.7 requirement introduced
-  # https://github.com/SeleniumHQ/selenium/blob/selenium-4.2.0/rb/CHANGES#L25
-  gem "selenium-webdriver", "< 4.2.0", group: :development
-elsif RUBY_VERSION < "2.8"
-  # Ruby 3.0 requirement introduced
-  # https://github.com/SeleniumHQ/selenium/blob/selenium-4.9.1/rb/CHANGES#L5
-  gem "selenium-webdriver", "< 4.9.1", group: :development
+group :development do
+  gem "pry-byebug"
+  gem "rerun", require: false
 end
 
-#group :development do
-#  gem "pry"
-#end
+group :development, :lint do
+  gem "rubocop"
+  gem "rubocop-capybara", require: false
+  gem "rubocop-i18n", require: false
+  gem "rubocop-packaging", require: false
+  gem "rubocop-performance", require: false
+  gem "rubocop-rake", require: false
+  gem "rubocop-rspec", require: false
+  gem "rubocop-thread_safety", "~> 0.5.1", require: false
+end
+
+group :test do
+  gem "brakeman"
+  gem "bundler-audit"
+  gem "capybara"
+  gem "capybara-screenshot"
+  gem "rspec"
+  gem "selenium-webdriver"
+end

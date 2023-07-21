@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "English"
 require "open3"
 require "optparse"
 require "rbconfig"
@@ -15,13 +16,15 @@ module EventMachine
   end
 end
 
-require "mail_catcher/version"
+require "./lib/mail_catcher/version"
 
-module MailCatcher extend self
-  autoload :Bus, "mail_catcher/bus"
-  autoload :Mail, "mail_catcher/mail"
-  autoload :Smtp, "mail_catcher/smtp"
-  autoload :Web, "mail_catcher/web"
+module MailCatcher
+  module_function
+
+  autoload :Bus, "./lib/mail_catcher/bus"
+  autoload :Mail, "./lib/mail_catcher/mail"
+  autoload :Smtp, "./lib/mail_catcher/smtp"
+  autoload :Web, "./lib/mail_catcher/web"
 
   def env
     ENV.fetch("MAILCATCHER_ENV", "production")
@@ -45,7 +48,7 @@ module MailCatcher extend self
     windows? or which? "open"
   end
 
-  def browse url
+  def browse(url)
     if windows?
       system "start", "/b", url
     elsif which? "open"
@@ -60,21 +63,23 @@ module MailCatcher extend self
 
     puts "*** #{message}: #{context.inspect}"
     puts "    Exception: #{exception}"
-    puts "    Backtrace:", *exception.backtrace.map { |line| "       #{line.sub(gems_regexp, gems_replace)}" }
+    puts "    Backtrace:", *exception.backtrace.map do |line|
+      "       #{line.sub(gems_regexp, gems_replace)}"
+    end
     puts "    Please submit this as an issue at https://github.com/sj26/mailcatcher/issues"
   end
 
   @@defaults = {
-    :smtp_ip => "127.0.0.1",
-    :smtp_port => "1025",
-    :http_ip => "127.0.0.1",
-    :http_port => "1080",
-    :http_path => "/",
-    :messages_limit => nil,
-    :verbose => false,
-    :daemon => !windows?,
-    :browse => false,
-    :quit => true,
+    smtp_ip: "127.0.0.1",
+    smtp_port: "1025",
+    http_ip: "127.0.0.1",
+    http_port: "1080",
+    http_path: "/",
+    messages_limit: nil,
+    verbose: false,
+    daemon: false,
+    browse: false,
+    quit: false
   }
 
   def options
@@ -85,7 +90,7 @@ module MailCatcher extend self
     options[:quit]
   end
 
-  def parse! arguments=ARGV, defaults=@defaults
+  def parse!(_arguments = ARGV, _defaults = @defaults)
     @@defaults.dup.tap do |options|
       OptionParser.new do |parser|
         parser.banner = "Usage: mailcatcher [options]"
@@ -114,7 +119,8 @@ module MailCatcher extend self
           options[:http_port] = port
         end
 
-        parser.on("--messages-limit COUNT", Integer, "Only keep up to COUNT most recent messages") do |count|
+        parser.on("--messages-limit COUNT", Integer,
+                  "Only keep up to COUNT most recent messages") do |count|
           options[:messages_limit] = count
         end
 
@@ -126,6 +132,10 @@ module MailCatcher extend self
 
         parser.on("--no-quit", "Don't allow quitting the process") do
           options[:quit] = false
+        end
+
+        parser.on("--quit", "Don't allow quitting the process") do
+          options[:quit] = true
         end
 
         unless windows?
@@ -157,7 +167,7 @@ module MailCatcher extend self
     end
   end
 
-  def run! options=nil
+  def run!(options = nil)
     # If we are passed options, fill in the blanks
     options &&= @@defaults.merge options
     # Otherwise, parse them from ARGV
@@ -167,9 +177,7 @@ module MailCatcher extend self
     @@options = options
 
     # If we're running in the foreground sync the output.
-    unless options[:daemon]
-      $stdout.sync = $stderr.sync = true
-    end
+    $stdout.sync = $stderr.sync = true unless options[:daemon]
 
     puts "Starting MailCatcher v#{VERSION}"
 
@@ -224,8 +232,6 @@ module MailCatcher extend self
     EventMachine.next_tick { EventMachine.stop_event_loop }
   end
 
-protected
-
   def smtp_url
     "smtp://#{@@options[:smtp_ip]}:#{@@options[:smtp_port]}"
   end
@@ -234,20 +240,16 @@ protected
     "http://#{@@options[:http_ip]}:#{@@options[:http_port]}#{@@options[:http_path]}".chomp("/")
   end
 
-  def rescue_port port
-    begin
-      yield
+  def rescue_port(port)
+    yield
 
-    # XXX: EventMachine only spits out RuntimeError with a string description
-    rescue RuntimeError
-      if $!.to_s =~ /\bno acceptor\b/
-        puts "~~> ERROR: Something's using port #{port}. Are you already running MailCatcher?"
-        puts "==> #{smtp_url}"
-        puts "==> #{http_url}"
-        exit -1
-      else
-        raise
-      end
-    end
+  # XXX: EventMachine only spits out RuntimeError with a string description
+  rescue RuntimeError
+    raise unless /\bno acceptor\b/.match?($ERROR_INFO.to_s)
+
+    puts "~~> ERROR: Something's using port #{port}. Are you already running MailCatcher?"
+    puts "==> #{smtp_url}"
+    puts "==> #{http_url}"
+    exit(-1)
   end
 end

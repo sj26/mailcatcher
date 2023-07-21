@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-require "mail_catcher"
+require "./lib/mail_catcher"
 
 Mailcatcher = MailCatcher

@@ -1,0 +1,21 @@
+{
+  "editor.defaultFormatter": "misogi.ruby-rubocop",
+  "editor.tabSize": 2,
+  "ruby.rubocop.useBundler": true,
+  "ruby.rubocop.onSave": true,
+  "ruby.format": "rubocop",
+  "ruby.useLanguageServer": true,
+  "ruby.lint": {
+    "rubocop": true
+  },
+  "editor.insertSpaces": true,
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "files.trimTrailingWhitespace": true,
+  "git.ignoreLimitWarning": true,
+  "files.associations": {
+    "*.erb": "erb",
+    "*.slim": "slim"
+  }
+}
