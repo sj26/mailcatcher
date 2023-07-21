@@ -59,7 +59,6 @@ module MailCatcher
       end
 
       get "/" do
-        puts "e"
         erb :index
       end
 
