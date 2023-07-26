@@ -27,7 +27,7 @@ GEM
     date (3.3.3)
     diff-lcs (1.5.0)
     eventmachine (1.2.7)
-    faye-websocket (0.11.2)
+    faye-websocket (0.11.3)
       eventmachine (>= 0.12.0)
       websocket-driver (>= 0.5.1)
     ffi (1.15.5)
@@ -155,7 +155,7 @@ GEM
     timeout (0.4.0)
     unicode-display_width (2.5.0)
     websocket (1.2.9)
-    websocket-driver (0.7.5)
+    websocket-driver (0.7.6)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
     xpath (3.2.0)
@@ -170,7 +170,7 @@ DEPENDENCIES
   capybara
   capybara-screenshot
   eventmachine (~> 1.2.7)
-  faye-websocket (~> 0.11.1)
+  faye-websocket (~> 0.11.3)
   mail (~> 2.8.1)
   net-smtp (~> 0.3.3)
   pry-byebug

@@ -5,7 +5,7 @@ source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 gem "eventmachine", "~> 1.2.7"
-gem "faye-websocket", "~> 0.11.1"
+gem "faye-websocket", "~> 0.11.3"
 gem "mail", "~> 2.8.1"
 gem "net-smtp", "~> 0.3.3"
 gem "rake", "~> 13.0.6"
