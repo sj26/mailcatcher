@@ -1,7 +1,7 @@
-FROM ruby:3.0-alpine
+FROM ruby:3.2-alpine
 MAINTAINER Samuel Cochran <sj26@sj26.com>
 
-ARG VERSION=0.8.2
+ARG VERSION=0.9.0
 
 RUN apk add --no-cache build-base sqlite-libs sqlite-dev && \
     gem install mailcatcher -v $VERSION && \
