@@ -43,6 +43,23 @@ task "release" => ["package"] do
   %x[gem push mailcatcher-#{MailCatcher::VERSION}.gem]
 end
 
+desc "Build and push Docker images"
+task "docker" do
+  Dir.chdir(__dir__) do
+    system "docker", "buildx", "build",
+      # Push straight to Docker Hub (only way to do multi-arch??)
+      "--push",
+      # Build for both intel and arm (apple, graviton, etc)
+      "--platform", "linux/amd64",
+      "--platform", "linux/arm64",
+      # Push latest and currrent version
+      "-t", "sj26/mailcatcher:latest",
+      "-t", "sj26/mailcatcher:v#{MailCatcher::VERSION}",
+      # Use current dir as context
+      "."
+  end
+end
+
 require "rdoc/task"
 
 RDoc::Task.new(:rdoc => "doc",:clobber_rdoc => "doc:clean", :rerdoc => "doc:force") do |rdoc|
