@@ -38,7 +38,7 @@ module MailCatcher extend self
   end
 
   def windows?
-    RbConfig::CONFIG["host_os"] =~ /mswin|mingw/
+    RbConfig::CONFIG["host_os"].match?(/mswin|mingw/)
   end
 
   def browseable?
