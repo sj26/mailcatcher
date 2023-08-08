@@ -70,9 +70,9 @@ GEM
       pry (>= 0.13, < 0.15)
     public_suffix (5.0.3)
     racc (1.7.1)
-    rack (2.2.7)
-    rack-protection (3.0.6)
-      rack
+    rack (2.2.8)
+    rack-protection (3.1.0)
+      rack (~> 2.2, >= 2.2.4)
     rack-test (2.1.0)
       rack (>= 1.3)
     rainbow (3.1.1)
@@ -136,10 +136,10 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
-    sinatra (3.0.6)
+    sinatra (3.1.0)
       mustermann (~> 3.0)
       rack (~> 2.2, >= 2.2.4)
-      rack-protection (= 3.0.6)
+      rack-protection (= 3.1.0)
       tilt (~> 2.0)
     sinatra-basic-auth (0.1.0)
       sinatra
@@ -184,7 +184,7 @@ DEPENDENCIES
   rubocop-rspec
   rubocop-thread_safety (~> 0.5.1)
   selenium-webdriver
-  sinatra (~> 3.0.6)
+  sinatra (~> 3.1.0)
   sinatra-basic-auth
   sqlite3 (~> 1.6.3)
   thin (~> 1.8.2)
