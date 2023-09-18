@@ -125,6 +125,29 @@ if DEBUG:
     EMAIL_USE_TLS = False
 ```
 
+### Docker
+
+There is a Docker image available [on Docker Hub](https://hub.docker.com/r/sj26/mailcatcher):
+
+```
+$ docker run -p 1080 -p 1025 sj26/mailcatcher
+Unable to find image 'sj26/mailcatcher:latest' locally
+latest: Pulling from sj26/mailcatcher
+8c6d1654570f: Already exists
+f5649d186f41: Already exists
+b850834ea1df: Already exists
+d6ac1a07fd46: Pull complete
+b609298bc3c9: Pull complete
+ab05825ece51: Pull complete
+Digest: sha256:b17c45de08a0a82b012d90d4bd048620952c475f5655c61eef373318de6c0855
+Status: Downloaded newer image for sj26/mailcatcher:latest
+Starting MailCatcher v0.9.0
+==> smtp://0.0.0.0:1025
+==> http://0.0.0.0:1080
+```
+
+How those ports appear and can be accessed may vary based on your Docker configuration. For example, your may need to use `http://127.0.0.1:1080` etc instead of the listed address. But MailCatcher will run and listen to those ports on all IPs it can from within the Docker container.
+
 ### API
 
 A fairly RESTful URL schema means you can download a list of messages in JSON from `/messages`, each message's metadata with `/messages/:id.json`, and then the pertinent parts with `/messages/:id.html` and `/messages/:id.plain` for the default HTML and plain text version, `/messages/:id/parts/:cid` for individual attachments by CID, or the whole message with `/messages/:id.source`.
