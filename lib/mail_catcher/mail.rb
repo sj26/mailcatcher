@@ -56,9 +56,11 @@ module MailCatcher::Mail extend self
       add_message_part(message_id, cid, part.mime_type || "text/plain", part.attachment? ? 1 : 0, part.filename, part.charset, body, body.length)
     end
 
+    attachments_count = parts.count(&:attachment?)
+
     EventMachine.next_tick do
       message = MailCatcher::Mail.message message_id
-      MailCatcher::Bus.push(type: "add", message: message)
+      MailCatcher::Bus.push(type: "add", message: message.merge("attachments_count" => attachments_count))
     end
   end
 
@@ -73,7 +75,7 @@ module MailCatcher::Mail extend self
   end
 
   def messages
-    @messages_query ||= db.prepare "SELECT id, sender, recipients, subject, size, created_at FROM message ORDER BY created_at, id ASC"
+    @messages_query ||= db.prepare "SELECT id, sender, recipients, subject, size, created_at, (SELECT COUNT(*) FROM message_part WHERE message_id = message.id AND is_attachment = 1) AS attachments_count FROM message ORDER BY created_at, id ASC"
     @messages_query.execute.map do |row|
       Hash[row.fields.zip(row)].tap do |message|
         message["recipients"] &&= JSON.parse(message["recipients"])
