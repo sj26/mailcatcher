@@ -3,7 +3,7 @@ MAINTAINER Samuel Cochran <sj26@sj26.com>
 
 # Use --build-arg VERSION=... to override
 # or `rake docker VERSION=...`
-ARG VERSION=0.9.0
+ARG VERSION=0.10.0
 
 # sqlite3 aarch64 is broken on alpine, so use ruby:
 # https://github.com/sparklemotion/sqlite3-ruby/issues/372
