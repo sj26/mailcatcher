@@ -116,6 +116,7 @@ module MailCatcher
             "formats" => [
               "source",
               ("html" if Mail.message_has_html? id),
+              ("html-source" if Mail.message_has_html? id),
               ("plain" if Mail.message_has_plain? id)
             ].compact,
             "attachments" => Mail.message_attachments(id),
@@ -136,6 +137,16 @@ module MailCatcher
           body.gsub! /cid:([^'"> ]+)/, "#{id}/parts/\\1"
 
           body
+        else
+          not_found
+        end
+      end
+
+      get "/messages/:id.html-source" do
+        id = params[:id].to_i
+        if part = Mail.message_part_html(id)
+          content_type "text/plain", :charset => (part["charset"] || "utf8")
+          part["body"]
         else
           not_found
         end
