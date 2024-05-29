@@ -123,6 +123,10 @@ body > header
         font-weight: bold
         color: #666
         +text-shadow(0 1px 0 white)
+        &.attachments-header
+          width: 3em
+          text-align: right
+          padding-right: 1em
     tbody tr
       cursor: pointer
       +transition(0.1s ease)
@@ -139,6 +143,9 @@ body > header
         &.blank
           color: #666
           font-style: italic
+        &.attachments-count
+          text-align: right
+          padding-right: 1em
 #resizer
   padding-bottom: 5px
   cursor: ns-resize

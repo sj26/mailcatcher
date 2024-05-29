@@ -186,6 +186,7 @@ class MailCatcher
       .append($("<td/>").text(message.sender or "No sender").toggleClass("blank", !message.sender))
       .append($("<td/>").text((message.recipients || []).join(", ") or "No recipients").toggleClass("blank", !message.recipients.length))
       .append($("<td/>").text(message.subject or "No subject").toggleClass("blank", !message.subject))
+      .append($("""<td class="attachments-count"/>""").text(message.attachments_count || ""))
       .append($("<td/>").text(@formatDate(message.created_at)))
       .prependTo($("#messages tbody"))
     @updateMessagesCount()
