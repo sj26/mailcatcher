@@ -130,6 +130,20 @@ class MailCatcher
     date &&= @offsetTimeZone(date)
     date &&= date.toString("dddd, d MMM yyyy h:mm:ss tt")
 
+  formatSize: (bytes) ->
+    thresh = 1000
+    units = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+
+    if Math.abs(bytes) < thresh
+      return bytes + ' B'
+    u = -1
+    loop
+      bytes /= thresh
+      ++u
+      unless Math.abs(bytes) >= thresh and u < units.length - 1
+        break
+    bytes.toFixed(1) + ' ' + units[u]
+
   messagesCount: ->
     $("#messages tr").length - 1
 
@@ -187,6 +201,7 @@ class MailCatcher
       .append($("<td/>").text((message.recipients || []).join(", ") or "No recipients").toggleClass("blank", !message.recipients.length))
       .append($("<td/>").text(message.subject or "No subject").toggleClass("blank", !message.subject))
       .append($("<td/>").text(@formatDate(message.created_at)))
+      .append($("<td/>").text(@formatSize(message.size)))
       .prependTo($("#messages tbody"))
     @updateMessagesCount()
 
@@ -238,6 +253,11 @@ class MailCatcher
         $("#message .metadata dd.from").text(message.sender)
         $("#message .metadata dd.to").text((message.recipients || []).join(", "))
         $("#message .metadata dd.subject").text(message.subject)
+        $("#message .metadata dd.size").html(
+          $('<span />')
+            .attr('title', message.size+' bytes')
+            .text(@formatSize(message.size))
+        )
         $("#message .views .tab.format").each (i, el) ->
           $el = $(el)
           format = $el.attr("data-message-format")
