@@ -130,7 +130,7 @@ if DEBUG:
 There is a Docker image available [on Docker Hub](https://hub.docker.com/r/sj26/mailcatcher):
 
 ```
-$ docker run -p 1080 -p 1025 sj26/mailcatcher
+$ docker run -p 1080:1080 -p 1025:1025 sj26/mailcatcher
 Unable to find image 'sj26/mailcatcher:latest' locally
 latest: Pulling from sj26/mailcatcher
 8c6d1654570f: Already exists
