@@ -1,4 +1,4 @@
-FROM ruby:3.3-alpine
+FROM ruby:3.4-alpine
 MAINTAINER Samuel Cochran <sj26@sj26.com>
 
 # Use --build-arg VERSION=... to override
