@@ -1,0 +1,108 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Icon } from 'astro-icon/components';
+---
+
+<Layout
+  title="Page Not Found - MailCatcher NG"
+  description="The page you're looking for doesn't exist. Let's get you back on track."
+  currentPage="404"
+>
+  <div class="min-h-screen flex flex-col justify-center items-center px-4 py-20 sm:py-32">
+    <div class="max-w-2xl mx-auto text-center space-y-8">
+      {/* 404 Graphic */}
+      <div class="relative mb-8">
+        <div class="absolute inset-0 flex items-center justify-center opacity-10">
+          <div class="text-9xl font-display font-bold text-forest-600">404</div>
+        </div>
+        <div class="relative flex justify-center">
+          <div class="w-32 h-32 rounded-full bg-forest-50 border-4 border-forest-200 flex items-center justify-center">
+            <Icon name="mdi:email-alert" class="w-16 h-16 text-forest-600" />
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div class="space-y-4">
+        <h1 class="font-display text-4xl sm:text-5xl font-bold text-anthracite">
+          Mail Not Delivered
+        </h1>
+        <p class="text-lg sm:text-xl text-gray-600 max-w-xl mx-auto">
+          Sorry! This page couldn't be found. It seems the address isn't in our mailbox.
+        </p>
+      </div>
+
+      {/* CTA Buttons */}
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
+        <a href="/mailcatcher/" class="btn-primary inline-flex items-center gap-2">
+          <Icon name="mdi:home" class="w-5 h-5" />
+          Back to Home
+        </a>
+        <a href="/mailcatcher/usage/" class="btn-secondary inline-flex items-center gap-2">
+          <Icon name="mdi:book-open" class="w-5 h-5" />
+          Read Documentation
+        </a>
+      </div>
+
+      {/* Suggestions */}
+      <div class="mt-16 pt-12 border-t border-gray-200">
+        <p class="text-sm text-gray-600 font-medium mb-6">Here are some helpful links:</p>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <a
+            href="/mailcatcher/usage/"
+            class="p-4 rounded-lg border border-gray-200 hover:border-forest-600 hover:bg-forest-50 transition-all duration-200 text-left group"
+          >
+            <div class="flex items-center gap-3 mb-2">
+              <Icon name="mdi:lightning-bolt" class="w-5 h-5 text-forest-600" />
+              <h3 class="font-semibold text-anthracite group-hover:text-forest-600">Quick Start</h3>
+            </div>
+            <p class="text-sm text-gray-600">Get up and running with MailCatcher NG</p>
+          </a>
+
+          <a
+            href="/mailcatcher/api/"
+            class="p-4 rounded-lg border border-gray-200 hover:border-forest-600 hover:bg-forest-50 transition-all duration-200 text-left group"
+          >
+            <div class="flex items-center gap-3 mb-2">
+              <Icon name="mdi:api" class="w-5 h-5 text-forest-600" />
+              <h3 class="font-semibold text-anthracite group-hover:text-forest-600">API Reference</h3>
+            </div>
+            <p class="text-sm text-gray-600">Explore the REST API documentation</p>
+          </a>
+
+          <a
+            href="/mailcatcher/advanced/"
+            class="p-4 rounded-lg border border-gray-200 hover:border-forest-600 hover:bg-forest-50 transition-all duration-200 text-left group"
+          >
+            <div class="flex items-center gap-3 mb-2">
+              <Icon name="mdi:cog" class="w-5 h-5 text-forest-600" />
+              <h3 class="font-semibold text-anthracite group-hover:text-forest-600">Advanced Config</h3>
+            </div>
+            <p class="text-sm text-gray-600">Learn about SSL, UTF-8, and more</p>
+          </a>
+
+          <a
+            href="/mailcatcher/ai-integration/"
+            class="p-4 rounded-lg border border-gray-200 hover:border-forest-600 hover:bg-forest-50 transition-all duration-200 text-left group"
+          >
+            <div class="flex items-center gap-3 mb-2">
+              <Icon name="mdi:brain" class="w-5 h-5 text-forest-600" />
+              <h3 class="font-semibold text-anthracite group-hover:text-forest-600">AI Integration</h3>
+            </div>
+            <p class="text-sm text-gray-600">Use Claude MCP and Plugin support</p>
+          </a>
+        </div>
+      </div>
+
+      {/* Footer Note */}
+      <div class="mt-12 pt-8 border-t border-gray-200">
+        <p class="text-xs text-gray-500">
+          If you think this is a mistake, please report it on
+          <a href="https://github.com/spaquet/mailcatcher/issues" target="_blank" rel="noopener noreferrer" class="text-forest-600 hover:underline font-medium">
+            GitHub Issues
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</Layout>

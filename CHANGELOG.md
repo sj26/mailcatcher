@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.3] - 2026-03-16
+
+### Changed
+
+- Gem updates: Updated 21 dependencies to latest versions for security and compatibility
+- Removed Dockerfile and docker rake task (Docker builds managed separately)
+
+### Dependencies
+
+- **Updated**:
+  - addressable 2.8.8 → 2.8.9
+  - capybara-screenshot 1.0.26 → 1.0.27
+  - erb 6.0.1 → 6.0.2
+  - json 2.18.0 → 2.19.1
+  - net-imap 0.6.2 → 0.6.3
+  - nokogiri 1.19.0 → 1.19.1
+  - parser 3.3.10.1 → 3.3.10.2
+  - prism 1.8.0 → 1.9.0
+  - public_suffix 7.0.2 → 7.0.5
+  - rack 3.2.4 → 3.2.5
+  - rdoc 7.1.0 → 7.2.0
+  - rspec-mocks 3.13.7 → 3.13.8
+  - rspec-support 3.13.6 → 3.13.7
+  - rubocop 1.82.1 → 1.85.1
+  - selenium-webdriver 4.40.0 → 4.41.0
+  - sqlite3 2.9.0 → 2.9.2
+  - timeout 0.6.0 → 0.6.1
+
+- **New**:
+  - json-schema 6.2.0 (for MCP validation)
+  - mcp 0.8.0 (Model Context Protocol server support)
+  - bigdecimal 4.0.1 (stdlib dependency)
+
 ## [1.5.2] - 2026-01-12
 
 ### Added
