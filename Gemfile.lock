@@ -20,7 +20,7 @@ GEM
       public_suffix (>= 2.0.2, < 8.0)
     ast (2.4.3)
     base64 (0.3.0)
-    bigdecimal (4.0.1)
+    bigdecimal (4.1.0)
     capybara (3.40.0)
       addressable
       matrix
@@ -45,7 +45,7 @@ GEM
     faye-websocket (0.12.0)
       eventmachine (>= 0.12.0)
       websocket-driver (>= 0.8.0)
-    json (2.19.1)
+    json (2.19.2)
     json-schema (6.2.0)
       addressable (~> 2.8)
       bigdecimal (>= 3.1, < 5)
@@ -63,7 +63,7 @@ GEM
       net-pop
       net-smtp
     matrix (0.4.3)
-    mcp (0.8.0)
+    mcp (0.9.2)
       json-schema (>= 4.1)
     mini_mime (1.1.5)
     mustermann (3.0.4)
@@ -104,7 +104,7 @@ GEM
       stringio
     public_suffix (7.0.5)
     racc (1.8.1)
-    rack (3.2.5)
+    rack (3.2.6)
     rack-protection (4.2.1)
       base64 (>= 0.1.0)
       logger (>= 1.6.0)
