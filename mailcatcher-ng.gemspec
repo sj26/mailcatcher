@@ -55,7 +55,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rake', '~> 13.3', '>= 13.3.1'
   s.add_development_dependency 'rdoc', '~> 7.0', '>= 7.0.3'
   s.add_development_dependency 'rspec', '~> 3.13', '>= 3.13.2'
-  s.add_development_dependency 'rubocop', '~> 1.85.1'
+  s.add_development_dependency 'rubocop', '~> 1.86.1'
   s.add_development_dependency 'selenium-webdriver', '~> 4.39'
   s.add_development_dependency 'sprockets'
   s.add_development_dependency 'sprockets-helpers'

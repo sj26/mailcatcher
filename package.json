@@ -1,6 +1,6 @@
 {
   "name": "mailcatcher-ng",
-  "version": "1.4.0",
+  "version": "1.5.4",
   "description": "Modernized MailCatcher – catches emails via SMTP and displays them in a clean web interface",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,7 @@
   "dependencies": {
     "@popperjs/core": "^2.11.8",
     "highlight.js": "^11.11.1",
-    "jquery": "^3.7.1",
+    "jquery": "^4.0.0",
     "tippy.js": "^6.3.7"
   },
   "devDependencies": {}
