@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mailcatcher-ng (1.5.3)
+    mailcatcher-ng (1.5.4)
       eventmachine (~> 1.2.7)
       faye-websocket (~> 0.12.0)
       mail (~> 2.9)
@@ -20,7 +20,6 @@ GEM
       public_suffix (>= 2.0.2, < 8.0)
     ast (2.4.3)
     base64 (0.3.0)
-    bigdecimal (4.1.2)
     capybara (3.40.0)
       addressable
       matrix
@@ -46,9 +45,6 @@ GEM
       eventmachine (>= 0.12.0)
       websocket-driver (>= 0.8.0)
     json (2.19.5)
-    json-schema (6.2.0)
-      addressable (~> 2.8)
-      bigdecimal (>= 3.1, < 5)
     language_server-protocol (3.17.0.5)
     launchy (3.1.1)
       addressable (~> 2.8)
@@ -63,8 +59,6 @@ GEM
       net-pop
       net-smtp
     matrix (0.4.3)
-    mcp (0.15.0)
-      json-schema (>= 4.1)
     mini_mime (1.1.5)
     mustermann (3.1.1)
     net-imap (0.6.4)
@@ -134,12 +128,11 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.7)
-    rubocop (1.85.1)
+    rubocop (1.86.1)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
-      mcp (~> 0.6)
-      parallel (~> 1.10)
+      parallel (>= 1.10)
       parser (>= 3.3.0.2)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 2.9.3, < 3.0)
@@ -220,7 +213,7 @@ DEPENDENCIES
   rake (~> 13.3, >= 13.3.1)
   rdoc (~> 7.0, >= 7.0.3)
   rspec (~> 3.13, >= 3.13.2)
-  rubocop (~> 1.85.1)
+  rubocop (~> 1.86.1)
   selenium-webdriver (~> 4.39)
   sprockets
   sprockets-helpers
