@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.4] - 2026-05-06
+
+### Changed
+
+- Updated gem dependencies for security and compatibility
+- Updated JavaScript dependencies for website
+
+### Dependencies
+
+- **Gems**:
+  - mcp 0.14.0 → 0.15.0
+  - sqlite3 2.9.3 → 2.9.4
+
+- **JavaScript**:
+  - jquery 3.7.1 → 4.0.0
+
 ## [1.5.3] - 2026-03-16
 
 ### Changed
