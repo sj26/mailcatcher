@@ -22,7 +22,7 @@ mailcatcher/
 
 ## The Ruby Gem
 
-**Tech Stack:** Ruby 3.2-4.0, ERB, SQLite, RSpec
+**Tech Stack:** Ruby 3.3-4.0, ERB, SQLite, RSpec
 
 **Setup:**
 

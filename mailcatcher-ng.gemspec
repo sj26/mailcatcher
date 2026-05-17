@@ -37,7 +37,7 @@ Gem::Specification.new do |s|
   s.executables = %w[mailcatcher catchmail]
   s.extra_rdoc_files = ['README.md', 'LICENSE']
 
-  s.required_ruby_version = '>= 3.2'
+  s.required_ruby_version = '>= 3.3'
 
   s.add_dependency 'eventmachine', '~> 1.2.7'
   s.add_dependency 'faye-websocket', '~> 0.12.0'
