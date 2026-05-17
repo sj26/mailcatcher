@@ -404,6 +404,7 @@ module MailCatcher
         if message = Mail.message(id)
           content_type :json
           JSON.generate(message.merge({
+            "content_type" => message["type"],
             "formats" => [
               "source",
               ("html" if Mail.message_has_html? id),

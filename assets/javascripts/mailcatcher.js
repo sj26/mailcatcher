@@ -151,6 +151,31 @@ class MailCatcher {
     }
   }
 
+  normalizeMessageId(messageId) {
+    const id = Number(messageId);
+    if (!Number.isInteger(id) || id < 0) {
+      throw new Error(`Invalid message id: ${messageId}`);
+    }
+    return id;
+  }
+
+  buildMessageUrl(messageId, format = "json") {
+    const id = this.normalizeMessageId(messageId);
+    const safeFormat = ["json", "html", "plain", "source", "transcript", "eml"].includes(format) ? format : "json";
+    return new URL(`messages/${id}.${safeFormat}`, document.baseURI).toString();
+  }
+
+  buildMessagePathUrl(messageId, pathSuffix) {
+    const id = this.normalizeMessageId(messageId);
+    const safeSuffix = String(pathSuffix).replace(/^\/+/, "");
+    return new URL(`messages/${id}/${safeSuffix}`, document.baseURI).toString();
+  }
+
+  buildMessagePartUrl(messageId, cid) {
+    const id = this.normalizeMessageId(messageId);
+    return new URL(`messages/${id}/parts/${encodeURIComponent(cid)}`, document.baseURI).toString();
+  }
+
   formatDate(date) {
     if (typeof date === "string") {
       date = this.parseDate(date);
@@ -282,7 +307,7 @@ class MailCatcher {
 
         // If we don't have attachment data yet, fetch it from the server
         if (hasAttachments === undefined) {
-          $.getJSON(`messages/${messageId}.json`, (message) => {
+          $.getJSON(this.buildMessageUrl(messageId), (message) => {
             $row.data("has-attachments", message.attachments && message.attachments.length > 0);
             // Reapply filters after loading the data
             this.applyFilters();
@@ -513,11 +538,17 @@ class MailCatcher {
       // Fetch the plain text or HTML version to extract preview
       const format = message.formats.includes("plain") ? "plain" : "html";
       $.ajax({
-        url: `messages/${message.id}.${format}`,
+        url: this.buildMessageUrl(message.id, format),
         type: "GET",
         success: (data) => {
-          // Extract first 100 characters, strip HTML tags
-          let preview = data.replace(/<[^>]*>/g, "").trim();
+          // Extract first 100 characters from plain text or HTML text content.
+          let preview = data;
+          if (format === "html") {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data, "text/html");
+            preview = doc.body ? doc.body.textContent || "" : "";
+          }
+          preview = preview.trim();
           preview = preview.substring(0, 100);
           if (preview.length >= 100) {
             preview += "...";
@@ -735,6 +766,7 @@ class MailCatcher {
     $("#messages tbody, #message .metadata dd").empty();
     $(".attachments-list").empty();
     $(".attachments-column").removeClass("visible");
+    $("#contentTypeNotice").hide().text("");
     $("#message iframe").attr("src", "about:blank");
     return null;
   }
@@ -762,12 +794,21 @@ class MailCatcher {
       messageRow.addClass("selected");
       this.scrollToRow(messageRow);
 
-      $.getJSON(`messages/${id}.json`, (message) => {
+      $.getJSON(this.buildMessageUrl(id), (message) => {
         // Update the row's attachment data
         const messageRow = $(`#messages tbody tr[data-message-id='${id}']`);
         messageRow.data("has-attachments", message.attachments && message.attachments.length > 0);
 
         $("#message .metadata dd.created_at").text(this.formatDate(message.created_at));
+        const hasRenderableBody = message.formats && (message.formats.includes("html") || message.formats.includes("plain"));
+        if (hasRenderableBody) {
+          $("#contentTypeNotice").hide().text("");
+        } else {
+          $("#contentTypeNotice")
+            .text("Content-type error")
+            .show();
+        }
+
         // Use email headers if available, otherwise fall back to envelope data
         if (message.from_header) {
           $("#message .metadata dd.from").text(this.formatSender(message.from_header));
@@ -790,7 +831,7 @@ class MailCatcher {
           if (format === "transcript") {
             $el.show();
           } else if ($.inArray(format, message.formats) >= 0) {
-            $el.find("a").attr("href", `messages/${id}.${format}`);
+            $el.find("a").attr("href", this.buildMessageUrl(id, format));
             $el.show();
           } else {
             $el.hide();
@@ -799,7 +840,12 @@ class MailCatcher {
 
         if ($("#message .views .tab.selected:not(:visible)").length) {
           $("#message .views .tab.selected").removeClass("selected");
-          $("#message .views .tab:visible:first").addClass("selected");
+          const $fallbackTab = hasRenderableBody
+            ? $("#message .views .tab:visible:first")
+            : $("#message .views .tab.source:visible:first");
+          if ($fallbackTab.length) {
+            $fallbackTab.addClass("selected");
+          }
         }
 
         if (message.attachments.length) {
@@ -807,7 +853,7 @@ class MailCatcher {
 
           $.each(message.attachments, (i, attachment) => {
             const $li = $("<li/>");
-            const $a = $("<a/>").attr("href", `messages/${id}/parts/${attachment["cid"]}`).addClass(attachment["type"].split("/", 1)[0]).addClass(attachment["type"].replace("/", "-")).text(attachment["filename"]);
+            const $a = $("<a/>").attr("href", this.buildMessagePartUrl(id, attachment["cid"])).addClass(attachment["type"].split("/", 1)[0]).addClass(attachment["type"].replace("/", "-")).text(attachment["filename"]);
             const $meta = $("<div/>").addClass("attachment-meta");
             $meta.append($("<div/>").addClass("attachment-size").text(this.formatSize(attachment["size"])));
             $meta.append($("<div/>").addClass("attachment-type").text(attachment["type"]));
@@ -819,7 +865,7 @@ class MailCatcher {
           $(".attachments-column").removeClass("visible");
         }
 
-        $("#message .views .download a").attr("href", `messages/${id}.eml`);
+        $("#message .views .download a").attr("href", this.buildMessageUrl(id, "eml"));
 
         this.loadAccessibilityScore(id);
         this.loadMessageBody();
@@ -828,7 +874,7 @@ class MailCatcher {
   }
 
   loadAccessibilityScore(id) {
-    $.getJSON(`messages/${id}/accessibility.json`, (data) => {
+    $.getJSON(this.buildMessagePathUrl(id, "accessibility.json"), (data) => {
       // Update accessibility score
       $("#accessibilityScore").text(data.score);
 
@@ -1011,7 +1057,7 @@ class MailCatcher {
     $(`#message .views .tab:not([data-message-format="${format}"]).selected`).removeClass("selected");
 
     if (id != null) {
-      $("#message iframe").attr("src", `messages/${id}.${format}`);
+      $("#message iframe").attr("src", this.buildMessageUrl(id, format));
     }
   }
 

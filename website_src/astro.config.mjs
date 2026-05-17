@@ -8,7 +8,7 @@ export default defineConfig({
   // security: { csp: true }, // cannot be activated when in development
   base: '/mailcatcher/',
   vite: {
-      plugins: [tailwindcss()],
+    plugins: [tailwindcss()],
   },
 
   integrations: [icon()],

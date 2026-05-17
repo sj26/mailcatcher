@@ -12,7 +12,7 @@ Content-Type: text/html; charset=utf-8
         This email demonstrates poor accessibility practices. Notice the issues:
 
         <div style="margin-top: 10px;">
-          <img src="https://example.com/newsletter-image.jpg" style="width: 300px;">
+          <img src="https://raw.githubusercontent.com/spaquet/mailcatcher/main/screenshots/inbox.webp" style="width: 300px;">
           This image has no alt text, making it invisible to screen readers.
         </div>
 
@@ -22,7 +22,7 @@ Content-Type: text/html; charset=utf-8
         </div>
 
         <div style="margin-top: 15px;">
-          <img src="https://example.com/graph.png">
+          <img src="https://raw.githubusercontent.com/spaquet/mailcatcher/main/screenshots/inbox.webp">
           Another image without alt text. Charts and graphs are especially important to describe.
         </div>
 

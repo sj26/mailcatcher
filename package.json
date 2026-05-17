@@ -1,6 +1,6 @@
 {
   "name": "mailcatcher-ng",
-  "version": "1.5.4",
+  "version": "1.5.6",
   "description": "Modernized MailCatcher – catches emails via SMTP and displays them in a clean web interface",
   "main": "index.js",
   "scripts": {

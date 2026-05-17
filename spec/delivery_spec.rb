@@ -47,6 +47,10 @@ RSpec.describe MailCatcher, type: :feature do
     page.find("#message header .attachments-column")
   end
 
+  def content_type_notice_element
+    page.find("#message header #contentTypeNotice")
+  end
+
   def first_attachment_element
     attachment_contents_element.find("ul li:first-of-type a")
   end
@@ -230,7 +234,22 @@ RSpec.describe MailCatcher, type: :feature do
 
     # Do not reload, make sure that the message appears via websockets
 
-    skip
+    expect(page).to have_selector("#messages table tbody tr:first-of-type", text: "Test unknown content-type")
+
+    message_row_element.click
+
+    expect(source_tab_element).to be_visible
+    expect(page).to have_no_selector("#message header .format.html a")
+    expect(page).to have_no_selector("#message header .format.plain a")
+    expect(page).to have_selector("#message header .format.transcript a")
+    expect(content_type_notice_element).to have_text("Content-type error")
+
+    source_tab_element.click
+
+    within_frame do
+      expect(page).to have_text("Content-Type: application/x-weird")
+      expect(page).to have_text("Subject: Test unknown content-type")
+    end
   end
 
   it "catches and displays a message with multipart attachments" do
