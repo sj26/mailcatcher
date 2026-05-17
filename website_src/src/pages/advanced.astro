@@ -1,0 +1,195 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CodeBlock from '../components/CodeBlock.astro';
+import { Icon } from 'astro-icon/components';
+---
+
+<Layout title="Advanced Configuration - MailCatcher NG" description="Learn advanced features and configuration options for MailCatcher NG." currentPage="advanced">
+  {/* Header */}
+  <section class="bg-forest-50 border-b border-forest-200 py-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="font-display text-4xl font-bold text-anthracite mb-4">Advanced Configuration</h1>
+      <p class="text-gray-600 max-w-2xl">Master advanced features and configuration options for production-like testing environments.</p>
+    </div>
+  </section>
+
+  {/* Content */}
+  <section class="py-16 sm:py-24">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="prose prose-lg max-w-none space-y-12">
+
+        {/* SSL/TLS Section */}
+        <div>
+          <h2 class="font-display text-3xl font-bold text-anthracite mb-6 flex items-center gap-3">
+            <Icon name="mdi:shield-lock" class="w-8 h-8 text-forest-600" />
+            SSL/TLS Support
+          </h2>
+          <p class="text-gray-700 mb-6">MailCatcher NG supports both STARTTLS and direct TLS (SMTPS) for encrypted SMTP connections. This is useful for testing email delivery in staging environments that require secure connections.</p>
+
+          <div class="bg-forest-50 border border-forest-200 rounded-lg p-6 mb-8">
+            <h3 class="font-display font-semibold text-forest-900 mb-4 flex items-center gap-2">
+              <Icon name="mdi:information" class="w-5 h-5" />
+              Generate a Self-Signed Certificate
+            </h3>
+            <CodeBlock
+              code={`openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes`}
+              language="bash"
+              title="Generate Certificate"
+            />
+            <p class="text-sm text-gray-700 mt-4">This creates:</p>
+            <ul class="text-sm text-gray-700 mt-2 space-y-1">
+              <li>• <code class="bg-gray-200 px-2 py-1 rounded">cert.pem</code>: Certificate file</li>
+              <li>• <code class="bg-gray-200 px-2 py-1 rounded">key.pem</code>: Private key file</li>
+            </ul>
+          </div>
+
+          <h3 class="font-display font-semibold text-anthracite mb-4">Start with SSL/TLS</h3>
+          <CodeBlock
+            code={`docker run -d -p 1080:1080 -p 1025:1025 -p 1465:1465 \\
+  -v $(pwd)/cert.pem:/etc/mailcatcher/cert.pem \\
+  -v $(pwd)/key.pem:/etc/mailcatcher/key.pem \\
+  stpaquet/alpinemailcatcher \\
+  --smtp-ssl --smtp-ssl-cert /etc/mailcatcher/cert.pem --smtp-ssl-key /etc/mailcatcher/key.pem`}
+            language="bash"
+            title="Docker with SSL/TLS"
+          />
+
+          <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mt-6">
+            <p class="text-sm text-amber-900"><strong>⚠️ Note:</strong> This enables both STARTTLS on port 1025 and direct TLS (SMTPS) on port 1465.</p>
+          </div>
+        </div>
+
+        {/* UTF-8 Support Section */}
+        <div>
+          <h2 class="font-display text-3xl font-bold text-anthracite mb-6 flex items-center gap-3">
+            <Icon name="mdi:globe" class="w-8 h-8 text-forest-600" />
+            UTF-8 & International Content
+          </h2>
+          <p class="text-gray-700 mb-6">MailCatcher NG fully supports modern SMTP capabilities for UTF-8 and international content.</p>
+
+          <h3 class="font-display font-semibold text-anthracite mb-4">SMTP Capabilities</h3>
+          <ul class="space-y-2 text-gray-700 mb-8">
+            <li class="flex items-start gap-3">
+              <Icon name="mdi:check-circle" class="w-5 h-5 text-forest-600 mt-0.5 shrink-0" />
+              <div>
+                <strong>SMTPUTF8 (RFC 6531):</strong> Allows clients to send UTF-8 directly without encoding
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <Icon name="mdi:check-circle" class="w-5 h-5 text-forest-600 mt-0.5 shrink-0" />
+              <div>
+                <strong>8BITMIME (RFC 6152):</strong> Accepts 8bit transfer encoding for UTF-8 content
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <Icon name="mdi:check-circle" class="w-5 h-5 text-forest-600 mt-0.5 shrink-0" />
+              <div>
+                <strong>Multiple encodings:</strong> 7bit, 8bit, base64, and quoted-printable
+              </div>
+            </li>
+          </ul>
+
+          <h3 class="font-display font-semibold text-anthracite mb-4">Test UTF-8 Content</h3>
+          <CodeBlock
+            code={`SMTP_HOST=127.0.0.1 SMTP_PORT=1025 ruby send_example_emails.rb`}
+            language="bash"
+            title="Send Test Emails"
+          />
+        </div>
+
+        {/* Email Authentication Section */}
+        <div>
+          <h2 class="font-display text-3xl font-bold text-anthracite mb-6 flex items-center gap-3">
+            <Icon name="mdi:check-decagram" class="w-8 h-8 text-forest-600" />
+            Email Authentication
+          </h2>
+          <p class="text-gray-700 mb-6">MailCatcher NG verifies and displays email authentication results:</p>
+
+          <div class="grid gap-4">
+            <div class="feature-card">
+              <h4 class="font-display font-semibold text-anthracite mb-2">DMARC</h4>
+              <p class="text-sm text-gray-600">Domain-based Message Authentication, Reporting and Conformance</p>
+            </div>
+            <div class="feature-card">
+              <h4 class="font-display font-semibold text-anthracite mb-2">DKIM</h4>
+              <p class="text-sm text-gray-600">DomainKeys Identified Mail signature verification</p>
+            </div>
+            <div class="feature-card">
+              <h4 class="font-display font-semibold text-anthracite mb-2">SPF</h4>
+              <p class="text-sm text-gray-600">Sender Policy Framework authorized sender verification</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Message Management Section */}
+        <div>
+          <h2 class="font-display text-3xl font-bold text-anthracite mb-6 flex items-center gap-3">
+            <Icon name="mdi:inbox" class="w-8 h-8 text-forest-600" />
+            Message Management
+          </h2>
+
+          <h3 class="font-display font-semibold text-anthracite mb-4">Limit Message Storage</h3>
+          <p class="text-gray-700 mb-4">Prevent memory usage from growing unbounded:</p>
+          <CodeBlock
+            code={`docker run -d -p 1080:1080 -p 1025:1025 \\
+  stpaquet/alpinemailcatcher \\
+  --messages-limit 1000`}
+            language="bash"
+            title="Limit Messages to 1000"
+          />
+
+          <h3 class="font-display font-semibold text-anthracite mb-4 mt-8">Disable Quit Function</h3>
+          <p class="text-gray-700 mb-4">Prevent accidental server shutdown:</p>
+          <CodeBlock
+            code={`docker run -d -p 1080:1080 -p 1025:1025 \\
+  stpaquet/alpinemailcatcher \\
+  --no-quit`}
+            language="bash"
+            title="Disable Quit"
+          />
+        </div>
+
+        {/* HTTP Path Prefix */}
+        <div>
+          <h2 class="font-display text-3xl font-bold text-anthracite mb-6 flex items-center gap-3">
+            <Icon name="mdi:lan" class="w-8 h-8 text-forest-600" />
+            HTTP Path Prefix
+          </h2>
+          <p class="text-gray-700 mb-6">For reverse proxy or nested deployment scenarios:</p>
+          <CodeBlock
+            code={`docker run -d -p 1080:1080 -p 1025:1025 \\
+  stpaquet/alpinemailcatcher \\
+  --http-path /mail`}
+            language="bash"
+            title="HTTP Path Prefix"
+          />
+          <p class="text-gray-700 mt-4">Access the web interface at <code class="bg-gray-200 px-2 py-1 rounded">http://127.0.0.1:1080/mail/</code></p>
+        </div>
+
+        {/* Keyboard Navigation */}
+        <div>
+          <h2 class="font-display text-3xl font-bold text-anthracite mb-6 flex items-center gap-3">
+            <Icon name="mdi:keyboard" class="w-8 h-8 text-forest-600" />
+            Keyboard Navigation
+          </h2>
+          <p class="text-gray-700 mb-6">The web interface supports keyboard shortcuts for efficient navigation:</p>
+          <ul class="space-y-2 text-gray-700">
+            <li class="flex items-center gap-3">
+              <kbd class="bg-gray-300 px-2 py-1 rounded text-sm font-mono">↑</kbd>
+              <span>Previous message</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <kbd class="bg-gray-300 px-2 py-1 rounded text-sm font-mono">↓</kbd>
+              <span>Next message</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <kbd class="bg-gray-300 px-2 py-1 rounded text-sm font-mono">?</kbd>
+              <span>Show help</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</Layout>

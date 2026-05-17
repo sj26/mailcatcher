@@ -1,0 +1,304 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CodeBlock from '../components/CodeBlock.astro';
+import { Icon } from 'astro-icon/components';
+---
+
+<Layout title="AI Integration - MailCatcher NG" description="Integrate MailCatcher NG with Claude using MCP and plugins for AI-powered email testing." currentPage="ai">
+  {/* Header */}
+  <section class="bg-forest-50 border-b border-forest-200 py-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="font-display text-4xl font-bold text-anthracite mb-4">AI Integration</h1>
+      <p class="text-gray-600 max-w-2xl">Integrate MailCatcher NG with Claude using MCP and plugins for AI-powered email testing and automation.</p>
+    </div>
+  </section>
+
+  {/* Content */}
+  <section class="py-16 sm:py-24">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+
+      {/* MCP Section */}
+      <div id="mcp" class="scroll-mt-24">
+        <h2 class="font-display text-3xl font-bold text-anthracite mb-2 flex items-center gap-3">
+          <Icon name="mdi:pipe" class="w-8 h-8 text-forest-600" />
+          Model Context Protocol (MCP)
+        </h2>
+        <p class="text-gray-600 mb-6">Enable Claude to interact with MailCatcher NG through the MCP protocol for seamless AI integration.</p>
+
+        <div class="bg-forest-50 border border-forest-200 rounded-lg p-6 mb-8">
+          <h3 class="font-display font-semibold text-forest-900 mb-4">What is MCP?</h3>
+          <p class="text-gray-700">The Model Context Protocol (MCP) is an open standard for connecting AI models to external data sources and tools. With MailCatcher NG's MCP server, Claude can search, retrieve, and analyze emails directly.</p>
+        </div>
+
+        <div class="space-y-8">
+          <div>
+            <h3 class="font-display font-semibold text-anthracite mb-4">Start MailCatcher with MCP</h3>
+            <p class="text-gray-700 mb-4">Enable MCP mode when starting MailCatcher NG:</p>
+            <CodeBlock
+              code={`mailcatcher --mcp --foreground`}
+              language="bash"
+              title="Start with MCP"
+            />
+          </div>
+
+          <div>
+            <h3 class="font-display font-semibold text-anthracite mb-4">Configure Claude Desktop</h3>
+            <p class="text-gray-700 mb-4">Add MailCatcher NG to your Claude Desktop configuration:</p>
+            <CodeBlock
+              code={`{
+  "mcpServers": {
+    "mailcatcher": {
+      "command": "mailcatcher",
+      "args": ["--mcp", "--foreground"]
+    }
+  }
+}`}
+              language="json"
+              title="~/.claude_desktop_config.json"
+            />
+            <p class="text-sm text-gray-600 mt-4">Location: <code class="bg-gray-200 px-2 py-1 rounded">~/.claude_desktop_config.json</code></p>
+          </div>
+
+          <div>
+            <h3 class="font-display font-semibold text-anthracite mb-4">Available MCP Tools</h3>
+            <div class="space-y-4">
+              <div class="feature-card">
+                <h4 class="font-display font-semibold text-anthracite mb-2">search_messages</h4>
+                <p class="text-sm text-gray-600 mb-3">Search through caught emails with flexible filtering.</p>
+                <div class="text-xs space-y-1 text-gray-700">
+                  <p><strong>Parameters:</strong></p>
+                  <ul class="list-disc list-inside space-y-1">
+                    <li><code>query</code> - Search term (required)</li>
+                    <li><code>limit</code> - Max results (default: 5)</li>
+                    <li><code>has_attachments</code> - Filter by attachments</li>
+                    <li><code>from_date</code> - Start date (ISO 8601)</li>
+                    <li><code>to_date</code> - End date (ISO 8601)</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="feature-card">
+                <h4 class="font-display font-semibold text-anthracite mb-2">get_latest_message_for</h4>
+                <p class="text-sm text-gray-600 mb-3">Get the latest email received by a specific recipient.</p>
+                <div class="text-xs space-y-1 text-gray-700">
+                  <p><strong>Parameters:</strong></p>
+                  <ul class="list-disc list-inside space-y-1">
+                    <li><code>recipient</code> - Email address (required)</li>
+                    <li><code>subject_contains</code> - Optional subject filter</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="feature-card">
+                <h4 class="font-display font-semibold text-anthracite mb-2">get_message_details</h4>
+                <p class="text-sm text-gray-600 mb-3">Get complete details of a specific message including headers and body.</p>
+                <div class="text-xs space-y-1 text-gray-700">
+                  <p><strong>Parameters:</strong></p>
+                  <ul class="list-disc list-inside space-y-1">
+                    <li><code>message_id</code> - Message ID (required)</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="feature-card">
+                <h4 class="font-display font-semibold text-anthracite mb-2">list_messages</h4>
+                <p class="text-sm text-gray-600 mb-3">List all caught messages with pagination support.</p>
+                <div class="text-xs space-y-1 text-gray-700">
+                  <p><strong>Parameters:</strong></p>
+                  <ul class="list-disc list-inside space-y-1">
+                    <li><code>limit</code> - Max results (default: 20)</li>
+                    <li><code>offset</code> - Pagination offset</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-display font-semibold text-anthracite mb-4">Example Usage</h3>
+            <CodeBlock
+              code={`# In Claude, you can now ask:
+"Search for emails from noreply@example.com in the last 24 hours"
+
+"What's the verification code in the latest email to admin@test.com?"
+
+"Show me all emails with attachments"
+
+"Find all password reset emails from the last week"`}
+              language="bash"
+              title="Natural Language Queries"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Plugin Section */}
+      <div id="claude-plugin" class="scroll-mt-24 border-t-2 border-gray-200 pt-16">
+        <h2 class="font-display text-3xl font-bold text-anthracite mb-2 flex items-center gap-3">
+          <Icon name="mdi:puzzle" class="w-8 h-8 text-forest-600" />
+          Claude Plugin
+        </h2>
+        <p class="text-gray-600 mb-6">Use MailCatcher NG as a plugin with Claude.com or Claude Desktop for instant mail inspection capabilities.</p>
+
+        <div class="bg-forest-50 border border-forest-200 rounded-lg p-6 mb-8">
+          <h3 class="font-display font-semibold text-forest-900 mb-4">What is a Claude Plugin?</h3>
+          <p class="text-gray-700">Claude Plugins extend Claude's capabilities with custom tools. The MailCatcher NG plugin gives Claude direct access to your caught emails through a simple HTTP interface.</p>
+        </div>
+
+        <div class="space-y-8">
+          <div>
+            <h3 class="font-display font-semibold text-anthracite mb-4">Start MailCatcher with Plugin Support</h3>
+            <p class="text-gray-700 mb-4">Enable plugin mode when starting MailCatcher NG:</p>
+            <CodeBlock
+              code={`mailcatcher --plugin --foreground`}
+              language="bash"
+              title="Start with Plugin"
+            />
+            <p class="text-sm text-gray-600 mt-4">Or enable both MCP and Plugin:</p>
+            <CodeBlock
+              code={`mailcatcher --mcp --plugin --foreground`}
+              language="bash"
+              title="Start with MCP and Plugin"
+            />
+          </div>
+
+          <div>
+            <h3 class="font-display font-semibold text-anthracite mb-4">Install Plugin on Claude</h3>
+            <ol class="space-y-3 text-gray-700">
+              <li class="flex gap-3">
+                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-forest-600 text-white text-sm font-bold shrink-0">1</span>
+                <span>Go to <a href="https://claude.com" target="_blank" class="text-forest-600 hover:underline">Claude.com</a> or open Claude Desktop</span>
+              </li>
+              <li class="flex gap-3">
+                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-forest-600 text-white text-sm font-bold shrink-0">2</span>
+                <span>Open the plugin settings</span>
+              </li>
+              <li class="flex gap-3">
+                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-forest-600 text-white text-sm font-bold shrink-0">3</span>
+                <span>Click "Create a plugin"</span>
+              </li>
+              <li class="flex gap-3">
+                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-forest-600 text-white text-sm font-bold shrink-0">4</span>
+                <span>Paste the manifest URL: <code class="bg-gray-200 px-2 py-1 rounded text-sm">http://localhost:1080/.well-known/ai-plugin.json</code></span>
+              </li>
+              <li class="flex gap-3">
+                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-forest-600 text-white text-sm font-bold shrink-0">5</span>
+                <span>Click "Install" or "Add"</span>
+              </li>
+            </ol>
+          </div>
+
+          <div>
+            <h3 class="font-display font-semibold text-anthracite mb-4">Manual Plugin Installation</h3>
+            <p class="text-gray-700 mb-4">If automatic discovery doesn't work:</p>
+            <CodeBlock
+              code={`Name: MailCatcher NG
+Plugin URL: http://localhost:1080/.well-known/ai-plugin.json
+API Base URL: http://localhost:1080`}
+              language="bash"
+              title="Manual Plugin Details"
+            />
+          </div>
+
+          <div>
+            <h3 class="font-display font-semibold text-anthracite mb-4">Plugin Endpoints</h3>
+            <div class="space-y-4">
+              <div class="space-y-2">
+                <div class="flex items-center gap-3">
+                  <span class="inline-block bg-forest-600 text-white px-3 py-1 rounded font-mono text-sm font-bold">POST</span>
+                  <code class="font-mono text-anthracite">/plugin/search</code>
+                </div>
+                <p class="text-gray-700 text-sm">Search through emails</p>
+                <CodeBlock
+                  code={`POST /plugin/search?query=password&limit=10`}
+                  language="bash"
+                  title="Example"
+                />
+              </div>
+
+              <div class="space-y-2">
+                <div class="flex items-center gap-3">
+                  <span class="inline-block bg-forest-600 text-white px-3 py-1 rounded font-mono text-sm font-bold">GET</span>
+                  <code class="font-mono text-anthracite">{'/plugin/message/:id/latest'}</code>
+                </div>
+                <p class="text-gray-700 text-sm">Get latest message for a recipient</p>
+                <CodeBlock
+                  code={`GET /plugin/message/1/latest?recipient=user@example.com`}
+                  language="bash"
+                  title="Example"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-display font-semibold text-anthracite mb-4">Example Plugin Queries</h3>
+            <CodeBlock
+              code={`"Search my emails for messages from noreply@example.com"
+
+"What's the OTP code in the latest email to admin@test.com?"
+
+"Show me the HTML preview of message 1 optimized for mobile"
+
+"Clear all my test emails"`}
+              language="bash"
+              title="Natural Language with Plugin"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Comparison Section */}
+      <div class="border-t-2 border-gray-200 pt-16">
+        <h2 class="font-display text-3xl font-bold text-anthracite mb-8">MCP vs Plugin</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm border-collapse">
+            <thead>
+              <tr class="border-b-2 border-gray-300">
+                <th class="text-left py-3 px-4 font-display font-semibold text-anthracite bg-forest-50">Feature</th>
+                <th class="text-left py-3 px-4 font-display font-semibold text-anthracite bg-forest-50">MCP</th>
+                <th class="text-left py-3 px-4 font-display font-semibold text-anthracite bg-forest-50">Plugin</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-gray-200 hover:bg-forest-50">
+                <td class="py-3 px-4 text-anthracite font-medium">Setup</td>
+                <td class="py-3 px-4 text-gray-700">Config file + restart</td>
+                <td class="py-3 px-4 text-gray-700">URL paste + click</td>
+              </tr>
+              <tr class="border-b border-gray-200 hover:bg-forest-50">
+                <td class="py-3 px-4 text-anthracite font-medium">Claude Desktop</td>
+                <td class="py-3 px-4 text-forest-600 font-semibold">✓ Native</td>
+                <td class="py-3 px-4 text-gray-700">Via HTTP</td>
+              </tr>
+              <tr class="border-b border-gray-200 hover:bg-forest-50">
+                <td class="py-3 px-4 text-anthracite font-medium">Claude.com</td>
+                <td class="py-3 px-4 text-gray-700">No</td>
+                <td class="py-3 px-4 text-forest-600 font-semibold">✓ Yes</td>
+              </tr>
+              <tr class="border-b border-gray-200 hover:bg-forest-50">
+                <td class="py-3 px-4 text-anthracite font-medium">Performance</td>
+                <td class="py-3 px-4 text-forest-600 font-semibold">✓ Faster</td>
+                <td class="py-3 px-4 text-gray-700">HTTP overhead</td>
+              </tr>
+              <tr class="border-b border-gray-200 hover:bg-forest-50">
+                <td class="py-3 px-4 text-anthracite font-medium">Reliability</td>
+                <td class="py-3 px-4 text-forest-600 font-semibold">✓ More stable</td>
+                <td class="py-3 px-4 text-gray-700">Network dependent</td>
+              </tr>
+              <tr class="hover:bg-forest-50">
+                <td class="py-3 px-4 text-anthracite font-medium">Context Sharing</td>
+                <td class="py-3 px-4 text-forest-600 font-semibold">✓ Full access</td>
+                <td class="py-3 px-4 text-gray-700">Limited scope</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-gray-600 text-sm mt-6">
+          <strong>Recommendation:</strong> Use MCP with Claude Desktop for the best experience. Use the Plugin if you primarily use Claude.com or need web access to your local MailCatcher instance.
+        </p>
+      </div>
+
+    </div>
+  </section>
+</Layout>

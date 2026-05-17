@@ -1,0 +1,313 @@
+---
+import Layout from '../layouts/Layout.astro';
+import FeatureCard from '../components/FeatureCard.astro';
+import CodeBlock from '../components/CodeBlock.astro';
+import { Icon } from 'astro-icon/components';
+
+const features = [
+  {
+    icon: 'mdi:lightning-bolt',
+    title: 'Quick Setup',
+    description: 'One-line Docker command. No configuration. Start catching emails in seconds.',
+  },
+  {
+    icon: 'mdi:web',
+    title: 'Web Interface',
+    description: 'Beautiful, responsive web UI to view, inspect, and manage caught emails.',
+  },
+  {
+    icon: 'mdi:api',
+    title: 'REST API',
+    description: 'Full REST API for programmatic access to messages and email data.',
+  },
+  {
+    icon: 'mdi:shield-lock',
+    title: 'SSL/TLS Support',
+    description: 'Test secure SMTP connections with STARTTLS and direct TLS (SMTPS).',
+  },
+  {
+    icon: 'mdi:globe',
+    title: 'UTF-8 & i18n',
+    description: 'Full UTF-8 support for international content and modern email standards.',
+  },
+  {
+    icon: 'mdi:brain',
+    title: 'AI Integration',
+    description: 'Claude MCP and plugin support for AI-powered email testing workflows.',
+  },
+  {
+    icon: 'mdi:puzzle',
+    title: 'Language & Framework Agnostic',
+    description: 'Works with any language (Python, Ruby, Go, Rust, PHP, Node.js, etc.) and framework.',
+  },
+  {
+    icon: 'mdi:network',
+    title: 'SMTP Transcripts',
+    description: 'View detailed SMTP logs and connection transcripts for each message for debugging.',
+  },
+  {
+    icon: 'mdi:robot',
+    title: 'AI-Driven Testing',
+    description: 'Perfect for automated testing, including AI-driven test suites and verification workflows.',
+  },
+];
+---
+
+<Layout title="MailCatcher NG - Catch Mail in Development" currentPage="home">
+  {/* Hero Section */}
+  <section class="hero-gradient relative overflow-hidden pt-20 pb-32 sm:pt-32 sm:pb-48">
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-40 -right-40 w-80 h-80 bg-forest-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+      <div class="absolute top-1/2 -left-40 w-80 h-80 bg-forest-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center space-y-6">
+        <div class="inline-block">
+          <div class="flex items-center gap-2 bg-forest-50 text-forest-700 px-4 py-2 rounded-full border border-forest-200 font-medium text-sm">
+            <Icon name="mdi:star" class="w-4 h-4" />
+            Now with AI Integration
+          </div>
+        </div>
+
+        <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-anthracite text-balance leading-tight">
+          Catch Mail in <span class="text-forest-600">Development</span>
+        </h1>
+
+        <p class="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto text-balance leading-relaxed">
+          Simple, powerful email testing tool. Install with Docker, test email delivery in seconds, and debug SMTP connections with ease.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+          <a href="#quick-install" class="btn-primary">
+            Get Started Now
+          </a>
+          <a href="https://github.com/spaquet/mailcatcher" target="_blank" rel="noopener noreferrer" class="btn-secondary">
+            <Icon name="mdi:github" class="w-5 h-5" />
+            View on GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* Quick Install Section */}
+  <section id="quick-install" class="py-16 sm:py-24 border-b border-gray-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="font-display text-3xl sm:text-4xl font-bold text-anthracite mb-4">Quick Install</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">Get started in seconds. Choose Docker or Ruby Gem, then access the web interface at <code class="bg-gray-200 px-2 py-1 rounded text-sm">http://localhost:1080</code></p>
+      </div>
+
+      <div class="space-y-6">
+        <div class="grid sm:grid-cols-2 gap-6">
+          <div>
+            <CodeBlock
+              code={'docker run -d -p 1080:1080 -p 1025:1025 stpaquet/alpinemailcatcher'}
+              language="bash"
+              title="Docker Install (Recommended)"
+            />
+          </div>
+          <div>
+            <CodeBlock
+              code={`gem install mailcatcher-ng
+mailcatcher`}
+              language="bash"
+              title="Ruby Gem Install"
+            />
+          </div>
+        </div>
+
+        <div class="bg-forest-50 border border-forest-200 rounded-lg p-6">
+          <div class="flex gap-4">
+            <Icon name="mdi:information" class="w-6 h-6 text-forest-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 class="font-display font-semibold text-forest-900 mb-2">What does this do?</h3>
+              <ul class="text-sm text-gray-700 space-y-1">
+                <li>• Starts MailCatcher NG in the background</li>
+                <li>• Port 1080: Web interface (<a href="http://127.0.0.1:1080" class="text-forest-600 hover:underline">http://127.0.0.1:1080</a>)</li>
+                <li>• Port 1025: SMTP server for catching emails</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <CodeBlock
+            code={`# Django/Python
+EMAIL_HOST = '127.0.0.1'
+EMAIL_PORT = 1025`}
+            language="python"
+            title="Django Configuration"
+          />
+
+          <CodeBlock
+            code={`# Rails
+config.action_mailer.smtp_settings = {
+  address: '127.0.0.1',
+  port: 1025
+}`}
+            language="ruby"
+            title="Rails Configuration"
+          />
+        </div>
+
+        <div class="flex justify-center pt-4">
+          <a href="/mailcatcher/usage/" class="text-forest-600 font-medium hover:text-forest-700 inline-flex items-center gap-2">
+            View full usage guide
+            <Icon name="mdi:arrow-right" class="w-4 h-4" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* Language & Framework Agnostic Section */}
+  <section class="py-16 sm:py-24 border-b border-gray-200 bg-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="font-display text-3xl sm:text-4xl font-bold text-anthracite mb-4">Language & Framework Agnostic</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">Works seamlessly with any programming language, framework, and development tool.</p>
+      </div>
+
+      <div class="space-y-12">
+        {/* Programming Languages */}
+        <div>
+          <h3 class="font-display font-semibold text-anthracite mb-6 text-lg">Programming Languages</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">
+            <div class="flex flex-col items-center text-center">
+              <i class="devicon-python-plain w-12 h-12 mb-3 text-3xl flex items-center justify-center"></i>
+              <span class="font-medium text-sm">Python</span>
+            </div>
+            <div class="flex flex-col items-center text-center">
+              <i class="devicon-ruby-plain w-12 h-12 mb-3 text-3xl flex items-center justify-center"></i>
+              <span class="font-medium text-sm">Ruby</span>
+            </div>
+            <div class="flex flex-col items-center text-center">
+              <i class="devicon-go-plain w-12 h-12 mb-3 text-3xl flex items-center justify-center"></i>
+              <span class="font-medium text-sm">Go</span>
+            </div>
+            <div class="flex flex-col items-center text-center">
+              <i class="devicon-php-plain w-12 h-12 mb-3 text-3xl flex items-center justify-center"></i>
+              <span class="font-medium text-sm">PHP</span>
+            </div>
+            <div class="flex flex-col items-center text-center">
+              <i class="devicon-nodejs-plain w-12 h-12 mb-3 text-3xl flex items-center justify-center"></i>
+              <span class="font-medium text-sm">Node.js</span>
+            </div>
+            <div class="flex flex-col items-center text-center">
+              <div class="w-12 h-12 mb-3 rounded-lg bg-forest-50 flex items-center justify-center hover:bg-forest-100 transition-colors">
+                <Icon name="mdi:more-horiz" class="w-6 h-6 text-forest-600" />
+              </div>
+              <span class="font-medium text-sm">More</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Frameworks */}
+        <div>
+          <h3 class="font-display font-semibold text-anthracite mb-6 text-lg">Popular Frameworks</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">
+            <div class="flex flex-col items-center text-center">
+              <i class="devicon-rails-plain w-12 h-12 mb-3 text-3xl flex items-center justify-center"></i>
+              <span class="font-medium text-sm">Rails</span>
+            </div>
+            <div class="flex flex-col items-center text-center">
+              <i class="devicon-django-plain w-12 h-12 mb-3 text-3xl flex items-center justify-center"></i>
+              <span class="font-medium text-sm">Django</span>
+            </div>
+            <div class="flex flex-col items-center text-center">
+              <i class="devicon-express-original w-12 h-12 mb-3 text-3xl flex items-center justify-center"></i>
+              <span class="font-medium text-sm">Express</span>
+            </div>
+            <div class="flex flex-col items-center text-center">
+              <i class="devicon-laravel-plain w-12 h-12 mb-3 text-3xl flex items-center justify-center"></i>
+              <span class="font-medium text-sm">Laravel</span>
+            </div>
+            <div class="flex flex-col items-center text-center">
+              <i class="devicon-ruby-plain w-12 h-12 mb-3 text-3xl flex items-center justify-center" title="Sinatra"></i>
+              <span class="font-medium text-sm">Sinatra</span>
+            </div>
+            <div class="flex flex-col items-center text-center">
+              <div class="w-12 h-12 mb-3 rounded-lg bg-forest-50 flex items-center justify-center hover:bg-forest-100 transition-colors">
+                <Icon name="mdi:more-horiz" class="w-6 h-6 text-forest-600" />
+              </div>
+              <span class="font-medium text-sm">More</span>
+            </div>
+          </div>
+        </div>
+
+        {/* IDEs & Tools */}
+        <div>
+          <h3 class="font-display font-semibold text-anthracite mb-6 text-lg">Development Tools</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">
+            <div class="flex flex-col items-center text-center">
+              <i class="devicon-vscode-plain w-12 h-12 mb-3 text-3xl flex items-center justify-center"></i>
+              <span class="font-medium text-sm">VSCode</span>
+            </div>
+            <div class="flex flex-col items-center text-center">
+              <div class="w-12 h-12 mb-3 rounded-lg bg-purple-50 flex items-center justify-center">
+                <span class="font-bold text-purple-600 text-sm">Cr</span>
+              </div>
+              <span class="font-medium text-sm">Cursor</span>
+            </div>
+            <div class="flex flex-col items-center text-center">
+              <i class="devicon-jetbrains-plain w-12 h-12 mb-3 text-3xl flex items-center justify-center"></i>
+              <span class="font-medium text-sm">RubyMine</span>
+            </div>
+            <div class="flex flex-col items-center text-center">
+              <i class="devicon-xcode-plain w-12 h-12 mb-3 text-3xl flex items-center justify-center"></i>
+              <span class="font-medium text-sm">Xcode</span>
+            </div>
+            <div class="flex flex-col items-center text-center">
+              <i class="devicon-androidstudio-plain w-12 h-12 mb-3 text-3xl flex items-center justify-center"></i>
+              <span class="font-medium text-sm">Android Studio</span>
+            </div>
+            <div class="flex flex-col items-center text-center">
+              <div class="w-12 h-12 mb-3 rounded-lg bg-forest-50 flex items-center justify-center hover:bg-forest-100 transition-colors">
+                <Icon name="mdi:more-horiz" class="w-6 h-6 text-forest-600" />
+              </div>
+              <span class="font-medium text-sm">More</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* Features Section */}
+  <section id="features" class="py-16 sm:py-24 border-b border-gray-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="font-display text-3xl sm:text-4xl font-bold text-anthracite mb-4">Powerful Features</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">Everything you need for email testing and debugging in development.</p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {features.map(feature => (
+          <FeatureCard {...feature} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {/* CTA Section */}
+  <section class="py-16 sm:py-24">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-gradient-to-br from-forest-600 to-forest-700 rounded-2xl p-8 sm:p-12 text-center text-white">
+        <h2 class="font-display text-3xl sm:text-4xl font-bold mb-4">Ready to catch emails?</h2>
+        <p class="text-forest-100 mb-8 max-w-xl mx-auto">
+          Get started with MailCatcher NG today. One command, zero configuration.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="#quick-install" class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-white text-forest-600 font-semibold hover:bg-forest-50 transition-all duration-300">
+            Install Now
+          </a>
+          <a href="/mailcatcher/advanced/" class="inline-flex items-center justify-center px-6 py-3 rounded-lg border-2 border-white text-white font-semibold hover:bg-forest-700 transition-all duration-300">
+            Read Documentation
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
