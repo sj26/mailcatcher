@@ -2,6 +2,8 @@
 
 require "pathname"
 require "net/http"
+require "openssl"
+require "ipaddr"
 require "uri"
 
 require "faye/websocket"
@@ -34,6 +36,13 @@ end
 module MailCatcher
   module Web
     class Application < Sinatra::Base
+      class RemoteResourceTooLarge < StandardError; end
+
+      REMOTE_RESOURCE_MAX_BYTES = 5 * 1024 * 1024
+      REMOTE_RESOURCE_OPEN_TIMEOUT = 3
+      REMOTE_RESOURCE_READ_TIMEOUT = 5
+      REMOTE_RESOURCE_MAX_REDIRECTS = 3
+
       set :environment, MailCatcher.env
       set :prefix, MailCatcher.options[:http_path]
       set :asset_prefix, File.join(prefix, "assets")
@@ -226,6 +235,95 @@ module MailCatcher
         end
       end
 
+      helpers do
+        def valid_message_id!(id)
+          message_id = Integer(id)
+          halt 400, "Invalid message id" if message_id.negative?
+          message_id
+        rescue ArgumentError, TypeError
+          halt 400, "Invalid message id"
+        end
+
+        def remote_resource_proxy_url(url)
+          "/resources/proxy?url=#{URI.encode_www_form_component(url)}"
+        end
+
+        def external_http_url?(raw_url)
+          uri = URI.parse(raw_url)
+          uri.is_a?(URI::HTTP) && uri.host && uri.host != ""
+        rescue URI::InvalidURIError
+          false
+        end
+
+        def safe_remote_host?(host)
+          return false if host.nil? || host.empty?
+          return false if host == "localhost"
+
+          ip = IPAddr.new(host)
+          !ip.loopback? && !ip.private? && !ip.link_local?
+        rescue IPAddr::InvalidAddressError
+          require "resolv"
+          addresses = Resolv.getaddresses(host)
+          return false if addresses.empty?
+
+          addresses.all? do |address|
+            ip = IPAddr.new(address)
+            !ip.loopback? && !ip.private? && !ip.link_local?
+          rescue IPAddr::InvalidAddressError
+            false
+          end
+        end
+
+        def rewrite_html_for_preview(html)
+          doc = Nokogiri::HTML::DocumentFragment.parse(html.to_s)
+
+          doc.css("img[src], source[src], iframe[src], video[src], audio[src], object[data], embed[src]").each do |node|
+            attr_name = node.name == "object" ? "data" : (node["src"] ? "src" : "href")
+            raw_url = node[attr_name]
+            next unless raw_url
+            next unless external_http_url?(raw_url)
+
+            node[attr_name] = remote_resource_proxy_url(raw_url)
+          end
+
+          doc.to_html
+        end
+
+        def fetch_remote_resource(url, depth = 0)
+          raise Sinatra::BadRequest, "Invalid URL" unless external_http_url?(url)
+          raise Sinatra::BadRequest, "Too many redirects" if depth > REMOTE_RESOURCE_MAX_REDIRECTS
+
+          uri = URI.parse(url)
+          raise Sinatra::BadRequest, "Unsafe remote host" unless safe_remote_host?(uri.host)
+
+          http = Net::HTTP.new(uri.host, uri.port)
+          http.use_ssl = uri.scheme == "https"
+          http.open_timeout = REMOTE_RESOURCE_OPEN_TIMEOUT
+          http.read_timeout = REMOTE_RESOURCE_READ_TIMEOUT
+          http.verify_mode = OpenSSL::SSL::VERIFY_PEER if http.use_ssl?
+
+          response = http.request(Net::HTTP::Get.new(uri.request_uri))
+
+          case response
+          when Net::HTTPSuccess
+            body = +""
+            response.read_body do |chunk|
+              body << chunk
+              raise RemoteResourceTooLarge if body.bytesize > REMOTE_RESOURCE_MAX_BYTES
+            end
+            [response["content-type"], body]
+          when Net::HTTPRedirection
+            location = response["location"]
+            raise Sinatra::BadRequest, "Redirect missing location" unless location
+
+            next_url = URI.parse(location).absolute? ? location : uri.merge(location).to_s
+            fetch_remote_resource(next_url, depth + 1)
+          else
+            halt response.code.to_i, response.message
+          end
+        end
+      end
+
       get "/" do
         @version = MailCatcher::VERSION
         erb :index
@@ -400,7 +498,7 @@ module MailCatcher
       end
 
       get "/messages/:id.json" do
-        id = params[:id].to_i
+        id = valid_message_id!(params[:id])
         if message = Mail.message(id)
           content_type :json
           JSON.generate(message.merge({
@@ -425,7 +523,7 @@ module MailCatcher
       end
 
       get "/messages/:id.html" do
-        id = params[:id].to_i
+        id = valid_message_id!(params[:id])
         if part = Mail.message_part_html(id)
           content_type :html, :charset => (part["charset"] || "utf8")
 
@@ -433,6 +531,7 @@ module MailCatcher
 
           # Rewrite body to link to embedded attachments served by cid
           body = body.gsub /cid:([^'"> ]+)/, "#{id}/parts/\\1"
+          body = rewrite_html_for_preview(body)
 
           body
         else
@@ -441,7 +540,7 @@ module MailCatcher
       end
 
       get "/messages/:id.plain" do
-        id = params[:id].to_i
+        id = valid_message_id!(params[:id])
         if part = Mail.message_part_plain(id)
           content_type part["type"], :charset => (part["charset"] || "utf8")
           part["body"]
@@ -451,7 +550,7 @@ module MailCatcher
       end
 
       get "/messages/:id.source" do
-        id = params[:id].to_i
+        id = valid_message_id!(params[:id])
         if message_source = Mail.message_source(id)
           content_type "text/plain"
           message_source
@@ -461,7 +560,7 @@ module MailCatcher
       end
 
       get "/messages/:id.eml" do
-        id = params[:id].to_i
+        id = valid_message_id!(params[:id])
         if message_source = Mail.message_source(id)
           content_type "message/rfc822"
           message_source
@@ -471,7 +570,7 @@ module MailCatcher
       end
 
       get "/messages/:id/transcript.json" do
-        id = params[:id].to_i
+        id = valid_message_id!(params[:id])
         if transcript = Mail.message_transcript(id)
           content_type :json
           JSON.generate(transcript)
@@ -481,7 +580,7 @@ module MailCatcher
       end
 
       get "/messages/:id.transcript" do
-        id = params[:id].to_i
+        id = valid_message_id!(params[:id])
         if transcript = Mail.message_transcript(id)
           content_type :html, charset: "utf-8"
           erb :transcript, locals: { transcript: transcript }
@@ -491,7 +590,7 @@ module MailCatcher
       end
 
       get "/messages/:id/parts/:cid" do
-        id = params[:id].to_i
+        id = valid_message_id!(params[:id])
         if part = Mail.message_part_cid(id, params[:cid])
           content_type part["type"], :charset => (part["charset"] || "utf8")
           attachment part["filename"] if part["is_attachment"] == 1
@@ -502,7 +601,7 @@ module MailCatcher
       end
 
       get "/messages/:id/extract" do
-        id = params[:id].to_i
+        id = valid_message_id!(params[:id])
         if message = Mail.message(id)
           content_type :json
           JSON.generate(Mail.extract_tokens(id, type: params[:type]))
@@ -512,7 +611,7 @@ module MailCatcher
       end
 
       get "/messages/:id/links.json" do
-        id = params[:id].to_i
+        id = valid_message_id!(params[:id])
         if message = Mail.message(id)
           content_type :json
           JSON.generate(Mail.extract_all_links(id))
@@ -522,7 +621,7 @@ module MailCatcher
       end
 
       get "/messages/:id/parsed.json" do
-        id = params[:id].to_i
+        id = valid_message_id!(params[:id])
         if message = Mail.message(id)
           content_type :json
           JSON.generate(Mail.parse_message_structured(id))
@@ -532,7 +631,7 @@ module MailCatcher
       end
 
       get "/messages/:id/accessibility.json" do
-        id = params[:id].to_i
+        id = valid_message_id!(params[:id])
         if message = Mail.message(id)
           content_type :json
           begin
@@ -547,7 +646,7 @@ module MailCatcher
       end
 
       post "/messages/:id/forward" do
-        id = params[:id].to_i
+        id = valid_message_id!(params[:id])
         if message = Mail.message(id)
           content_type :json
           result = Mail.forward_message(id)
@@ -564,13 +663,25 @@ module MailCatcher
       end
 
       delete "/messages/:id" do
-        id = params[:id].to_i
+        id = valid_message_id!(params[:id])
         if Mail.message(id)
           Mail.delete_message!(id)
           status 204
         else
           not_found
         end
+      end
+
+      get "/resources/proxy" do
+        content_type, body = fetch_remote_resource(params[:url].to_s)
+        content_type content_type if content_type
+        body
+      rescue URI::InvalidURIError, Sinatra::BadRequest => e
+        halt 400, e.message
+      rescue Net::OpenTimeout, Net::ReadTimeout
+        halt 504, "Remote resource timed out"
+      rescue RemoteResourceTooLarge
+        halt 413, "Remote resource too large"
       end
 
       # Claude Plugin Routes
@@ -672,7 +783,7 @@ module MailCatcher
       end
 
       get "/plugin/message/:id/tokens" do
-        id = params[:id].to_i
+        id = valid_message_id!(params[:id])
         content_type :json
 
         unless Mail.message(id)
@@ -710,7 +821,7 @@ module MailCatcher
       end
 
       get "/plugin/message/:id/auth-info" do
-        id = params[:id].to_i
+        id = valid_message_id!(params[:id])
         content_type :json
 
         unless Mail.message(id)
@@ -733,7 +844,7 @@ module MailCatcher
       end
 
       get "/plugin/message/:id/preview" do
-        id = params[:id].to_i
+        id = valid_message_id!(params[:id])
         content_type :html
 
         html_part = Mail.message_part_html(id)
@@ -766,7 +877,7 @@ module MailCatcher
       end
 
       delete "/plugin/message/:id" do
-        id = params[:id].to_i
+        id = valid_message_id!(params[:id])
         if Mail.message(id)
           Mail.delete_message!(id)
           status 204

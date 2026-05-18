@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module MailCatcher
-  VERSION = '1.5.6'
+  VERSION = '1.5.7'
 end

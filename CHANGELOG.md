@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.7] - 2026-05-17
+
+### Changed
+
+- Added a dedicated proxy for remote email resources in the HTML preview
+- Kept internal message URLs strict while preserving external image and document rendering
+- Added regression coverage for remote resource rewriting
+
 ## [1.5.6] - 2026-05-17
 
 ### Changed
