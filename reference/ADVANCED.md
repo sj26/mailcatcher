@@ -154,6 +154,63 @@ Improved parsing and display of:
 - Reply-To addresses
 - Proper name encoding and display
 
+## Server Logs and SMTP Monitoring
+
+Monitor real-time SMTP protocol interactions between your application and MailCatcher NG. The Server Logs view displays all SMTP commands, responses, and connection events.
+
+### Accessing Server Logs
+
+1. Visit the web interface at `http://127.0.0.1:1080`
+2. Click "Server Information" in the sidebar
+3. View the "Server Logs" panel on the right
+
+![Server Logs View](/screenshots/logs.webp)
+
+### Log Details
+
+Logs show:
+
+- **Timestamp**: Millisecond-precision event time
+- **Session ID**: Unique identifier for each SMTP connection
+- **Event Type**: COMMAND, RESPONSE, DATA, or CONNECTION
+- **Direction**: Client (→) or server (←) direction
+- **Message**: SMTP command, response code, or event details
+
+### Example Log Events
+
+```text
+COMMAND    + client    RCPT TO:<recipient@example.com>
+RESPONSE   - server    250 OK
+DATA       + client    Message complete (1145 bytes)
+RESPONSE   - server    354 Start mail input; end with <CRLF>.<CRLF>
+CONNECTION - server    Connection established from 127.0.0.1:55044
+RESPONSE   - server    250 8BITMIME SMTPUTF8
+```
+
+### Auto-refresh
+
+Enable **Auto-refresh: ON** toggle to continuously monitor live connections. Disable to pause and review historical logs.
+
+### Filter Logs
+
+Use the "Filter logs..." search box to find specific:
+
+- Connection IDs
+- Command names (RCPT, MAIL, DATA)
+- Email addresses
+- Response codes (250, 354, 550)
+- Custom text patterns
+
+### Debugging SMTP Issues
+
+Server logs are essential for troubleshooting:
+
+- **Connection refused**: Check if MailCatcher is running on `127.0.0.1:1025`
+- **AUTH failures**: Verify authentication commands in logs (MailCatcher doesn't require AUTH)
+- **Message rejections**: See exact SMTP response codes
+- **Protocol errors**: Identify non-standard client behavior
+- **UTF-8 issues**: Monitor SMTPUTF8 capability negotiation
+
 ## Message Management
 
 ### Limit Message Storage
