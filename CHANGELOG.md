@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.6] - 2026-07-01
+
+### Changed
+
+- Updated Gemfile.lock for dependency resolution
+
 ## [1.6.4] - 2026-07-01
 
 ### Changed
