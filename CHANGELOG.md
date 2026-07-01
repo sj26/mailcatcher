@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.4] - 2026-07-01
+
+### Changed
+
+- Upgraded GitHub Actions to use actions/checkout@v7.0.0 and Node.js 24
+
 ## [1.6.3] - 2026-07-01
 
 ### Changed

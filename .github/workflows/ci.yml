@@ -23,7 +23,7 @@ jobs:
     outputs:
       is-website-only: ${{ steps.check.outputs.website-only }}
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v7.0.0
         with:
           fetch-depth: 0
       - name: Determine if only website files changed
@@ -60,7 +60,7 @@ jobs:
     if: needs.check-files.outputs.is-website-only == 'false'
 
     steps:
-    - uses: actions/checkout@v4.2.2
+    - uses: actions/checkout@v7.0.0
 
     - uses: ruby/setup-ruby@v1
       with:
