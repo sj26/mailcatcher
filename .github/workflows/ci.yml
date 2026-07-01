@@ -65,7 +65,10 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby-version }}
-        bundler-cache: true
+        bundler-cache: false
+
+    - name: Install gems
+      run: bundle install
 
     - uses: actions/setup-node@v4.1.0
       with:

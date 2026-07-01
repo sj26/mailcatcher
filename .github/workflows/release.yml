@@ -24,7 +24,10 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.4'
-        bundler-cache: true
+        bundler-cache: false
+
+    - name: Install gems
+      run: bundle install
 
     - uses: actions/setup-node@v4.1.0
       with:
@@ -147,6 +150,7 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.4'
+        bundler-cache: false
 
     - name: Download gem
       uses: actions/download-artifact@v4
