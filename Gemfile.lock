@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mailcatcher-ng (1.5.7)
+    mailcatcher-ng (1.6.1)
       eventmachine (~> 1.2.7)
       faye-websocket (~> 0.12.0)
       mail (~> 2.9)
