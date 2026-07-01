@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.1] - 2026-07-01
+
+### Changed
+
+- Updated gem dependencies for security and compatibility
+- Updated jQuery to version 4.0.0 on website
+
+### Dependencies
+
+- **Gems**: concurrent-ruby, json, mail, net-imap, nokogiri, sqlite3, websocket-driver, psych, rubyzip, selenium-webdriver
+
 ## [1.5.7] - 2026-05-17
 
 ### Changed
