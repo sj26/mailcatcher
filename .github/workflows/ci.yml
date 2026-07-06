@@ -80,7 +80,7 @@ jobs:
       run: npm ci
 
     - uses: browser-actions/setup-chrome@latest
-    - uses: nanasess/setup-chromedriver@master
+    - uses: nanasess/setup-chromedriver@v3
 
     - name: Run tests
       run: bundle exec rake test
