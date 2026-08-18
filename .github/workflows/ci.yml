@@ -15,31 +15,34 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        ruby-version: ['3.1', '3.2', '3.3']
+        ruby-version: ['3.1', '3.2', '3.3', '3.4', '4.0']
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7.0.1
 
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true
 
-    - uses: actions/setup-node@v3
+    - uses: actions/setup-node@v7.0.0
+      with:
+        node-version: 24
 
-    - uses: browser-actions/setup-chrome@latest
-    - uses: nanasess/setup-chromedriver@master
+    - uses: browser-actions/setup-chrome@v2.2.0
+      with:
+        install-chromedriver: true
 
     - name: Run tests
       run: bundle exec rake test
       timeout-minutes: 5
 
     - name: Upload test artifacts
-      uses: actions/upload-artifact@v4.6.2
+      uses: actions/upload-artifact@v7.0.1
       if: always()
       with:
-        name: test-artifacts
+        name: test-artifacts-${{ matrix.os }}-ruby-${{ matrix.ruby-version }}
         path: tmp
