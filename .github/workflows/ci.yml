@@ -35,7 +35,7 @@ jobs:
       timeout-minutes: 5
 
     - name: Upload test artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4.6.2
       if: always()
       with:
         name: test-artifacts
