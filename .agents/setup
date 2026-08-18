@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$repo_root"
+
+packages=(
+  build-essential
+  chromium
+  chromium-driver
+  libsqlite3-dev
+  ruby
+  ruby-bundler
+  ruby-dev
+)
+
+if ! command -v node >/dev/null 2>&1; then
+  packages+=(nodejs)
+fi
+
+missing_packages=()
+for package in "${packages[@]}"; do
+  if ! dpkg-query -W -f='${Status}' "$package" 2>/dev/null | grep -q '^install ok installed$'; then
+    missing_packages+=("$package")
+  fi
+done
+
+if ((${#missing_packages[@]})); then
+  echo "==> Installing system packages: ${missing_packages[*]}"
+  time sudo apt-get update
+  time sudo apt-get install -y --no-install-recommends "${missing_packages[@]}"
+else
+  echo "==> System packages are already installed"
+fi
+
+echo "==> Installing Ruby dependencies"
+bundle config set --local path .bundle
+if bundle check >/dev/null 2>&1; then
+  echo "Ruby dependencies are already installed"
+else
+  time bundle install --jobs "$(nproc)" --retry 3
+fi
+
+echo "==> MailCatcher orb setup complete"
