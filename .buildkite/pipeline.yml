@@ -8,3 +8,6 @@ steps:
           workflow: .github/workflows/ci.yml
           version: "0.18.0"
           experimental-runner-user: true
+          runners:
+            - runs-on: ubuntu-latest
+              queue: hosted
