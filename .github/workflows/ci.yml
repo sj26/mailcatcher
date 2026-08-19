@@ -47,12 +47,27 @@ jobs:
           sudo apt-get install --yes "${packages[@]}"
         fi
 
-    - name: Prepare Ruby tool cache on macOS
+    - name: Prepare macOS dependencies
       if: runner.os == 'macOS'
       shell: bash
       run: |
+        set -euo pipefail
+
         if [[ ! -w /Users/runner ]]; then
           sudo install -d -o "$(id -un)" -g "$(id -gn)" /Users/runner
+        fi
+
+        chrome="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+        if [[ ! -x "$chrome" ]]; then
+          brew install --cask google-chrome
+        fi
+
+        if driver="$(command -v chromedriver)"; then
+          chrome_major="$("$chrome" --version | awk '{print $NF}' | cut -d. -f1)"
+          driver_major="$(chromedriver --version | awk '{print $2}' | cut -d. -f1)"
+          if [[ "$chrome_major" != "$driver_major" ]]; then
+            sudo rm -f "$driver"
+          fi
         fi
 
     - uses: ruby/setup-ruby@v1
