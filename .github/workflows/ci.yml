@@ -23,14 +23,29 @@ jobs:
     steps:
     - uses: actions/checkout@v7.0.1
 
-    - name: Install Linux dependencies
+    - name: Install missing Linux dependencies
       if: runner.os == 'Linux'
+      shell: bash
       run: |
-        sudo apt-get update
-        curl --fail --location --silent --show-error \
-          https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-          --output /tmp/google-chrome.deb
-        sudo apt-get install --yes libyaml-dev /tmp/google-chrome.deb
+        set -euo pipefail
+
+        packages=()
+        [[ -f /usr/include/yaml.h ]] || packages+=(libyaml-dev)
+
+        if ! command -v google-chrome >/dev/null 2>&1 && \
+           ! command -v google-chrome-stable >/dev/null 2>&1 && \
+           ! command -v chromium >/dev/null 2>&1 && \
+           ! command -v chromium-browser >/dev/null 2>&1; then
+          curl --fail --location --silent --show-error \
+            https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+            --output /tmp/google-chrome.deb
+          packages+=(/tmp/google-chrome.deb)
+        fi
+
+        if (( ${#packages[@]} )); then
+          sudo apt-get update
+          sudo apt-get install --yes "${packages[@]}"
+        fi
 
     - uses: ruby/setup-ruby@v1
       with:
