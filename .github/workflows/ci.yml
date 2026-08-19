@@ -27,14 +27,10 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        if [[ -n "${BUILDKITE:-}" ]]; then
-          curl --fail --location --silent --show-error \
-            https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-            --output /tmp/google-chrome.deb
-          sudo apt-get install --yes libyaml-dev /tmp/google-chrome.deb
-        else
-          sudo apt-get install --yes libyaml-dev
-        fi
+        curl --fail --location --silent --show-error \
+          https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+          --output /tmp/google-chrome.deb
+        sudo apt-get install --yes libyaml-dev /tmp/google-chrome.deb
 
     - uses: ruby/setup-ruby@v1
       with:
