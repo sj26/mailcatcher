@@ -13,11 +13,3 @@ steps:
               queue: hosted
             - runs-on: macos-latest
               queue: macos-medium
-
-  - wait: ~
-
-  - label: ":white_check_mark: CI complete"
-    key: "github-actions-complete"
-    command: "true"
-    agents:
-      queue: hosted
