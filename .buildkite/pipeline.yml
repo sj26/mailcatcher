@@ -1,0 +1,15 @@
+steps:
+  - label: ":github: CI"
+    key: "github-actions-ci"
+    agents:
+      queue: hosted
+    plugins:
+      - github-actions#v0.13.0:
+          workflow: .github/workflows/ci.yml
+          version: "0.18.0"
+          experimental-runner-user: true
+          runners:
+            - runs-on: ubuntu-latest
+              queue: hosted
+            - runs-on: macos-latest
+              queue: macos-medium
