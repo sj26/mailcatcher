@@ -23,6 +23,10 @@ jobs:
     steps:
     - uses: actions/checkout@v7.0.1
 
+    - name: Install Linux dependencies
+      if: runner.os == 'Linux'
+      run: sudo apt-get update && sudo apt-get install --yes libyaml-dev
+
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby-version }}
