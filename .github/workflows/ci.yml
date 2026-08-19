@@ -47,6 +47,14 @@ jobs:
           sudo apt-get install --yes "${packages[@]}"
         fi
 
+    - name: Prepare Ruby tool cache on macOS
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        if [[ ! -w /Users/runner ]]; then
+          sudo install -d -o "$(id -un)" -g "$(id -gn)" /Users/runner
+        fi
+
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby-version }}
