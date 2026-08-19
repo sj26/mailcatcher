@@ -22,7 +22,6 @@ HTTP_PORT = 20080
 Capybara.default_driver = :selenium
 Capybara.register_driver :selenium do |app|
   opts = Selenium::WebDriver::Chrome::Options.new
-  opts.binary = ENV["CHROME_BIN"] if ENV["CHROME_BIN"]
 
   opts.add_argument('disable-gpu')
   opts.add_argument('force-device-scale-factor=1')
@@ -33,11 +32,8 @@ Capybara.register_driver :selenium do |app|
     opts.add_argument('headless=new')
   end
 
-  service_options = {log: File.expand_path("../tmp/chromedriver.log", __dir__)}
-  service_options[:path] = ENV["CHROMEDRIVER_BIN"] if ENV["CHROMEDRIVER_BIN"]
-
   Capybara::Selenium::Driver.new app, browser: :chrome,
-    service: Selenium::WebDriver::Service.chrome(**service_options),
+    service: Selenium::WebDriver::Service.chrome(log: File.expand_path("../tmp/chromedriver.log", __dir__)),
     options: opts
 end
 

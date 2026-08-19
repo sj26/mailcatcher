@@ -32,17 +32,9 @@ jobs:
       with:
         node-version: 24
 
-    - uses: browser-actions/setup-chrome@v2.2.0
-      id: chrome
-      with:
-        install-chromedriver: true
-
     - name: Run tests
       run: bundle exec rake test
       timeout-minutes: 5
-      env:
-        CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
-        CHROMEDRIVER_BIN: ${{ steps.chrome.outputs.chromedriver-path }}
 
     - name: Upload test artifacts
       uses: actions/upload-artifact@v7.0.1
