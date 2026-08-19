@@ -6,7 +6,7 @@ steps:
     plugins:
       - github-actions#v0.13.0:
           workflow: .github/workflows/ci.yml
-          version: "0.18.0"
+          version: "0.13.16"
           experimental-runner-user: true
           runners:
             - runs-on: ubuntu-latest
