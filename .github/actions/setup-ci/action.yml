@@ -1,0 +1,45 @@
+name: Setup CI
+description: Install system dependencies not supplied by the runner
+
+runs:
+  using: composite
+  steps:
+    - name: Install missing Linux dependencies
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        packages=()
+        [[ -f /usr/include/yaml.h ]] || packages+=(libyaml-dev)
+
+        if ! command -v google-chrome >/dev/null 2>&1 && \
+           ! command -v google-chrome-stable >/dev/null 2>&1 && \
+           ! command -v chromium >/dev/null 2>&1 && \
+           ! command -v chromium-browser >/dev/null 2>&1; then
+          chrome_deb="$RUNNER_TEMP/google-chrome.deb"
+          curl --fail --location --silent --show-error \
+            https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+            --output "$chrome_deb"
+          packages+=("$chrome_deb")
+        fi
+
+        if (( ${#packages[@]} )); then
+          sudo apt-get update
+          sudo apt-get install --yes "${packages[@]}"
+        fi
+
+    - name: Install missing macOS dependencies
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        if [[ ! -w /Users/runner/hostedtoolcache ]]; then
+          sudo install -d -o "$(id -un)" -g "$(id -gn)" /Users/runner/hostedtoolcache
+        fi
+
+        chrome="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+        if [[ ! -x "$chrome" ]]; then
+          brew install --cask google-chrome
+        fi
