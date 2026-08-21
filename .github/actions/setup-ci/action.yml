@@ -11,8 +11,13 @@ runs:
         set -euo pipefail
 
         packages=()
+
+        # Buildkite's hosted Linux image lacks the libyaml headers Psych needs
+        # during bundle install. Remove this when the image supplies libyaml-dev.
         [[ -f /usr/include/yaml.h ]] || packages+=(libyaml-dev)
 
+        # Buildkite's hosted Linux image lacks a browser for the Selenium tests.
+        # Remove this when the image supplies Chrome or Chromium.
         if ! command -v google-chrome >/dev/null 2>&1 && \
            ! command -v google-chrome-stable >/dev/null 2>&1 && \
            ! command -v chromium >/dev/null 2>&1 && \
@@ -35,10 +40,15 @@ runs:
       run: |
         set -euo pipefail
 
+        # ruby/setup-ruby's prebuilt arm64 Rubies embed GitHub's tool-cache path,
+        # which the Buildkite image lacks. Remove this when those builds are
+        # relocatable or the image provides this writable path.
         if [[ ! -w /Users/runner/hostedtoolcache ]]; then
           sudo install -d -o "$(id -un)" -g "$(id -gn)" /Users/runner/hostedtoolcache
         fi
 
+        # Buildkite's hosted macOS image lacks a browser for the Selenium tests.
+        # Remove this when the image supplies Google Chrome.
         chrome="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
         if [[ ! -x "$chrome" ]]; then
           brew install --cask google-chrome
