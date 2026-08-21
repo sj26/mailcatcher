@@ -1,0 +1,8 @@
+steps:
+  - label: ":github: CI"
+    key: "github-actions-ci"
+    plugins:
+      - github-actions:
+          workflow: .github/workflows/ci.yml
+          source-ref: "eb736b2af19cfc564d9e1046d1b35d59e59554cb"
+          experimental-runner-user: true
