@@ -1,0 +1,20 @@
+To: Blah <blah@blah.com>
+From: Me <me@sj26.com>
+Subject: Inline image
+Mime-Version: 1.0
+Content-Type: multipart/related; boundary=INLINE-BOUNDARY
+
+--INLINE-BOUNDARY
+Content-Type: text/html; charset=UTF-8
+
+<html><body><p>Embedded below:</p><img src="cid:inline-image@example.com" alt="A tiny image"></body></html>
+
+--INLINE-BOUNDARY
+Content-Type: image/png
+Content-Transfer-Encoding: base64
+Content-Disposition: inline; filename="pixel.png"
+Content-ID: <inline-image@example.com>
+
+iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=
+
+--INLINE-BOUNDARY--

@@ -11,6 +11,10 @@ RSpec.describe "Clear", type: :feature do
 
     # .. should display three emails
     expect(page).to have_selector("#messages table tbody tr", text: "Plain mail", count: 3)
+    expect(page).to have_title("MailCatcher (3)")
+
+    page.find("#messages table tbody tr:first-of-type").click
+    expect(page).to have_selector("#message dd.subject", text: "Plain mail")
 
     # Clicking Clear but cancelling ..
     dismiss_confirm do
@@ -27,5 +31,7 @@ RSpec.describe "Clear", type: :feature do
 
     # .. should display no emails
     expect(page).not_to have_selector("#messages table tbody tr")
+    expect(page).to have_selector("#message dd.subject", text: "", exact_text: true)
+    expect(page).to have_title("MailCatcher (0)")
   end
 end
