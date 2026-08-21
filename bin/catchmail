@@ -47,7 +47,7 @@ OptionParser.new do |parser|
 
   parser.on('-h', '--help', 'Display this help information') do
     puts parser
-    exit!
+    exit
   end
 end.parse!
 
