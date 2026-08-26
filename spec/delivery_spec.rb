@@ -88,6 +88,17 @@ RSpec.describe MailCatcher, type: :feature do
     end
   end
 
+  it "catches multiple messages sent over one SMTP connection" do
+    Net::SMTP.start(LOCALHOST, SMTP_PORT) do |smtp|
+      smtp.send_message read_example("plainmail"), DEFAULT_FROM, DEFAULT_TO
+      smtp.send_message read_example("htmlmail"), DEFAULT_FROM, DEFAULT_TO
+    end
+
+    expect(page).to have_selector("#messages table tbody tr", count: 2)
+    expect(page).to have_selector("#messages table tbody tr", text: "Plain mail")
+    expect(page).to have_selector("#messages table tbody tr", text: "Test HTML Mail")
+  end
+
   it "catches and displays an html message as html and source" do
     deliver_example("htmlmail")
 
@@ -214,7 +225,18 @@ RSpec.describe MailCatcher, type: :feature do
 
     # Do not reload, make sure that the message appears via websockets
 
-    skip
+    expect(page).to have_selector("#messages table tbody tr:first-of-type", text: "Test mail")
+
+    message_row_element.click
+
+    expect(source_tab_element).to be_visible
+    expect(page).to have_no_selector("#message header .format.plain a")
+    expect(page).to have_no_selector("#message header .format.html a")
+
+    within_frame do
+      expect(body_element).to have_text("Content-Type: application/x-weird")
+      expect(body_element).to have_text("Weird stuff~")
+    end
   end
 
   it "catches and displays a message with multipart attachments" do
@@ -247,6 +269,12 @@ RSpec.describe MailCatcher, type: :feature do
     # Downloading via the browser is hard, so just grab from the URI directly
     expect(Net::HTTP.get(URI.join(Capybara.app_host, first_attachment_element[:href]))).to eql("Hello, I am an attachment!\r\n")
 
+    download_element = page.find("#message .views .download a")
+    expect(download_element[:href]).to match(%r{/messages/[^/]+\.eml\z})
+    downloaded_message = Net::HTTP.get(URI(download_element[:href]))
+    expect(downloaded_message).to include("Subject: Test Attachment Mail")
+    expect(downloaded_message).to include("Content-Type: multipart/mixed")
+
     source_tab_element.click
 
     within_frame do
@@ -263,7 +291,15 @@ RSpec.describe MailCatcher, type: :feature do
 
     # Do not reload, make sure that the message appears via websockets
 
-    skip
+    expect(page).to have_selector("#messages table tbody tr:first-of-type", text: "Whatever")
+
+    message_row_element.click
+    plain_tab_element.click
+
+    within_frame do
+      lines = body_element.text.lines.map(&:strip)
+      expect(lines).to include(".", "...", "Done.")
+    end
   end
 
   it "doesn't choke on messages containing quoted printables" do
@@ -271,6 +307,63 @@ RSpec.describe MailCatcher, type: :feature do
 
     # Do not reload, make sure that the message appears via websockets
 
-    skip
+    expect(page).to have_selector("#messages table tbody tr:first-of-type", text: "Test quoted-printable HTML mail")
+
+    message_row_element.click
+    html_tab_element.click
+
+    within_frame do
+      expect(body_element).to have_text("Thank you for allowing Grand Rounds to provide a test case that may demonstrate a limitation in MailCatcher.")
+      link = page.find_link("here")
+      expect(link[:href]).to eq("http://localhost:9876/big/long/d50243b933ddd425")
+      expect(link[:target]).to eq("_blank")
+    end
+  end
+
+  it "renders XHTML messages as HTML" do
+    deliver_example("xhtmlmail")
+
+    expect(page).to have_selector("#messages table tbody tr:first-of-type", text: "Test XHTML Mail")
+
+    message_row_element.click
+
+    expect(html_tab_element).to be_visible
+    expect(page).to have_no_selector("#message header .format.plain a")
+
+    within_frame do
+      expect(body_element).to have_text("Yo, you slimey scoundrel.")
+      expect(body_element).to have_no_text("<em>")
+    end
+  end
+
+  it "escapes and links URLs in plain text messages" do
+    deliver_example("plainlinkmail")
+
+    expect(page).to have_selector("#messages table tbody tr:first-of-type", text: "Plain mail")
+
+    message_row_element.click
+    plain_tab_element.click
+
+    within_frame do
+      expect(body_element).to have_text('You "should" <really> visit:')
+      link = page.find_link("https://mailcatcher.me")
+      expect(link[:href]).to eq("https://mailcatcher.me/")
+      expect(link[:target]).to eq("_blank")
+    end
+  end
+
+  it "displays embedded images referenced by content ID" do
+    deliver_example("inlinemail")
+
+    expect(page).to have_selector("#messages table tbody tr:first-of-type", text: "Inline image")
+
+    message_row_element.click
+    html_tab_element.click
+
+    within_frame do
+      image = page.find("img[alt='A tiny image']")
+      expect(image[:src]).to match(%r{/messages/[^/]+/parts/inline-image@example\.com\z})
+      wait.until { image.evaluate_script("this.complete && this.naturalWidth === 1") }
+    end
   end
 end
