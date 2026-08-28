@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "sprockets"
-require "sprockets-sass"
 require "compass"
 
 module MailCatcher
@@ -10,6 +9,14 @@ module MailCatcher
       Dir["#{sprockets.root}/{,vendor}/assets/*"].each do |path|
         sprockets.append_path(path)
       end
+      Compass.configuration.sass_load_paths.each do |path|
+        sprockets.append_path(path.root) if path.respond_to?(:root)
+      end
+      sprockets.register_transformer "text/sass", "text/css", Sprockets::SassCompressor.new(
+        :syntax => :sass,
+        :style => :expanded,
+        :load_paths => sprockets.paths,
+      )
     end
   end
 end
