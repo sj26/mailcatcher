@@ -282,20 +282,30 @@ class MailCatcher
       when "html"
         body = $("#message iframe").contents().find("body")
         $("a", body).attr("target", "_blank")
+      when "html-source"
+        message_iframe = $("#message iframe").contents()
+        text = message_iframe.text()
+
+        text = @escape_html_reserved_characters text
+
+        message_iframe.find("html").html("<body><pre>#{text}</pre></body>")
       when "plain"
         message_iframe = $("#message iframe").contents()
         text = message_iframe.text()
 
-        # Escape special characters
-        text = text.replace(/&/g, "&amp;")
-        text = text.replace(/</g, "&lt;")
-        text = text.replace(/>/g, "&gt;")
-        text = text.replace(/"/g, "&quot;")
+        text = @escape_html_reserved_characters text
 
         # Autolink text
         text = text.replace(/((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?)/g, """<a href="$1" target="_blank">$1</a>""")
 
         message_iframe.find("html").html("""<body style="font-family: sans-serif; white-space: pre-wrap">#{text}</body>""")
+
+  escape_html_reserved_characters: (text) ->
+    text
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll("\"", "&quot;")
 
   refresh: ->
     $.getJSON "messages", (messages) =>
