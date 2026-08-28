@@ -49,7 +49,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec"
   s.add_development_dependency "rake"
   s.add_development_dependency "rdoc"
-  s.add_development_dependency "sass"
   s.add_development_dependency "selenium-webdriver"
   s.add_development_dependency "sprockets", "~> 4.4"
   s.add_development_dependency "sprockets-helpers"
