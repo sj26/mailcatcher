@@ -33,13 +33,14 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ">= 3.3"
 
   s.add_dependency "eventmachine", "~> 1.0"
-  s.add_dependency "faye-websocket", "~> 0.11.1"
+  s.add_dependency "faye-websocket", "~> 0.12.0"
   s.add_dependency "mail", "~> 2.3"
   s.add_dependency "net-smtp"
   s.add_dependency "rack", "~> 3.2", ">= 3.2.6"
   s.add_dependency "sinatra", "~> 4.2", ">= 4.2.1"
   s.add_dependency "sqlite3", "~> 2.0"
   s.add_dependency "thin", "~> 2.0"
+  s.add_dependency "websocket-driver", "~> 0.8.2"
 
   s.add_development_dependency "capybara"
   s.add_development_dependency "capybara-screenshot"
