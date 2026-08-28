@@ -8,6 +8,7 @@ require "selenium/webdriver"
 
 require "net/smtp"
 require "socket"
+require "timeout"
 
 require "mail_catcher"
 
@@ -68,10 +69,38 @@ RSpec.configure do |config|
     deliver(read_example(name), options)
   end
 
+  def http_request(method, path)
+    uri = URI.join("#{Capybara.app_host}/", path.sub(%r{\A/}, ""))
+    request_class = Net::HTTP.const_get(method.to_s.capitalize)
+
+    Net::HTTP.start(uri.host, uri.port) do |http|
+      http.request(request_class.new(uri.request_uri))
+    end
+  end
+
+  def wait_for_server(pid)
+    Timeout.timeout(Capybara.default_max_wait_time) do
+      loop do
+        smtp_ready = Socket.tcp(LOCALHOST, SMTP_PORT, connect_timeout: 1) { true } rescue false
+        http_ready = Socket.tcp(LOCALHOST, HTTP_PORT, connect_timeout: 1) { true } rescue false
+        break if smtp_ready && http_ready
+
+        if Process.waitpid(pid, Process::WNOHANG)
+          raise "MailCatcher exited before its servers were ready"
+        end
+
+        sleep 0.05
+      end
+    end
+  end
+
   # Teach RSpec to gather console errors from chrome when there are failures
   config.after(:each, type: :feature) do |example|
     # Did the example fail?
     next unless example.exception # "failed"
+
+    # API-only feature specs don't launch a browser.
+    next if example.metadata[:browser] == false
 
     # Do we have a browser?
     next unless page.driver.browser
@@ -96,33 +125,54 @@ RSpec.configure do |config|
   end
 
   def wait
-    Selenium::WebDriver::Wait.new
+    Selenium::WebDriver::Wait.new(timeout: Capybara.default_max_wait_time)
   end
 
-  config.before :each, type: :feature do
+  config.before :each, type: :feature do |example|
     # Start MailCatcher
-    @pid = spawn "bundle", "exec", "mailcatcher", "--foreground", "--smtp-port", SMTP_PORT.to_s, "--http-port", HTTP_PORT.to_s
+    command = [
+      "bundle", "exec", "mailcatcher", "--foreground",
+      "--smtp-port", SMTP_PORT.to_s,
+      "--http-port", HTTP_PORT.to_s,
+      *Array(example.metadata[:mailcatcher_options]),
+    ]
+    @pid = spawn(*command)
 
     # Wait for it to boot
-    begin
-      Socket.tcp(LOCALHOST, SMTP_PORT, connect_timeout: 1) { |s| s.close }
-      Socket.tcp(LOCALHOST, HTTP_PORT, connect_timeout: 1) { |s| s.close }
-    rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT
-      retry
+    wait_for_server(@pid)
+
+    next if example.metadata[:browser] == false
+
+    if example.metadata[:websocket] == false
+      result = page.driver.browser.execute_cdp(
+        "Page.addScriptToEvaluateOnNewDocument",
+        source: "window.WebSocket = undefined;",
+      )
+      @browser_setup_script = result["identifier"]
     end
 
     # Open the web interface
-    visit "/"
+    visit example.metadata.fetch(:http_path, "/")
 
     # Wait for the websocket to be available to avoid race conditions
-    wait.until { page.evaluate_script("MailCatcher.websocket.readyState") == 1 rescue false }
+    unless example.metadata[:websocket] == false
+      wait.until { page.evaluate_script("MailCatcher.websocket.readyState") == 1 rescue false }
+    end
   end
 
-  config.after :each, type: :feature do
+  config.append_after :each, type: :feature do
+    if @browser_setup_script
+      page.driver.browser.execute_cdp(
+        "Page.removeScriptToEvaluateOnNewDocument",
+        identifier: @browser_setup_script,
+      )
+      @browser_setup_script = nil
+    end
+
     # Quit MailCatcher
     Process.kill("TERM", @pid)
-    Process.wait
-  rescue Errno::ESRCH
+    Process.wait(@pid)
+  rescue Errno::ESRCH, Errno::ECHILD
     # It's already gone
   end
 end
