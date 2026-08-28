@@ -47,9 +47,21 @@ RSpec.describe "Inbox", type: :feature do
     body.send_keys(:down)
     expect(page).to have_selector("#{message_rows}.selected", text: "Third message")
 
+    body.send_keys([:control, :down])
+    expect(page).to have_selector("#{message_rows}.selected", text: "First message")
+
+    body.send_keys([:control, :up])
+    expect(page).to have_selector("#{message_rows}.selected", text: "Third message")
+
     body.send_keys(:down)
     expect(page).to have_selector("#{message_rows}.selected", text: "Second message")
     expect(page).to have_selector("#message dd.subject", text: "Second message")
+
+    body.send_keys(:up)
+    expect(page).to have_selector("#{message_rows}.selected", text: "Third message")
+
+    body.send_keys(:down)
+    expect(page).to have_selector("#{message_rows}.selected", text: "Second message")
 
     body.send_keys(:right)
     expect(page).to have_selector("#message li.format.source.selected")
