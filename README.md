@@ -60,6 +60,8 @@ gem install mailcatcher
 
 ### Ruby
 
+MailCatcher requires Ruby 3.3 or newer.
+
 If you have trouble with the setup commands, make sure you have [Ruby installed](https://www.ruby-lang.org/en/documentation/installation/):
 
 ```
