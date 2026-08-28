@@ -8,11 +8,6 @@ module MailCatcher
       Dir["#{sprockets.root}/{,vendor}/assets/*"].each do |path|
         sprockets.append_path(path)
       end
-      sprockets.register_transformer "text/sass", "text/css", Sprockets::SassCompressor.new(
-        :syntax => :sass,
-        :style => :expanded,
-        :load_paths => sprockets.paths,
-      )
     end
   end
 end
