@@ -8,7 +8,7 @@ require "sqlite3"
 module MailCatcher::Mail extend self
   def db
     @__db ||= begin
-      SQLite3::Database.new(":memory:", :type_translation => true).tap do |db|
+      SQLite3::Database.new(":memory:", :type_translation => true, :results_as_hash => true).tap do |db|
         db.execute(<<-SQL)
           CREATE TABLE message (
             id INTEGER PRIMARY KEY ASC,
@@ -69,13 +69,14 @@ module MailCatcher::Mail extend self
 
   def latest_created_at
     @latest_created_at_query ||= db.prepare "SELECT created_at FROM message ORDER BY created_at DESC LIMIT 1"
-    @latest_created_at_query.execute.next
+    row = @latest_created_at_query.execute.next
+    row && row.values
   end
 
   def messages
     @messages_query ||= db.prepare "SELECT id, sender, recipients, subject, size, created_at FROM message ORDER BY created_at, id ASC"
     @messages_query.execute.map do |row|
-      Hash[row.fields.zip(row)].tap do |message|
+      row.tap do |message|
         message["recipients"] &&= JSON.parse(message["recipients"])
       end
     end
@@ -84,7 +85,7 @@ module MailCatcher::Mail extend self
   def message(id)
     @message_query ||= db.prepare "SELECT id, sender, recipients, subject, size, type, created_at FROM message WHERE id = ? LIMIT 1"
     row = @message_query.execute(id).next
-    row && Hash[row.fields.zip(row)].tap do |message|
+    row && row.tap do |message|
       message["recipients"] &&= JSON.parse(message["recipients"])
     end
   end
@@ -92,7 +93,7 @@ module MailCatcher::Mail extend self
   def message_source(id)
     @message_source_query ||= db.prepare "SELECT source FROM message WHERE id = ? LIMIT 1"
     row = @message_source_query.execute(id).next
-    row && row.first
+    row && row["source"]
   end
 
   def message_has_html?(id)
@@ -107,28 +108,22 @@ module MailCatcher::Mail extend self
 
   def message_parts(id)
     @message_parts_query ||= db.prepare "SELECT cid, type, filename, size FROM message_part WHERE message_id = ? ORDER BY filename ASC"
-    @message_parts_query.execute(id).map do |row|
-      Hash[row.fields.zip(row)]
-    end
+    @message_parts_query.execute(id).to_a
   end
 
   def message_attachments(id)
     @message_parts_query ||= db.prepare "SELECT cid, type, filename, size FROM message_part WHERE message_id = ? AND is_attachment = 1 ORDER BY filename ASC"
-    @message_parts_query.execute(id).map do |row|
-      Hash[row.fields.zip(row)]
-    end
+    @message_parts_query.execute(id).to_a
   end
 
   def message_part(message_id, part_id)
     @message_part_query ||= db.prepare "SELECT * FROM message_part WHERE message_id = ? AND id = ? LIMIT 1"
-    row = @message_part_query.execute(message_id, part_id).next
-    row && Hash[row.fields.zip(row)]
+    @message_part_query.execute(message_id, part_id).next
   end
 
   def message_part_type(message_id, part_type)
     @message_part_type_query ||= db.prepare "SELECT * FROM message_part WHERE message_id = ? AND type = ? AND is_attachment = 0 LIMIT 1"
-    row = @message_part_type_query.execute(message_id, part_type).next
-    row && Hash[row.fields.zip(row)]
+    @message_part_type_query.execute(message_id, part_type).next
   end
 
   def message_part_html(message_id)
@@ -146,9 +141,7 @@ module MailCatcher::Mail extend self
 
   def message_part_cid(message_id, cid)
     @message_part_cid_query ||= db.prepare "SELECT * FROM message_part WHERE message_id = ?"
-    @message_part_cid_query.execute(message_id).map do |row|
-      Hash[row.fields.zip(row)]
-    end.find do |part|
+    @message_part_cid_query.execute(message_id).find do |part|
       part["cid"] == cid
     end
   end
@@ -174,9 +167,7 @@ module MailCatcher::Mail extend self
   def delete_older_messages!(count = MailCatcher.options[:messages_limit])
     return if count.nil?
     @older_messages_query ||= db.prepare "SELECT id FROM message WHERE id NOT IN (SELECT id FROM message ORDER BY created_at DESC, id DESC LIMIT ?)"
-    @older_messages_query.execute(count).map do |row|
-      Hash[row.fields.zip(row)]
-    end.each do |message|
+    @older_messages_query.execute(count).each do |message|
       delete_message!(message["id"])
     end
   end
