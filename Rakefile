@@ -19,7 +19,14 @@ task "assets" do
   sprockets = MailCatcher::Web::Assets
   sprockets.css_compressor = :sass
   sprockets.js_compressor = :uglifier
-  sprockets.each_logical_path(/(\Amailcatcher\.(js|css)|\.(xsl|png)\Z)/) do |logical_path|
+  logical_paths = %w[
+    mailcatcher.js
+    mailcatcher.css
+    logo.png
+    logo_2x.png
+    logo_large.png
+  ]
+  logical_paths.each do |logical_path|
     if asset = sprockets.find_asset(logical_path)
       target = File.join(compiled_path, logical_path)
       asset.write_to target
