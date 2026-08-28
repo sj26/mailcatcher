@@ -133,7 +133,7 @@ module MailCatcher
           body = part["body"]
 
           # Rewrite body to link to embedded attachments served by cid
-          body.gsub! /cid:([^'"> ]+)/, "#{id}/parts/\\1"
+          body = body.gsub /cid:([^'"> ]+)/, "#{id}/parts/\\1"
 
           body
         else
