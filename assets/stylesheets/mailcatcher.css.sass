@@ -1,12 +1,56 @@
-@import "compass"
-@import "compass/reset"
+// Based on Eric Meyer's reset 2.0.
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video
+  margin: 0
+  padding: 0
+  border: 0
+  font: inherit
+  font-size: 100%
+  vertical-align: baseline
+
+html
+  line-height: 1
+
+ol, ul
+  list-style: none
+
+table
+  border-collapse: collapse
+  border-spacing: 0
+
+caption, th, td
+  text-align: left
+  font-weight: normal
+  vertical-align: middle
+
+q, blockquote
+  quotes: none
+  &:before, &:after
+    content: ""
+    content: none
+
+a img
+  border: none
+
+article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary
+  display: block
 
 html, body
   width: 100%
   height: 100%
 
 body
-  +establish-baseline(12px)
   display: -moz-box
   display: -webkit-box
   display: box
@@ -34,27 +78,27 @@ body
 .button
   padding: .5em 1em
   border: 1px solid #ccc
-  +border-radius(2px)
-  +background(linear-gradient(color-stops(#f4f4f4, #ececec)), #ececec)
+  border-radius: 2px
+  background: linear-gradient(#f4f4f4, #ececec), #ececec
   color: #666
-  +text-shadow(1px 1px 0 #fff)
+  text-shadow: 1px 1px 0 #fff
   text-decoration: none
   &:hover, &:focus
     border-color: #999
     border-bottom-color: #666
-    +background(linear-gradient(color-stops(#eee, #ddd)), #ddd)
+    background: linear-gradient(#eee, #ddd), #ddd
     color: #333
     text-decoration: none
   &:active, &.active
     border-color: #666
     border-bottom-color: #999
-    +background(linear-gradient(color-stops(#ddd, #eee)), #eee)
+    background: linear-gradient(#ddd, #eee), #eee
     color: #333
     text-decoration: none
-    +text-shadow(-1px -1px 0 #eee)
+    text-shadow: -1px -1px 0 #eee
 
 body > header
-  +clearfix
+  overflow: hidden
   border-bottom: 1px solid #ccc
   h1
     float: left
@@ -68,8 +112,8 @@ body > header
     a
       color: black
       text-decoration: none
-      +text-shadow(0 1px 0 white)
-      +transition(0.1s ease)
+      text-shadow: 0 1px 0 white
+      transition: ease 0.1s
       &:hover
         color: #4183C4
   nav
@@ -89,20 +133,20 @@ body > header
         display: block
         padding: 10px
         text-decoration: none
-        +text-shadow(0 1px 0 white)
-        +background(linear-gradient(color-stops(#f4f4f4, #ececec)), #ececec)
+        text-shadow: 0 1px 0 white
+        background: linear-gradient(#f4f4f4, #ececec), #ececec
         color: #666
-        +text-shadow(1px 1px 0 #fff)
+        text-shadow: 1px 1px 0 #fff
         text-decoration: none
         &:hover, &:focus
-          +background(linear-gradient(color-stops(#eee, #ddd)), #ddd)
+          background: linear-gradient(#eee, #ddd), #ddd
           color: #333
           text-decoration: none
         &:active, &.active
-          +background(linear-gradient(color-stops(#ddd, #eee)), #eee)
+          background: linear-gradient(#ddd, #eee), #eee
           color: #333
           text-decoration: none
-          +text-shadow(-1px -1px 0 #eee)
+          text-shadow: -1px -1px 0 #eee
 
 #messages
   width: 100%
@@ -113,7 +157,7 @@ body > header
   background: #fff
   border-top: 1px solid #fff
   table
-    +clearfix
+    overflow: hidden
     width: 100%
     thead tr
       background: #eee
@@ -122,10 +166,10 @@ body > header
         padding: .25em
         font-weight: bold
         color: #666
-        +text-shadow(0 1px 0 white)
+        text-shadow: 0 1px 0 white
     tbody tr
       cursor: pointer
-      +transition(0.1s ease)
+      transition: ease 0.1s
       color: #333
       &:hover
         color: #000
@@ -157,9 +201,9 @@ body > header
   -webkit-box-flex: 1
   box-flex: 1
   > header
-    +clearfix
+    overflow: hidden
     .metadata
-      +clearfix
+      overflow: hidden
       padding: .5em
       // This is already padded by resizer
       padding-top: 0
@@ -173,7 +217,7 @@ body > header
         text-align: right
         font-weight: bold
         color: #666
-        +text-shadow(0 1px 0 white)
+        text-shadow: 0 1px 0 white
       dd.subject
         font-weight: bold
       .attachments
@@ -181,23 +225,26 @@ body > header
         ul
           display: inline
           li
-            +inline-block
+            display: inline-block
+            vertical-align: middle
             margin-right: .5em
     .views
       ul
         padding: 0 .5em
         border-bottom: 1px solid #ccc
       .tab
-        +inline-block
+        display: inline-block
+        vertical-align: middle
         a
-          +inline-block
+          display: inline-block
+          vertical-align: middle
           padding: .5em
           border: 1px solid #ccc
           background: #ddd
           color: #333
           border-width: 1px 1px 0 1px
           cursor: pointer
-          +text-shadow(0 1px 0 #eeeeee)
+          text-shadow: 0 1px 0 #eeeeee
           text-decoration: none
         &:not(.selected):hover a
           background-color: #eee
@@ -205,11 +252,12 @@ body > header
           background: #fff
           color: #000
           height: 13px
-          +box-shadow(1px 1px 0 #ccc)
+          box-shadow: 1px 1px 0 #ccc
           margin-bottom: -2px
           cursor: default
       .action
-        +inline-block
+        display: inline-block
+        vertical-align: middle
         float: right
         margin: 0 .25em
 
