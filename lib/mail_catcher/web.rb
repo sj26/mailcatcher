@@ -18,7 +18,7 @@ module MailCatcher
         end
 
         # This should only affect when http_path is anything but "/" above
-        run lambda { |env| [302, {"Location" => MailCatcher.options[:http_path]}, []] }
+        run lambda { |env| [302, {"location" => MailCatcher.options[:http_path]}, []] }
       end
     end
 
