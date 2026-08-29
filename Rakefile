@@ -17,7 +17,6 @@ task "assets" do
 
   require "mail_catcher/web/assets"
   sprockets = MailCatcher::Web::Assets
-  sprockets.js_compressor = :uglifier
   logical_paths = %w[
     mailcatcher.js
     mailcatcher.css
