@@ -9,11 +9,6 @@ module MailCatcher
     def app
       @@app ||= Rack::Builder.new do
         map(MailCatcher.options[:http_path]) do
-          if MailCatcher.development?
-            require "mail_catcher/web/assets"
-            map("/assets") { run Assets }
-          end
-
           run Application
         end
 

@@ -1,39 +1,9 @@
 # frozen_string_literal: true
 
-require "fileutils"
-require "rubygems"
-
 require "mail_catcher/version"
 
-# XXX: Would prefer to use Rake::SprocketsTask but can't populate
-# non-digest assets, and we don't want sprockets at runtime so
-# can't use manifest directly. Perhaps index.html should be
-# precompiled with digest assets paths?
-
-desc "Compile assets"
-task "assets" do
-  compiled_path = File.expand_path("../public/assets", __FILE__)
-  FileUtils.mkdir_p(compiled_path)
-
-  require "mail_catcher/web/assets"
-  sprockets = MailCatcher::Web::Assets
-  logical_paths = %w[
-    mailcatcher.js
-    mailcatcher.css
-    logo.png
-    logo_2x.png
-    logo_large.png
-  ]
-  logical_paths.each do |logical_path|
-    if asset = sprockets.find_asset(logical_path)
-      target = File.join(compiled_path, logical_path)
-      asset.write_to target
-    end
-  end
-end
-
 desc "Package as Gem"
-task "package" => ["assets"] do
+task "package" do
   require "rubygems/package"
   require "rubygems/specification"
 
@@ -83,7 +53,5 @@ require "rspec/core/rake_task"
 RSpec::Core::RakeTask.new(:test) do |rspec|
   rspec.rspec_opts = "--format doc"
 end
-
-task :test => :assets
 
 task :default => :test

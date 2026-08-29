@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
     "lib/**/*.rb",
     "public/**/*",
     "views/**/*",
-  ] - Dir["lib/mail_catcher/web/assets.rb"]
+  ]
   s.require_paths = ["lib"]
   s.executables = ["mailcatcher", "catchmail"]
   s.extra_rdoc_files = ["README.md", "LICENSE"]
@@ -49,6 +49,4 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rake"
   s.add_development_dependency "rdoc"
   s.add_development_dependency "selenium-webdriver"
-  s.add_development_dependency "sprockets", "~> 4.4"
-  s.add_development_dependency "sprockets-helpers"
 end

@@ -28,10 +28,6 @@ jobs:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true
 
-    - uses: actions/setup-node@v7.0.0
-      with:
-        node-version: 24
-
     - name: Run tests
       run: bundle exec rake test
       timeout-minutes: 5
