@@ -1,10 +1,3 @@
-//= require modernizr
-//= require jquery
-//= require date
-//= require favcount
-//= require keymaster
-//= require url
-
 "use strict";
 
 // Add a case-insensitive :contains selector to jQuery.

@@ -4,9 +4,8 @@
 # Gemfile locks ignored for gems
 /Gemfile.lock
 
-# Generated documentation and assets
+# Generated documentation
 /doc
-/public/assets
 
 # Build gems
 *.gem

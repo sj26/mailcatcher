@@ -36,33 +36,7 @@ module MailCatcher
     class Application < Sinatra::Base
       set :environment, MailCatcher.env
       set :prefix, MailCatcher.options[:http_path]
-      set :asset_prefix, File.join(prefix, "assets")
       set :root, File.expand_path("#{__FILE__}/../../../..")
-
-      if development?
-        require "sprockets-helpers"
-
-        configure do
-          require "mail_catcher/web/assets"
-          Sprockets::Helpers.configure do |config|
-            config.environment = Assets
-            config.prefix      = settings.asset_prefix
-            config.digest      = false
-            config.public_path = public_folder
-            config.debug       = true
-          end
-        end
-
-        helpers do
-          include Sprockets::Helpers
-        end
-      else
-        helpers do
-          def asset_path(filename)
-            File.join(settings.asset_prefix, filename)
-          end
-        end
-      end
 
       get "/" do
         erb :index
