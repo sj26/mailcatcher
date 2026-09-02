@@ -82,20 +82,12 @@ No RubyGems API key is stored in GitHub.
 
 ### 5. Configure the Docker Hub publisher
 
-1. Create a dedicated Docker ID used only to publish MailCatcher. Verify its
-   email address, enable two-factor authentication, and do not give it access
-   to any other Docker Hub repositories.
-2. While signed in as `sj26`, open the public `sj26/mailcatcher` repository's
-   **Collaborators** tab and add the publisher Docker ID. Docker Hub grants a
-   collaborator push and pull access to this repository, but not repository
-   administration or deletion access.
-3. While signed in as the publisher, [create a personal access token](https://docs.docker.com/security/access-tokens/)
+1. While signed in as `sj26`, [create a personal access token](https://docs.docker.com/security/access-tokens/)
    named `mailcatcher-github-releases` with read and write permissions, but not
    delete permission. Set an expiration date and arrange to rotate it before it
    expires.
-4. On the GitHub `release` environment, add:
-   - environment variable `DOCKERHUB_USERNAME`: the publisher Docker ID
-   - environment secret `DOCKERHUB_TOKEN`: the publisher's token
+2. On the GitHub `release` environment, add the token as an environment secret
+   named `DOCKERHUB_TOKEN`.
 
 Do not use a repository secret. Restricting the token to the environment keeps
 workflows on ordinary branches from requesting it.
@@ -108,13 +100,11 @@ settings and make it public.
 
 RubyGems uses OIDC trusted publishing and GitHub Container Registry uses the
 workflow's short-lived `GITHUB_TOKEN`. Docker Hub only supports OIDC for
-organizations. A personal token is still account-wide for the dedicated
-publisher's own account, but within the `sj26` namespace that account has
-server-side access only to `sj26/mailcatcher`. A compromised publisher could
-create content in its own namespace but could not modify other `sj26`
-repositories. The workflow additionally limits Buildx's use of that credential
-to pull and push requests for `sj26/mailcatcher`; that client-side scope is
-defense in depth, not a substitute for the dedicated account.
+organizations. The `sj26` personal token is account-wide, so keep its lifetime
+short and rotate it regularly. The workflow limits Buildx's use of that
+credential to pull and push requests for `sj26/mailcatcher`, but that
+client-side scope is defense in depth rather than a server-enforced permission
+boundary.
 
 ## Publish a release
 
