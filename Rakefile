@@ -4,18 +4,21 @@ require "mail_catcher/version"
 
 desc "Package as Gem"
 task "package" do
+  require "fileutils"
   require "rubygems/package"
   require "rubygems/specification"
 
   spec_file = File.expand_path("../mailcatcher.gemspec", __FILE__)
   spec = Gem::Specification.load(spec_file)
+  package_dir = File.expand_path("pkg", __dir__)
 
-  Gem::Package.build spec
+  FileUtils.mkdir_p package_dir
+  Gem::Package.build spec, false, false, File.join(package_dir, spec.file_name)
 end
 
 desc "Release Gem to RubyGems"
 task "release" => ["package"] do
-  %x[gem push mailcatcher-#{MailCatcher::VERSION}.gem]
+  sh "gem", "push", File.expand_path("pkg/mailcatcher-#{MailCatcher::VERSION}.gem", __dir__)
 end
 
 desc "Build and push Docker images (optional: VERSION=#{MailCatcher::VERSION})"

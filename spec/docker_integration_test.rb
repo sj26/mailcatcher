@@ -9,7 +9,7 @@ require "securerandom"
 require "socket"
 
 ROOT = File.expand_path("..", __dir__)
-IMAGE = "mailcatcher-integration-test:#{Process.pid}"
+IMAGE = ENV.fetch("MAILCATCHER_DOCKER_IMAGE", "mailcatcher-integration-test:#{Process.pid}")
 SUBJECT = "Docker integration #{SecureRandom.hex(6)}"
 PLAIN_TEXT = "MailCatcher received this message over SMTP."
 HTML_TEXT = "MailCatcher rendered this HTML message."
@@ -80,8 +80,10 @@ end
 container = nil
 
 begin
-  puts "Building #{IMAGE}"
-  system("docker", "build", "--tag", IMAGE, ROOT) || raise("Docker image build failed")
+  unless ENV.key?("MAILCATCHER_DOCKER_IMAGE")
+    puts "Building #{IMAGE}"
+    system("docker", "build", "--tag", IMAGE, ROOT) || raise("Docker image build failed")
+  end
 
   container = capture!(
     "docker", "run", "--detach",
