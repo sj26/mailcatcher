@@ -1,0 +1,229 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]*'
+
+permissions: {}
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.release.outputs.version }}
+      prerelease: ${{ steps.release.outputs.prerelease }}
+
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        fetch-depth: 0
+        persist-credentials: false
+
+    - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+      with:
+        ruby-version: '3.4'
+        bundler-cache: true
+
+    - name: Validate release tag
+      id: release
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        version="$(ruby -Ilib -rmail_catcher/version -e 'print MailCatcher::VERSION')"
+        if [[ "$GITHUB_REF_NAME" != "v$version" ]]; then
+          echo "Tag $GITHUB_REF_NAME does not match MailCatcher version $version" >&2
+          exit 1
+        fi
+
+        if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+          echo "Tag $GITHUB_REF_NAME is not on the main branch" >&2
+          exit 1
+        fi
+
+        prerelease="$(ruby -rrubygems -e 'print Gem::Version.new(ARGV.fetch(0)).prerelease?' "$version")"
+        echo "version=$version" >> "$GITHUB_OUTPUT"
+        echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
+
+    - name: Run tests
+      run: bundle exec rake test
+      timeout-minutes: 5
+
+    - name: Package candidate gem
+      run: bundle exec rake package
+
+    - name: Test candidate container
+      shell: bash
+      env:
+        TEST_IMAGE: mailcatcher-release-test:${{ github.run_id }}
+        VERSION: ${{ steps.release.outputs.version }}
+      run: |
+        set -euo pipefail
+        docker build \
+          --build-arg "VERSION=$VERSION" \
+          --secret "id=mailcatcher-gem,src=pkg/mailcatcher-$VERSION.gem" \
+          --tag "$TEST_IMAGE" \
+          .
+        MAILCATCHER_DOCKER_IMAGE="$TEST_IMAGE" ruby spec/docker_integration_test.rb
+
+  publish-gem:
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+      with:
+        ruby-version: '3.4'
+        bundler-cache: true
+
+    - name: Check for an existing RubyGems release
+      id: rubygems
+      shell: bash
+      env:
+        VERSION: ${{ needs.validate.outputs.version }}
+      run: |
+        set -euo pipefail
+
+        gem_url="https://rubygems.org/downloads/mailcatcher-$VERSION.gem"
+        status="$(curl --silent --show-error --location --output /dev/null --write-out '%{http_code}' "$gem_url")"
+        case "$status" in
+          200)
+            mkdir -p pkg
+            curl --fail --silent --show-error --location \
+              --output "pkg/mailcatcher-$VERSION.gem" \
+              "$gem_url"
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            ;;
+          404)
+            echo "published=false" >> "$GITHUB_OUTPUT"
+            ;;
+          *)
+            echo "RubyGems.org returned HTTP $status for $gem_url" >&2
+            exit 1
+            ;;
+        esac
+
+    - name: Publish gem to RubyGems.org
+      if: steps.rubygems.outputs.published == 'false'
+      uses: rubygems/release-gem@7f9650160c1a4e7989fdc9855807bdbd421d8b6b # v1.4.1
+
+    - name: Save gem for the GitHub release
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: gem
+        path: pkg/mailcatcher-${{ needs.validate.outputs.version }}.gem
+        if-no-files-found: error
+        retention-days: 1
+
+  publish-containers:
+    needs: [validate, publish-gem]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: release
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+      with:
+        username: ${{ vars.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        scope: sj26/mailcatcher@pull,push
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4.2.0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
+
+    - name: Set image metadata
+      id: metadata
+      uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+      with:
+        images: |
+          sj26/mailcatcher
+          ghcr.io/${{ github.repository }}
+        tags: |
+          type=raw,value=${{ github.ref_name }}
+          type=raw,value=latest,enable=${{ needs.validate.outputs.prerelease == 'false' }}
+        labels: |
+          org.opencontainers.image.description=MailCatcher runs an SMTP server and displays caught email in a web interface.
+          org.opencontainers.image.licenses=MIT
+
+    - name: Build and publish container images
+      uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
+        push: true
+        build-args: VERSION=${{ needs.validate.outputs.version }}
+        tags: ${{ steps.metadata.outputs.tags }}
+        labels: ${{ steps.metadata.outputs.labels }}
+
+  github-release:
+    needs: [validate, publish-gem, publish-containers]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: write
+
+    steps:
+    - name: Download gem
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        name: gem
+        path: pkg
+
+    - name: Create GitHub release
+      shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_REPO: ${{ github.repository }}
+        VERSION: ${{ needs.validate.outputs.version }}
+        PRERELEASE: ${{ needs.validate.outputs.prerelease }}
+      run: |
+        set -euo pipefail
+
+        options=(
+          --verify-tag
+          --title "$GITHUB_REF_NAME"
+          --generate-notes
+        )
+        if [[ "$PRERELEASE" == "true" ]]; then
+          options+=(--prerelease)
+        fi
+
+        gh release create "$GITHUB_REF_NAME" \
+          "pkg/mailcatcher-$VERSION.gem" \
+          "${options[@]}"
