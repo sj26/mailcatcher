@@ -102,7 +102,8 @@ jobs:
         set -euo pipefail
 
         gem_url="https://rubygems.org/downloads/mailcatcher-$VERSION.gem"
-        status="$(curl --silent --show-error --location --output /dev/null --write-out '%{http_code}' "$gem_url")"
+        version_url="https://rubygems.org/api/v2/rubygems/mailcatcher/versions/$VERSION.json"
+        status="$(curl --silent --show-error --location --output /dev/null --write-out '%{http_code}' "$version_url")"
         case "$status" in
           200)
             mkdir -p pkg
@@ -115,7 +116,7 @@ jobs:
             echo "published=false" >> "$GITHUB_OUTPUT"
             ;;
           *)
-            echo "RubyGems.org returned HTTP $status for $gem_url" >&2
+            echo "RubyGems.org returned HTTP $status for $version_url" >&2
             exit 1
             ;;
         esac
