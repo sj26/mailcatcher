@@ -23,6 +23,8 @@ jobs:
     steps:
     - uses: actions/checkout@v7.0.1
 
+    - uses: ./.github/actions/setup-ci
+
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby-version }}
@@ -31,6 +33,8 @@ jobs:
     - name: Run tests
       run: bundle exec rake test
       timeout-minutes: 5
+      env:
+        SE_SKIP_DRIVER_IN_PATH: 'true'
 
     - name: Upload test artifacts
       uses: actions/upload-artifact@v7.0.1
