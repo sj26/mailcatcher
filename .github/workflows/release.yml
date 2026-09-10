@@ -178,7 +178,11 @@ jobs:
           type=raw,value=${{ github.ref_name }}
           type=raw,value=latest,enable=${{ needs.validate.outputs.prerelease == 'false' }}
         labels: |
+          org.opencontainers.image.authors=Samuel Cochran <sj26@sj26.com>
+          org.opencontainers.image.title=MailCatcher
           org.opencontainers.image.description=MailCatcher runs an SMTP server and displays caught email in a web interface.
+          org.opencontainers.image.url=https://mailcatcher.me
+          org.opencontainers.image.documentation=https://mailcatcher.me
           org.opencontainers.image.licenses=MIT
 
     - name: Build and publish container images

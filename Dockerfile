@@ -1,7 +1,6 @@
 # syntax=docker/dockerfile:1
 
 FROM ruby:3.4-alpine
-MAINTAINER Samuel Cochran <sj26@sj26.com>
 
 # Use --build-arg VERSION=... to override
 # or `rake docker VERSION=...`
