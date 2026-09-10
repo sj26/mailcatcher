@@ -178,6 +178,7 @@ jobs:
           type=raw,value=${{ github.ref_name }}
           type=raw,value=latest,enable=${{ needs.validate.outputs.prerelease == 'false' }}
         labels: |
+          org.opencontainers.image.authors=Samuel Cochran <sj26@sj26.com>
           org.opencontainers.image.description=MailCatcher runs an SMTP server and displays caught email in a web interface.
           org.opencontainers.image.licenses=MIT
 
