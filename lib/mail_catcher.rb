@@ -106,7 +106,19 @@ module MailCatcher extend self
           options[:smtp_port] = port
         end
 
-        parser.on("--http-ip IP", "Set the ip address of the http server") do |ip|
+        parser.on("--smtp-starttls", "Enable STARTTLS for the smtp server") do
+          options[:smtp_starttls] = true
+        end
+
+        parser.on("--smtp-private-key PATH", String, "Set the private key file for the smtp server") do |path|
+          options[:smtp_private_key_file] = path
+        end
+
+        parser.on("--smtp-cert PATH", String, "Set the certificate of the smtp server") do |path|
+          options[:smtp_cert_chain_path] = path
+        end
+
+        parser.on("--http-ip IP", String, "Set the ip address of the http server") do |ip|
           options[:http_ip] = ip
         end
 
@@ -180,6 +192,13 @@ module MailCatcher extend self
     EventMachine.run do
       # Set up an SMTP server to run within EventMachine
       rescue_port options[:smtp_port] do
+        Smtp.parms = {
+          starttls: options[:smtp_starttls],
+          starttls_options: {
+            private_key_file: options[:smtp_private_key_file],
+            cert_chain_file: options[:smtp_cert_chain_path],
+          },
+        }
         EventMachine.start_server options[:smtp_ip], options[:smtp_port], Smtp
         puts "==> #{smtp_url}"
       end
