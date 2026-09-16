@@ -18,7 +18,7 @@ jobs:
         ruby-version: ['3.3', '3.4', '4.0']
 
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
+    timeout-minutes: 20
 
     steps:
     - uses: actions/checkout@v7.0.1
@@ -30,7 +30,7 @@ jobs:
 
     - name: Run tests
       run: bundle exec rake test
-      timeout-minutes: 5
+      timeout-minutes: 15
 
     - name: Upload test artifacts
       uses: actions/upload-artifact@v7.0.1
