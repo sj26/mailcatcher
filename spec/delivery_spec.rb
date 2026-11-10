@@ -366,4 +366,47 @@ RSpec.describe MailCatcher, type: :feature do
       wait.until { image.evaluate_script("this.complete && this.naturalWidth === 1") }
     end
   end
+
+  it "displays HTML without running message scripts or submitting forms" do
+    deliver_example("plainmail")
+    deliver <<~MESSAGE
+      Subject: Inert HTML
+      Content-Type: text/html
+
+      <p id="status">Message content</p>
+      <script>
+        document.getElementById('status').textContent = 'Script ran';
+        parent.document.body.dataset.messageScript = 'ran';
+        fetch('1.source').then(response => response.text()).then(source => {
+          parent.document.body.dataset.messageSource = source;
+        });
+      </script>
+      <svg onload="document.getElementById('status').textContent = 'Handler ran'"></svg>
+      <form action="/" target="_top"><button>Submit message form</button></form>
+      <a href="javascript:document.getElementById('status').textContent='URL ran'">Script link</a>
+      <a href="/">Open application</a>
+    MESSAGE
+
+    page.find("#messages tbody tr", text: "Inert HTML").click
+
+    within_frame do
+      expect(page).to have_selector("#status", text: "Message content")
+      click_button "Submit message form"
+      click_link "Script link"
+      expect(page).to have_selector("#status", text: "Message content")
+    end
+
+    expect(page).to have_selector("#messages tbody tr.selected", text: "Inert HTML")
+    expect(page.evaluate_script("document.body.dataset.messageScript")).to be_nil
+    expect(page.evaluate_script("document.body.dataset.messageSource")).to be_nil
+
+    # Links must open a usable page, not inherit the message's script restrictions.
+    popup = window_opened_by do
+      within_frame { click_link "Open application" }
+    end
+    within_window popup do
+      expect(page).to have_selector("#messages tbody tr", text: "Plain mail")
+    end
+    popup.close
+  end
 end
