@@ -81,8 +81,9 @@ RSpec.configure do |config|
   def wait_for_server(pid)
     Timeout.timeout(Capybara.default_max_wait_time) do
       loop do
-        smtp_ready = Socket.tcp(LOCALHOST, SMTP_PORT, connect_timeout: 1) { true } rescue false
-        http_ready = Socket.tcp(LOCALHOST, HTTP_PORT, connect_timeout: 1) { true } rescue false
+        # Socket.tcp can report success for refused connections on macOS with Ruby 3.3.
+        smtp_ready = TCPSocket.open(LOCALHOST, SMTP_PORT) { true } rescue false
+        http_ready = TCPSocket.open(LOCALHOST, HTTP_PORT) { true } rescue false
         break if smtp_ready && http_ready
 
         if Process.waitpid(pid, Process::WNOHANG)

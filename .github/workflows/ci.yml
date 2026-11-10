@@ -31,6 +31,9 @@ jobs:
     - name: Run tests
       run: bundle exec rake test
       timeout-minutes: 15
+      env:
+        # Let Selenium select a driver matching the installed browser.
+        SE_SKIP_DRIVER_IN_PATH: 'true'
 
     - name: Upload test artifacts
       uses: actions/upload-artifact@v7.0.1

@@ -95,7 +95,7 @@ container = nil
 begin
   unless ENV.key?("MAILCATCHER_DOCKER_IMAGE")
     puts "Building #{IMAGE}"
-    system("docker", "build", "--tag", IMAGE, ROOT) || raise("Docker image build failed")
+    system("docker", "build", "--load", "--tag", IMAGE, ROOT) || raise("Docker image build failed")
   end
 
   container = capture!(
