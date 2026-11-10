@@ -125,6 +125,23 @@ RSpec.describe MailCatcher, type: :feature do
       expect(page).to have_no_text("Yo, you <em>slimey scoundrel</em>.")
     end
 
+    click_button "HTML source"
+    expect(page).to have_selector("button[aria-label='HTML source'][aria-pressed='true']")
+    expect(page).to have_selector(".format.html.selected")
+
+    within_frame do
+      expect(page).to have_text("Yo, you <em>slimey scoundrel</em>.")
+      expect(page).to have_no_text("Content-Type: text/html")
+      expect(page).to have_no_selector("em")
+    end
+
+    find_button("HTML source").send_keys(:space)
+    expect(page).to have_selector("button[aria-label='HTML source'][aria-pressed='false']")
+
+    within_frame do
+      expect(page).to have_selector("em", text: "slimey scoundrel")
+    end
+
     source_tab_element.click
 
     within_frame do
@@ -236,6 +253,36 @@ RSpec.describe MailCatcher, type: :feature do
     within_frame do
       expect(body_element).to have_text("Content-Type: application/x-weird")
       expect(body_element).to have_text("Weird stuff~")
+    end
+  end
+
+  it "switches from plain text to HTML source and falls back for text-only messages" do
+    deliver_example("multipartmail-with-utf8")
+    expect(page).to have_selector("#messages table tbody tr", text: "Test Multipart UTF8 Mail")
+    message_row_element.click
+    plain_tab_element.click
+    click_button "HTML source"
+
+    within_frame do
+      expect(page).to have_text("<em>© HTML</em> mail")
+      expect(page).to have_no_text("Plain text mail")
+      expect(page).to have_no_text("Content-Type:")
+    end
+
+    html_tab_element.click
+    expect(page).to have_selector("button[aria-label='HTML source'][aria-pressed='false']")
+    within_frame do
+      expect(page).to have_selector("em", text: "© HTML")
+    end
+
+    click_button "HTML source"
+    deliver_example("plainmail")
+    expect(page).to have_selector("#messages table tbody tr:first-of-type", text: "Plain mail")
+    message_row_element.click
+    expect(page).to have_no_button("HTML source")
+    within_frame do
+      expect(page).to have_text("Here's some text")
+      expect(page).to have_no_text("<em>")
     end
   end
 
@@ -365,6 +412,12 @@ RSpec.describe MailCatcher, type: :feature do
       image = page.find("img[alt='A tiny image']")
       expect(image[:src]).to match(%r{/messages/[^/]+/parts/inline-image@example\.com\z})
       wait.until { image.evaluate_script("this.complete && this.naturalWidth === 1") }
+    end
+
+    click_button "HTML source"
+    within_frame do
+      expect(page).to have_text('src="cid:inline-image@example.com"')
+      expect(page).to have_no_selector("img")
     end
   end
 

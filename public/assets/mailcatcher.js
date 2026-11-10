@@ -29,7 +29,13 @@ class MailCatcherApp {
     $("#message").on("click", ".views .format.tab a", (event) => {
       event.preventDefault();
       const format = $(event.currentTarget).parent("li").data("message-format");
+      this.htmlSource = false;
       this.loadMessageBody(this.selectedMessage(), format);
+    });
+
+    $("#message .html-source-toggle").on("click", () => {
+      this.htmlSource = !this.htmlSource;
+      this.loadMessageBody(this.selectedMessage(), "html");
     });
 
     $("#message iframe").on("load", () => {
@@ -360,18 +366,21 @@ class MailCatcherApp {
     id = id || this.selectedMessage();
     format = format || $("#message .views .tab.format.selected").attr("data-message-format") || "html";
 
+    this.htmlSource = format === "html" && !!this.htmlSource;
+    $("#message .html-source-toggle").attr("aria-pressed", String(this.htmlSource));
+
     $(`#message .views .tab[data-message-format="${format}"]:not(.selected)`).addClass("selected");
     $(`#message .views .tab:not([data-message-format="${format}"]).selected`).removeClass("selected");
 
     if (id != null) {
-      $("#message iframe").attr("src", `messages/${id}.${format}`);
+      $("#message iframe").attr("src", `messages/${id}.${this.htmlSource ? "html-source" : format}`);
     }
   }
 
   decorateMessageBody() {
     const format = $("#message .views .tab.format.selected").attr("data-message-format");
 
-    if (format === "html") {
+    if (format === "html" && !this.htmlSource) {
       const body = $("#message iframe").contents().find("body");
       $("a", body).attr("target", "_blank").each((_index, link) => {
         link.relList.remove("opener");

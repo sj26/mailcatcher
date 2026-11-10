@@ -63,7 +63,15 @@
       </dl>
       <nav class="views">
         <ul>
-          <li class="format tab html selected" data-message-format="html"><a href="#">HTML</a></li>
+          <li class="format tab html selected" data-message-format="html">
+            <a href="#">HTML</a>
+            <button type="button" class="html-source-toggle" aria-label="HTML source" aria-pressed="false" title="Toggle HTML source">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <path d="m9 7-5 5 5 5" />
+                <path d="m15 7 5 5-5 5" />
+              </svg>
+            </button>
+          </li>
           <li class="format tab plain" data-message-format="plain"><a href="#">Plain Text</a></li>
           <li class="format tab source" data-message-format="source"><a href="#">Source</a></li>
           <li class="action download" data-message-format="html"><a href="#" class="button"><span>Download</span></a></li>

@@ -122,6 +122,16 @@ module MailCatcher
         end
       end
 
+      get "/messages/:id.html-source" do
+        id = params[:id].to_i
+        if part = Mail.message_part_html(id)
+          content_type "text/plain", :charset => (part["charset"] || "utf8")
+          part["body"]
+        else
+          not_found
+        end
+      end
+
       get "/messages/:id.plain" do
         id = params[:id].to_i
         if part = Mail.message_part_plain(id)
