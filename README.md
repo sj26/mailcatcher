@@ -156,6 +156,7 @@ A fairly RESTful URL schema means you can download a list of messages in JSON fr
 
 ## Caveats
 
+* MailCatcher is a development tool, not a public mail service. Message previews and directly opened message parts disable scripts and forms, but remote images and styles can still load. Links open normal browser tabs; downloaded files are not sandboxed by MailCatcher.
 * Mail processing is fairly basic but easily modified. If something doesn't work for you, fork and fix it or [file an issue][mailcatcher-issues] and let me know. Include the whole message you're having problems with.
 * Encodings are difficult. MailCatcher does not completely support utf-8 straight over the wire, you must use a mail library which encodes things properly based on SMTP server capabilities.
 

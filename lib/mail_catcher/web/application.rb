@@ -38,6 +38,13 @@ module MailCatcher
       set :prefix, MailCatcher.options[:http_path]
       set :root, File.expand_path("#{__FILE__}/../../../..")
 
+      # Message URLs can also be opened outside the preview iframe.
+      before "/messages/*" do
+        headers \
+          "Content-Security-Policy" => "sandbox allow-same-origin allow-popups allow-popups-to-escape-sandbox; script-src 'none'; object-src 'none'",
+          "X-Content-Type-Options" => "nosniff"
+      end
+
       get "/" do
         erb :index
       end

@@ -409,4 +409,43 @@ RSpec.describe MailCatcher, type: :feature do
     end
     popup.close
   end
+
+  ["text/html", "application/xhtml+xml", "image/svg+xml"].each do |type|
+    it "blocks scripts in directly opened #{type} message parts",
+      mailcatcher_options: %w[--http-path mail], http_path: "/mail/" do
+      content = <<~HTML
+        <svg xmlns="http://www.w3.org/2000/svg" onload="document.documentElement.setAttribute('data-handler', 'ran')">
+          <text id="content" x="10" y="30">Message content</text>
+          <script>document.documentElement.setAttribute('data-script', 'ran')</script>
+        </svg>
+      HTML
+      if type != "image/svg+xml"
+        content = %(<html xmlns="http://www.w3.org/1999/xhtml"><body>#{content}</body></html>)
+      end
+      deliver <<~MESSAGE
+        Subject: Active part
+        Content-Type: multipart/related; boundary=PARTS
+
+        --PARTS
+        Content-Type: #{type}
+        Content-Disposition: inline
+        Content-ID: <active@example.com>
+
+        #{content}
+        --PARTS--
+      MESSAGE
+
+      row = page.find("#messages tbody tr", text: "Active part")
+      id = row["data-message-id"]
+      paths = ["/mail/messages/#{id}/parts/active@example.com"]
+      paths << "/mail/messages/#{id}.html" unless type == "image/svg+xml"
+
+      paths.each do |path|
+        visit path
+        expect(page).to have_selector("#content", text: "Message content")
+        expect(page.evaluate_script("document.documentElement.getAttribute('data-script')")).to be_nil
+        expect(page.evaluate_script("document.documentElement.getAttribute('data-handler')")).to be_nil
+      end
+    end
+  end
 end
