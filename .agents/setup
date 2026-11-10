@@ -6,12 +6,13 @@ cd "$repo_root"
 
 packages=(
   build-essential
+  ca-certificates
   chromium
   chromium-driver
+  chromium-sandbox
+  curl
   libsqlite3-dev
-  ruby
-  ruby-bundler
-  ruby-dev
+  libssl-dev
 )
 
 if ! command -v node >/dev/null 2>&1; then
@@ -31,6 +32,18 @@ if ((${#missing_packages[@]})); then
   time sudo apt-get install -y --no-install-recommends "${missing_packages[@]}"
 else
   echo "==> System packages are already installed"
+fi
+
+echo "==> Installing Ruby toolchain"
+export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:$PATH"
+if ! command -v mise >/dev/null 2>&1; then
+  curl --fail --silent --show-error --location https://mise.run | sh
+fi
+time MISE_RUBY_COMPILE=false mise use --global ruby@3.4.12
+
+ruby_path='export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:$PATH"'
+if ! grep -Fqx "$ruby_path" "$HOME/.bash_profile" 2>/dev/null; then
+  printf '\n%s\n' "$ruby_path" >> "$HOME/.bash_profile"
 fi
 
 echo "==> Installing Ruby dependencies"

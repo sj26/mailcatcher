@@ -64,6 +64,11 @@ RSpec.describe "HTTP API", type: :feature, browser: false do
     expect(part["Content-Type"]).to start_with("text/plain")
     expect(part["Content-Disposition"]).to match(%r{\Aattachment; filename="?attachment"?\z})
     expect(part.body).to eq("Hello, I am an attachment!\r\n")
+
+    [html, plain, source, original, part].each do |response|
+      expect(response["Content-Security-Policy"]).to include("sandbox", "script-src 'none'", "object-src 'none'")
+      expect(response["X-Content-Type-Options"]).to eq("nosniff")
+    end
   end
 
   it "deletes individual messages and the entire inbox" do

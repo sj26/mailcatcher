@@ -396,6 +396,7 @@ RSpec.describe MailCatcher, type: :feature do
       link = page.find_link("https://mailcatcher.me")
       expect(link[:href]).to eq("https://mailcatcher.me/")
       expect(link[:target]).to eq("_blank")
+      expect(link[:rel]).to eq("noopener")
     end
   end
 
@@ -417,6 +418,90 @@ RSpec.describe MailCatcher, type: :feature do
     within_frame do
       expect(page).to have_text('src="cid:inline-image@example.com"')
       expect(page).to have_no_selector("img")
+    end
+  end
+
+  it "displays HTML without running message scripts or submitting forms" do
+    deliver_example("plainmail")
+    deliver <<~MESSAGE
+      Subject: Inert HTML
+      Content-Type: text/html
+
+      <p id="status">Message content</p>
+      <script>
+        document.getElementById('status').textContent = 'Script ran';
+        parent.document.body.dataset.messageScript = 'ran';
+        fetch('1.source').then(response => response.text()).then(source => {
+          parent.document.body.dataset.messageSource = source;
+        });
+      </script>
+      <svg onload="document.getElementById('status').textContent = 'Handler ran'"></svg>
+      <form action="/" target="_top"><button>Submit message form</button></form>
+      <a href="javascript:document.getElementById('status').textContent='URL ran'">Script link</a>
+      <a href="/" rel="opener nofollow">Open application</a>
+    MESSAGE
+
+    page.find("#messages tbody tr", text: "Inert HTML").click
+
+    within_frame do
+      expect(page).to have_selector("#status", text: "Message content")
+      click_button "Submit message form"
+      click_link "Script link"
+      expect(page).to have_selector("#status", text: "Message content")
+      expect(page.find_link("Open application")[:rel].split).to contain_exactly("nofollow", "noopener")
+    end
+
+    expect(page).to have_selector("#messages tbody tr.selected", text: "Inert HTML")
+    expect(page.evaluate_script("document.body.dataset.messageScript")).to be_nil
+    expect(page.evaluate_script("document.body.dataset.messageSource")).to be_nil
+
+    # Links must open a usable page, not inherit the message's script restrictions.
+    popup = window_opened_by do
+      within_frame { click_link "Open application" }
+    end
+    within_window popup do
+      expect(page).to have_selector("#messages tbody tr", text: "Plain mail")
+      expect(page.evaluate_script("window.opener === null")).to be true
+    end
+    popup.close
+  end
+
+  ["text/html", "application/xhtml+xml", "image/svg+xml"].each do |type|
+    it "blocks scripts in directly opened #{type} message parts",
+      mailcatcher_options: %w[--http-path mail], http_path: "/mail/" do
+      content = <<~HTML
+        <svg xmlns="http://www.w3.org/2000/svg" onload="document.documentElement.setAttribute('data-handler', 'ran')">
+          <text id="content" x="10" y="30">Message content</text>
+          <script>document.documentElement.setAttribute('data-script', 'ran')</script>
+        </svg>
+      HTML
+      if type != "image/svg+xml"
+        content = %(<html xmlns="http://www.w3.org/1999/xhtml"><body>#{content}</body></html>)
+      end
+      deliver <<~MESSAGE
+        Subject: Active part
+        Content-Type: multipart/related; boundary=PARTS
+
+        --PARTS
+        Content-Type: #{type}
+        Content-Disposition: inline
+        Content-ID: <active@example.com>
+
+        #{content}
+        --PARTS--
+      MESSAGE
+
+      row = page.find("#messages tbody tr", text: "Active part")
+      id = row["data-message-id"]
+      paths = ["/mail/messages/#{id}/parts/active@example.com"]
+      paths << "/mail/messages/#{id}.html" unless type == "image/svg+xml"
+
+      paths.each do |path|
+        visit path
+        expect(page).to have_selector("#content", text: "Message content")
+        expect(page.evaluate_script("document.documentElement.getAttribute('data-script')")).to be_nil
+        expect(page.evaluate_script("document.documentElement.getAttribute('data-handler')")).to be_nil
+      end
     end
   end
 end
