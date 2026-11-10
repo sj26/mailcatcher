@@ -349,6 +349,7 @@ RSpec.describe MailCatcher, type: :feature do
       link = page.find_link("https://mailcatcher.me")
       expect(link[:href]).to eq("https://mailcatcher.me/")
       expect(link[:target]).to eq("_blank")
+      expect(link[:rel]).to eq("noopener")
     end
   end
 
@@ -384,7 +385,7 @@ RSpec.describe MailCatcher, type: :feature do
       <svg onload="document.getElementById('status').textContent = 'Handler ran'"></svg>
       <form action="/" target="_top"><button>Submit message form</button></form>
       <a href="javascript:document.getElementById('status').textContent='URL ran'">Script link</a>
-      <a href="/">Open application</a>
+      <a href="/" rel="opener nofollow">Open application</a>
     MESSAGE
 
     page.find("#messages tbody tr", text: "Inert HTML").click
@@ -394,6 +395,7 @@ RSpec.describe MailCatcher, type: :feature do
       click_button "Submit message form"
       click_link "Script link"
       expect(page).to have_selector("#status", text: "Message content")
+      expect(page.find_link("Open application")[:rel].split).to contain_exactly("nofollow", "noopener")
     end
 
     expect(page).to have_selector("#messages tbody tr.selected", text: "Inert HTML")
@@ -406,6 +408,7 @@ RSpec.describe MailCatcher, type: :feature do
     end
     within_window popup do
       expect(page).to have_selector("#messages tbody tr", text: "Plain mail")
+      expect(page.evaluate_script("window.opener === null")).to be true
     end
     popup.close
   end

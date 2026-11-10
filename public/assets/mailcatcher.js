@@ -373,7 +373,10 @@ class MailCatcherApp {
 
     if (format === "html") {
       const body = $("#message iframe").contents().find("body");
-      $("a", body).attr("target", "_blank");
+      $("a", body).attr("target", "_blank").each((_index, link) => {
+        link.relList.remove("opener");
+        link.relList.add("noopener");
+      });
     } else if (format === "plain") {
       const messageIframe = $("#message iframe").contents();
       let text = messageIframe.text();
@@ -385,7 +388,7 @@ class MailCatcherApp {
       text = text.replace(/"/g, "&quot;");
 
       // Autolink URLs.
-      text = text.replace(/((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?)/g, '<a href="$1" target="_blank">$1</a>');
+      text = text.replace(/((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
 
       messageIframe.find("html").html(`<body style="font-family: sans-serif; white-space: pre-wrap">${text}</body>`);
     }
