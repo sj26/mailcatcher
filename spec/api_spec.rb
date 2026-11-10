@@ -43,6 +43,11 @@ RSpec.describe "HTTP API", type: :feature, browser: false do
     expect(html["Content-Type"]).to start_with("text/html")
     expect(html.body).to include("<em>HTML</em> mail")
 
+    html_source = http_request(:get, "/messages/#{multipart_id}.html-source")
+    expect(html_source).to be_a(Net::HTTPOK)
+    expect(html_source["Content-Type"]).to start_with("text/plain")
+    expect(html_source.body).to eq(html.body)
+
     source = http_request(:get, "/messages/#{multipart_id}.source")
     expect(source).to be_a(Net::HTTPOK)
     expect(source["Content-Type"]).to start_with("text/plain")
@@ -82,7 +87,9 @@ RSpec.describe "HTTP API", type: :feature, browser: false do
 
     [
       "/messages/999.json",
+      "/messages/999.html-source",
       "/messages/#{message_id}.html",
+      "/messages/#{message_id}.html-source",
       "/messages/#{message_id}/parts/missing",
     ].each do |path|
       response = http_request(:get, path)

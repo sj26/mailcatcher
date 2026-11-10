@@ -339,6 +339,46 @@ body > header nav li a:active, body > header nav li a.active {
   cursor: default;
 }
 
+#message > header .views .tab.html {
+  position: relative;
+}
+
+#message > header .views .tab.html a {
+  padding-right: 38px;
+}
+
+.html-source-toggle {
+  position: absolute;
+  top: 5px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: #e5e5e5;
+  color: #666;
+  cursor: pointer;
+}
+
+.html-source-toggle:hover {
+  background: #d5d5d5;
+  color: #333;
+}
+
+.html-source-toggle[aria-pressed="true"] {
+  background: #666;
+  color: #fff;
+}
+
+.html-source-toggle:focus-visible {
+  outline: 2px solid #4183c4;
+  outline-offset: 2px;
+}
+
 #message > header .views .action {
   display: inline-block;
   vertical-align: middle;
